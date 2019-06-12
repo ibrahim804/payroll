@@ -33,7 +33,7 @@ class CreateUsersTable extends Migration
             $table->integer('salary_id');
             $table->integer('working_days_id');
             $table->date('joining_date');
-            $table->boolean('status')->default(1);
+            $table->boolean('status')->default(1)->nullable();
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
