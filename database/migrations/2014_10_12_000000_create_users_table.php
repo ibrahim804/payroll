@@ -24,7 +24,7 @@ class CreateUsersTable extends Migration
             $table->string('gender');
             $table->string('nationality')->default('bangladeshi');
             $table->string('passport_number');
-            $table->string('photo_path');
+            $table->string('photo_path')->nullable();
             $table->text('personal_address');
             $table->string('city');
             $table->string('phone');
