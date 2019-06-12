@@ -14,6 +14,8 @@ class User extends Authenticatable
 {
     use Notifiable, SoftDeletes, HasApiTokens;
 
+    private $admin_id = 1;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -57,4 +59,8 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isAdmin($user_id){
+        return ($user_id == $this->admin_id) ? 'true' : 'false';
+    }
 }
