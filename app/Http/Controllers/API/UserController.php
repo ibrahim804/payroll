@@ -66,11 +66,11 @@ class UserController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'full_name' => 'required|string|min:3|max:25',
-            'user_name' => 'required|string|min:3:max:25|unique:users',
+            'user_name' => 'required|string|min:3|max:25|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|max:30',
             'c_password' => 'required|same:password',
-            'date_of_birth' => 'required|string',
+            'date_of_birth' => 'required|date',
             'gender' => 'required|string',
             'nationality' => 'required|string',
             'passport_number' => 'required|string',
@@ -81,7 +81,7 @@ class UserController extends Controller
             'department_id' => 'required|string',
             'salary_id' => 'required|string',
             'working_days_id' => 'required|string',
-            'joining_date' => 'required|string',
+            'joining_date' => 'required|date',
         ]);
 
         if ($validator->fails())
@@ -127,30 +127,115 @@ class UserController extends Controller
         ];
     }
 
-    // public function update(Request $request)
-    // {
-    //     $user = Auth::user();
-    //
-    //     $validator = Validator::make($request->all(), [
-    //         'name' => 'required|string|min:3|max:25',
-    //     ]);
-    //
-    //     if ($validator->fails())
-    //     {
-    //         return $this->getErrorMessage($validator->errors());
-    //     }
-    //
-    //     $user->update(['name' => $request->input('name')]);
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'updated_name' => $user->name,
-    //         ]
-    //     ];
-    // }
-    //
+    public function update(Request $request, $id)
+    {
+        $validator = $this->getValidatorArray($request);
+
+        if ($validator->fails())
+        {
+            return $this->getErrorMessage($validator->errors());
+        }
+
+        $user = Auth::user();
+
+        if($user->isAdmin($user->id) == 'true' and $user->id == $id){
+
+            $input = $request->all();
+
+            if($request->filled('password') and $request->filled('c_password')){
+                $input['password'] = bcrypt($input['password']);
+            }
+
+            $user->update($input);
+
+            return
+            [
+                [
+                    'status' => 'OK',
+                    'message' => 'Admin Info Updated',
+                ]
+            ];
+        }
+
+        $user_to_be_updated = User::findOrFail($id);
+        $user_to_be_updated->update($this->getSoftInputs($request));
+
+        $authenticated_user = Auth::user();
+
+        if($authenticated_user->isAdmin($authenticated_user->id) == 'false'){
+            return $this->getErrorMessage('Soft inputs updated, but Restricted inputs were not.');
+        }
+
+        $user_to_be_updated->update($this->getRestrictedInputs($request));
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'All information are up to date.'
+            ]
+        ];
+    }
+
+    private function getSoftInputs(Request $request){
+
+        $soft_inputs = [];
+
+        if($request->filled('full_name')) $soft_inputs['full_name'] = $request->input('full_name');
+        if($request->filled('email')) $soft_inputs['email'] = $request->input('email');
+        if($request->filled('password') and $request->filled('c_password')) $soft_inputs['password'] = bcrypt($request->input['password']);
+        if($request->filled('date_of_birth')) $soft_inputs['date_of_birth'] = $request->input('date_of_birth');
+        if($request->filled('gender')) $soft_inputs['gender'] = $request->input('gender');
+        if($request->filled('nationality')) $soft_inputs['nationality'] = $request->input('nationality');
+        if($request->filled('passport_number')) $soft_inputs['passport_number'] = $request->input('passport_number');
+        if($request->filled('personal_address')) $soft_inputs['personal_address'] = $request->input('personal_address');
+        if($request->filled('city')) $soft_inputs['city'] = $request->input('city');
+        if($request->filled('phone')) $soft_inputs['phone'] = $request->input('phone');
+
+        return $soft_inputs;
+    }
+
+    private function getRestrictedInputs(Request $request){
+
+        $restricted_inputs = [];
+
+        if($request->filled('user_name')) $restricted_inputs['user_name'] = $request->input('user_name');
+        if($request->filled('photo_path')) $restricted_inputs['photo_path'] = $request->input('photo_path');
+        if($request->filled('designation_id')) $restricted_inputs['designation_id'] = $request->input('designation_id');
+        if($request->filled('department_id')) $restricted_inputs['department_id'] = $request->input('department_id');
+        if($request->filled('salary_id')) $restricted_inputs['salary_id'] = $request->input('salary_id');
+        if($request->filled('working_days_id')) $restricted_inputs['working_days_id'] = $request->input('working_days_id');
+        if($request->filled('joining_date')) $restricted_inputs['joining_date'] = $request->input('joining_date');
+        if($request->filled('status')) $restricted_inputs['status'] = $request->input('status');
+
+        return $restricted_inputs;
+    }
+
+    private function getValidatorArray(Request $request){
+
+        return Validator::make($request->all(), [
+            'full_name' => 'string|min:3|max:25',
+            'user_name' => 'string|min:3|max:25|unique:users',
+            'email' => 'string|email|max:255|unique:users',
+            'password' => 'string|min:6|max:30',
+            'c_password' => 'same:password',
+            'date_of_birth' => 'date',
+            'gender' => 'string',
+            'nationality' => 'string',
+            'passport_number' => 'string',
+            'photo_path' => 'string',
+            'personal_address' => 'string|min:10|max:300',
+            'city' => 'string',
+            'phone' => 'string',
+            'designation_id' => 'string',
+            'department_id' => 'string',
+            'salary_id' => 'string',
+            'working_days_id' => 'string',
+            'joining_date' => 'date',
+            'status' => 'min:1|max:1'
+        ]);
+    }
+
     // public function change_password(Request $request)
     // {
     //
@@ -196,6 +281,6 @@ class UserController extends Controller
     // }
 
     public function delete(Request $request){
-        
+        return 1;
     }
 }
