@@ -28,8 +28,6 @@ class UserController extends Controller
             $user = Auth::user();
             $success['token'] = $user->createToken(config('app.name'))->accessToken;
 
-            // return response()->json(['success' => $success], $this->successStatus);
-
             return
             [
                 [
@@ -49,7 +47,8 @@ class UserController extends Controller
         }
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
 
         auth()->user()->token()->revoke(); // after a long way headache, i found this line :)
 
@@ -86,7 +85,6 @@ class UserController extends Controller
 
         if ($validator->fails())
         {
-            //return response()->json(['error'=>$validator->errors()], 401);
             return $this->getErrorMessage($validator->errors());
         }
 
@@ -94,11 +92,7 @@ class UserController extends Controller
         $input['password'] = bcrypt($input['password']);
 
         $user = User::create($input);
-
         $success['token'] = $user->createToken(config('app.name'))->accessToken;
-        $success['name'] = $user->name;
-
-        // return response()->json(['success'=>$success], $this->successStatus);
 
         return
         [
@@ -115,8 +109,6 @@ class UserController extends Controller
     public function user()
     {
         $user = Auth::user();
-
-        //return response()->json(['success' => $user], $this->successStatus);
 
         return
         [
@@ -137,53 +129,45 @@ class UserController extends Controller
         }
 
         $user = Auth::user();
+        $user_to_be_updated = User::findOrFail($id);
 
-        if($user->isAdmin($user->id) == 'true' and $user->id == $id){
-
+        if($user->isAdmin($user->id) == 'true')
+        {
             $input = $request->all();
-
-            if($request->filled('password') and $request->filled('c_password')){
-                $input['password'] = bcrypt($input['password']);
-            }
-
-            $user->update($input);
+            $user_to_be_updated->update($input);
 
             return
             [
                 [
                     'status' => 'OK',
-                    'message' => 'Admin Info Updated',
+                    'message' => 'Info Updated',
                 ]
             ];
         }
 
-        $user_to_be_updated = User::findOrFail($id);
-        $user_to_be_updated->update($this->getSoftInputs($request));
+        if($user->id == $id)
+        {
+            $user_to_be_updated->update($this->getSoftInputs($request));
 
-        $authenticated_user = Auth::user();
+            return
+            [
+                [
+                    'status' => 'OK',
+                    'message' => 'Soft inputs updated, but restricted inputs did not.',
+                ]
+            ];
 
-        if($authenticated_user->isAdmin($authenticated_user->id) == 'false'){
-            return $this->getErrorMessage('Soft inputs updated, but Restricted inputs were not.');
         }
 
-        $user_to_be_updated->update($this->getRestrictedInputs($request));
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'All information are up to date.'
-            ]
-        ];
+        return $this->getErrorMessage('Permission denied');
     }
 
-    private function getSoftInputs(Request $request){
-
+    private function getSoftInputs(Request $request)
+    {
         $soft_inputs = [];
 
         if($request->filled('full_name')) $soft_inputs['full_name'] = $request->input('full_name');
         if($request->filled('email')) $soft_inputs['email'] = $request->input('email');
-        if($request->filled('password') and $request->filled('c_password')) $soft_inputs['password'] = bcrypt($request->input['password']);
         if($request->filled('date_of_birth')) $soft_inputs['date_of_birth'] = $request->input('date_of_birth');
         if($request->filled('gender')) $soft_inputs['gender'] = $request->input('gender');
         if($request->filled('nationality')) $soft_inputs['nationality'] = $request->input('nationality');
@@ -195,30 +179,12 @@ class UserController extends Controller
         return $soft_inputs;
     }
 
-    private function getRestrictedInputs(Request $request){
-
-        $restricted_inputs = [];
-
-        if($request->filled('user_name')) $restricted_inputs['user_name'] = $request->input('user_name');
-        if($request->filled('photo_path')) $restricted_inputs['photo_path'] = $request->input('photo_path');
-        if($request->filled('designation_id')) $restricted_inputs['designation_id'] = $request->input('designation_id');
-        if($request->filled('department_id')) $restricted_inputs['department_id'] = $request->input('department_id');
-        if($request->filled('salary_id')) $restricted_inputs['salary_id'] = $request->input('salary_id');
-        if($request->filled('working_days_id')) $restricted_inputs['working_days_id'] = $request->input('working_days_id');
-        if($request->filled('joining_date')) $restricted_inputs['joining_date'] = $request->input('joining_date');
-        if($request->filled('status')) $restricted_inputs['status'] = $request->input('status');
-
-        return $restricted_inputs;
-    }
-
-    private function getValidatorArray(Request $request){
-
+    private function getValidatorArray(Request $request)
+    {
         return Validator::make($request->all(), [
             'full_name' => 'string|min:3|max:25',
             'user_name' => 'string|min:3|max:25|unique:users',
             'email' => 'string|email|max:255|unique:users',
-            'password' => 'string|min:6|max:30',
-            'c_password' => 'same:password',
             'date_of_birth' => 'date',
             'gender' => 'string',
             'nationality' => 'string',
@@ -236,49 +202,40 @@ class UserController extends Controller
         ]);
     }
 
-    // public function change_password(Request $request)
-    // {
-    //
-    //     if(Auth::user()->isFbUser)
-    //     {
-    //         return $this->getErrorMessage('Facebook users are not allowed to change their password.');
-    //     }
-    //
-    //     $validator = Validator::make($request->all(), [
-    //         'current_password' => 'required',
-    //         'new_password' => 'required|string|min:6|max:30',
-    //         'confirm_password' => 'required|same:new_password',
-    //     ]);
-    //
-    //     if ($validator->fails())
-    //     {
-    //         return $this->getErrorMessage($validator->errors());
-    //     }
-    //
-    //     if(Auth::guard('web')->attempt(['id' => auth()->id(), 'password' => $request->input('current_password')]))
-    //     {
-    //         $new_password = bcrypt($request->input('new_password'));
-    //         auth()->user()->update(['password' => $new_password]);
-    //
-    //         return
-    //         [
-    //             [
-    //                 'status' => 'OK',
-    //                 'message' => 'Password has been changed successfully',
-    //             ]
-    //         ];
-    //     }
-    //
-    //     return $this->getErrorMessage('Current password is not correct.');
-    // }
-    //
-    // public function forgot_password(Request $request)
-    // {
-    //     if(Auth::user()->isFbUser)
-    //     {
-    //         return $this->getErrorMessage('Facebook users are not allowed to recover their password.');
-    //     }
-    // }
+    public function change_password(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required',
+            'new_password' => 'required|string|min:6|max:30',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        if ($validator->fails())
+        {
+            return $this->getErrorMessage($validator->errors());
+        }
+
+        if(Auth::guard('web')->attempt(['id' => auth()->id(), 'password' => $request->input('current_password')]))
+        {
+            $new_password = bcrypt($request->input('new_password'));
+            auth()->user()->update(['password' => $new_password]);
+
+            return
+            [
+                [
+                    'status' => 'OK',
+                    'message' => 'Password has been changed successfully',
+                ]
+            ];
+        }
+
+        return $this->getErrorMessage('Current password is not correct.');
+    }
+
+    public function forgot_password(Request $request)
+    {
+        
+    }
 
     public function delete(Request $request){
         return 1;
