@@ -33,5 +33,25 @@ Route::get('restore_user/{id}', 'API\UserController@restore');
 Route::get('all_users', 'API\UserController@index');
 
 
-Route::post('attendance', 'AttendanceController@store');
-Route::post('attendance/{id}', 'AttendanceController@update');
+Route::get('entry_office', 'AttendanceController@store');
+Route::get('exit_office', 'AttendanceController@update');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
