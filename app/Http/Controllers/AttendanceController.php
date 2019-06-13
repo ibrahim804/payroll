@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Attendance;
 use Illuminate\Http\Request;
+use App\Http\Controllers\CustomsErrorsTrait;
 
 class AttendanceController extends Controller
 {
+
+    use CustomsErrorsTrait;
 
     public function __construct()
     {
@@ -31,11 +34,16 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
+
+        $count = auth()->user()->attendances->where('day', date("d", strtotime('+6 hours')))->count();
+
+        if($count > 0) return $this->getErrorMessage('Today\'s attendance for this user already exists.');
+
         $attendance = Attendance::create([
             'user_id' => auth()->id(),
-            'date' => date('Y-m-d'),
-            'day' => date('d'),
-            'month' => date('M'),
+            'date' => date("Y-m-d", strtotime('+6 hours')),
+            'day' => date("d", strtotime('+6 hours')),
+            'month' => date("M", strtotime('+6 hours')),
             'entry_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
             'exit_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
         ]);
