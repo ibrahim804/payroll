@@ -239,7 +239,6 @@ class UserController extends Controller
 
     public function delete(Request $request, $id)
     {
-
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
 
         User::findOrFail($id)->delete();

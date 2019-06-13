@@ -17,9 +17,9 @@ Route::get('/', function(){
     return 'HRMS version 1.0';
 });
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('login', 'API\UserController@login');
 Route::post('register', 'API\UserController@register');
