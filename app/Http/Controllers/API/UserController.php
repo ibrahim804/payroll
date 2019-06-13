@@ -266,6 +266,19 @@ class UserController extends Controller
             ]
         ];
     }
+
+    public function index(Request $request)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'all_users' => User::all(),
+            ]
+        ];
+    }
 }
 
 
