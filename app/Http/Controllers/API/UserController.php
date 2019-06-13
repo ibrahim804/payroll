@@ -232,10 +232,10 @@ class UserController extends Controller
         return $this->getErrorMessage('Current password is not correct.');
     }
 
-    // public function forgot_password(Request $request)
-    // {
-    //
-    // }
+    public function forgot_password(Request $request)
+    {
+        return 'hello';
+    }
 
     public function delete(Request $request, $id)
     {
