@@ -27,4 +27,5 @@ Route::get('user', 'API\UserController@user');
 Route::post('update/{id}', 'API\UserController@update');
 Route::post('change_password', 'API\UserController@change_password');
 Route::get('logout', 'API\UserController@logout');
-Route::get('delete_user', 'API\UserController@delete');
+Route::get('delete_user/{id}', 'API\UserController@delete');
+Route::get('restore_user/{id}', 'API\UserController@restore');
