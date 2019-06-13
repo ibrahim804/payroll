@@ -17,6 +17,7 @@ class CreateAttendancesTable extends Migration
             $table->increments('id');
             $table->integer('user_id');
             $table->date('date');
+            $table->integer('day');
             $table->string('month');
             $table->timestamp('entry_time');
             $table->timestamp('exit_time')->default(\DB::raw('CURRENT_TIMESTAMP'));
