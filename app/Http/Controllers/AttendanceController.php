@@ -16,22 +16,11 @@ class AttendanceController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
 
@@ -58,35 +47,31 @@ class AttendanceController extends Controller
         ];
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function show(Attendance $attendance)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Attendance $attendance)
+    public function update(Request $request)
     {
+        $attendance = auth()->user()->attendances->where('day', date("d", strtotime('+6 hours')))->first();
 
+        if($attendance)
+        {
+            $attendance->update(['exit_time' => date("Y-m-d H:i:s", strtotime('+6 hours'))]);
+
+            return
+            [
+                [
+                    'status' => 'OK',
+                    'message' => 'Attendance exit time gets stored successfully.',
+                ]
+            ];
+        }
+
+        return $this->getErrorMessage('User has no attendance for Today');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Attendance $attendance)
     {
         //
