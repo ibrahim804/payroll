@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 class Attendance extends Model
 {
@@ -15,4 +16,9 @@ class Attendance extends Model
         'entry_time',
         'exit_time',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
