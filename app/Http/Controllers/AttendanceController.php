@@ -7,22 +7,18 @@ use Illuminate\Http\Request;
 
 class AttendanceController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth:api'); //->except(['register', 'login']);
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
     {
         //
     }
@@ -35,7 +31,23 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $attendance = Attendance::create([
+            'user_id' => auth()->id(),
+            'date' => date('Y-m-d'),
+            'day' => date('d'),
+            'month' => date('M'),
+            'entry_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
+            'exit_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
+        ]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Attendance created successfully, but entry time must be updated later.',
+                'attendance' => $attendance,
+            ]
+        ];
     }
 
     /**
@@ -50,17 +62,6 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Attendance $attendance)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -69,7 +70,7 @@ class AttendanceController extends Controller
      */
     public function update(Request $request, Attendance $attendance)
     {
-        //
+
     }
 
     /**
@@ -82,4 +83,13 @@ class AttendanceController extends Controller
     {
         //
     }
+
+    // private function validateAttendance()
+    // {
+    //     return request()->validate([                           // For DATABASE Validation
+    //         'game_id' => 'required',
+    //         'activation_date'  => 'required',
+    //         'text' => 'required'
+    //     ]);
+    // }
 }
