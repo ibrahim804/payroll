@@ -10,6 +10,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Attendance;
+
 class User extends Authenticatable
 {
     use Notifiable, SoftDeletes, HasApiTokens;
@@ -60,7 +62,33 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function isAdmin($user_id){
+    public function isAdmin($user_id)
+    {
         return ($user_id == $this->admin_id) ? 'true' : 'false';
     }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
