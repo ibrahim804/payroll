@@ -232,12 +232,64 @@ class UserController extends Controller
         return $this->getErrorMessage('Current password is not correct.');
     }
 
-    public function forgot_password(Request $request)
+    // public function forgot_password(Request $request)
+    // {
+    //
+    // }
+
+    public function delete(Request $request, $id)
     {
-        
+
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+
+        User::findOrFail($id)->delete();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'User deleted successfully',
+            ]
+        ];
     }
 
-    public function delete(Request $request){
-        return 1;
+    public function restore(Request $request, $id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+
+        User::withTrashed()->where('id', $id)->restore();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'User restored successfully.',
+            ]
+        ];
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
