@@ -19,8 +19,9 @@ class CreateAttendancesTable extends Migration
             $table->date('date');
             $table->string('day');
             $table->string('month');
-            $table->timestamp('entry_time');
+            $table->timestamp('entry_time')->nullable();
             $table->timestamp('exit_time')->nullable(); // ->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->integer('updatable_flag')->default(0);
             $table->timestamps();
         });
     }
