@@ -103,9 +103,4 @@ class AttendanceController extends Controller
 
         return $this->getErrorMessage('User has no attendance for Today');
     }
-
-    public function destroy(Attendance $attendance)
-    {
-        //
-    }
 }
