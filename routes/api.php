@@ -30,15 +30,13 @@ Route::get('logout', 'API\UserController@logout');
 Route::get('delete_user/{id}', 'API\UserController@delete');
 Route::get('restore_user/{id}', 'API\UserController@restore');
 // Route::get('forgot_password', 'API\UserController@forgot_password');
-Route::get('all_users', 'API\UserController@index');
+Route::get('all/users', 'API\UserController@index');
 
 
 Route::get('entry', 'AttendanceController@store');
 Route::get('exit', 'AttendanceController@update');
-Route::get('present/{month}/{day}', 'AttendanceController@index');
-
-
-
+Route::get('present/list/{month}/{day}', 'AttendanceController@index');
+Route::get('present/user/{month}/{id}', 'AttendanceController@show');
 
 
 
