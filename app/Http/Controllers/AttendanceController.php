@@ -62,9 +62,22 @@ class AttendanceController extends Controller
         ];
     }
 
-    public function show(Attendance $attendance)
+    public function show($month, $id)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+
+        $attendance = Attendance::where([
+            ['user_id', $id],
+            ['month', $month],
+        ])->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'attendances' => $attendance,
+            ]
+        ];
     }
 
     public function update(Request $request)
