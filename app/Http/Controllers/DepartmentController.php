@@ -4,82 +4,91 @@ namespace App\Http\Controllers;
 
 use App\Department;
 use Illuminate\Http\Request;
+use App\Http\Controllers\CustomsErrorsTrait;
 
 class DepartmentController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    use CustomsErrorsTrait;
+
+    public function __construct()
+    {
+        $this->middleware('auth:api'); //->except(['register', 'login']);
+    }
+
     public function index()
     {
-        //
+        $department = Department::all();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'departments' => $department,
+            ]
+        ];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store()
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Department');
+
+        $validate_attributes = $this->validateDepartment();
+
+        if(Department::where('department_name', $validate_attributes['department_name'])->count())
+            return $this->getErrorMessage('This department name already exits.');
+
+        $department = Department::create($validate_attributes);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'department_name' => $department,
+            ]
+        ];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show($id)
     {
-        //
+        $department_name = Department::findOrFail($id)->department_name;
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'department_name' => $department_name,
+            ]
+        ];
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Department  $department
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Department $department)
+    public function update($id)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Dept Info.');
+
+        $department = Department::findOrFail($id);
+        $department_old_name = $department->department_name;
+        $validate_attributes = $this->validateDepartment();
+        $department->update($validate_attributes);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'department_old_name' => $department_old_name,
+                'department_new_name' => $department->department_name,
+            ]
+        ];
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Department  $department
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Department $department)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Department  $department
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Department $department)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Department  $department
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Department $department)
     {
-        //
+        
+    }
+
+    private function validateDepartment()
+    {
+        return request()->validate([                           // For DATABASE Validation
+            'department_name' => 'required|string',
+        ]);
     }
 }
