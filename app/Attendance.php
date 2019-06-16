@@ -16,6 +16,7 @@ class Attendance extends Model
         'month',
         'entry_time',
         'exit_time',
+        'updatable_flag',
     ];
 
     public function user()
