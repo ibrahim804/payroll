@@ -8,5 +8,7 @@ class Department extends Model
 {
     //
 
-    protected $fillable = ['department_name'];
+    protected $fillable = [
+        'department_name',
+    ];
 }
