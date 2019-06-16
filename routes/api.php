@@ -33,8 +33,9 @@ Route::get('restore_user/{id}', 'API\UserController@restore');
 Route::get('all_users', 'API\UserController@index');
 
 
-Route::get('entry_office', 'AttendanceController@store');
-Route::get('exit_office', 'AttendanceController@update');
+Route::get('entry', 'AttendanceController@store');
+Route::get('exit', 'AttendanceController@update');
+Route::get('present/{month}/{day}', 'AttendanceController@index');
 
 
 
