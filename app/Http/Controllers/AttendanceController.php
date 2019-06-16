@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Attendance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
+use Carbon\Carbon;
 
 class AttendanceController extends Controller
 {
-
     use CustomsErrorsTrait;
 
     public function __construct()
@@ -34,7 +34,6 @@ class AttendanceController extends Controller
             'day' => date("d", strtotime('+6 hours')),
             'month' => date("M", strtotime('+6 hours')),
             'entry_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
-            'exit_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
         ]);
 
         return
@@ -42,7 +41,7 @@ class AttendanceController extends Controller
             [
                 'status' => 'OK',
                 'message' => 'Attendance created successfully, but entry time must be updated later.',
-                'attendance' => $attendance,
+                //'attendance' => $attendance,
             ]
         ];
     }
@@ -58,7 +57,9 @@ class AttendanceController extends Controller
 
         if($attendance)
         {
-            $attendance->update(['exit_time' => date("Y-m-d H:i:s", strtotime('+6 hours'))]);
+            $exit_time = clone Carbon::parse(Carbon::now());
+            $exit_time->addHours(+6);
+            $attendance->update(['exit_time' => $this->getFormattedTime()]);
 
             return
             [
@@ -85,4 +86,13 @@ class AttendanceController extends Controller
     //         'text' => 'required'
     //     ]);
     // }
+
+    private function getFormattedTime()
+    {
+        $time = Carbon::now()->timestamp;
+        $time = Carbon::createFromTimestamp($time)->toDateTimeString();
+        $time = Carbon::parse($time);
+        $time = $time->addHours(+6);
+        return $time;
+    }
 }
