@@ -23,7 +23,6 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
-
         $count = auth()->user()->attendances->where('day', date("d", strtotime('+6 hours')))->count();
 
         if($count > 0) return $this->getErrorMessage('Today\'s attendance for this user already exists.');
@@ -36,12 +35,16 @@ class AttendanceController extends Controller
             'entry_time' => date("Y-m-d H:i:s", strtotime('+6 hours')),
         ]);
 
+        // date("Y-m-d H:i:s", strtotime('+6 hours'))
+
+        // $attendance->entry_time = Carbon::parse($attendance->created_at->addHours(+6))->format('Y-m-d H:i:s');
+        // $attendance->save();
+
         return
         [
             [
                 'status' => 'OK',
                 'message' => 'Attendance created successfully, but entry time must be updated later.',
-                //'attendance' => $attendance,
             ]
         ];
     }
@@ -57,9 +60,11 @@ class AttendanceController extends Controller
 
         if($attendance)
         {
-            $exit_time = clone Carbon::parse(Carbon::now());
-            $exit_time->addHours(+6);
-            $attendance->update(['exit_time' => $this->getFormattedTime()]);
+            // $attendance->updatable_flag++;
+            // $attendance->save();
+            // $attendance->update(['exit_time' => Carbon::parse($attendance->updated_at->addHours(+6))->format('Y-m-d H:i:s')]);
+
+            $attendance->update(['exit_time' => date("Y-m-d H:i:s", strtotime('+6 hours'))]);
 
             return
             [
@@ -76,23 +81,5 @@ class AttendanceController extends Controller
     public function destroy(Attendance $attendance)
     {
         //
-    }
-
-    // private function validateAttendance()
-    // {
-    //     return request()->validate([                           // For DATABASE Validation
-    //         'game_id' => 'required',
-    //         'activation_date'  => 'required',
-    //         'text' => 'required'
-    //     ]);
-    // }
-
-    private function getFormattedTime()
-    {
-        $time = Carbon::now()->timestamp;
-        $time = Carbon::createFromTimestamp($time)->toDateTimeString();
-        $time = Carbon::parse($time);
-        $time = $time->addHours(+6);
-        return $time;
     }
 }
