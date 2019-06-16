@@ -19,6 +19,10 @@ class Attendance extends Model
         'updatable_flag',
     ];
 
+    protected $hidden = [
+        'day', 'month', 'created_at', 'updated_at', 'updatable_flag',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
