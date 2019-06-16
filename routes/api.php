@@ -39,6 +39,12 @@ Route::get('present/list/{month}/{day}', 'AttendanceController@index');
 Route::get('present/user/{month}/{id}', 'AttendanceController@show');
 
 
+Route::get('departments', 'DepartmentController@index');
+Route::post('department', 'DepartmentController@store');
+Route::get('department/{id}', 'DepartmentController@show');
+Route::post('department/{id}', 'DepartmentController@update');
+
+
 
 
 
