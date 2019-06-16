@@ -16,9 +16,22 @@ class AttendanceController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    public function index()
+    public function index($month, $day)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+
+        $employees = Attendance::where([
+            ['day', $day],
+            ['month', $month],
+        ])->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                '$users' => $employees,
+            ]
+        ];
     }
 
     public function store(Request $request)
