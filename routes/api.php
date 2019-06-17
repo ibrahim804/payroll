@@ -40,10 +40,12 @@ Route::get('present/user/{month}/{id}', 'AttendanceController@show');
 
 
 Route::get('departments', 'DepartmentController@index');
+Route::get('departments/trashed', 'DepartmentController@trashedIndex');
 Route::post('department', 'DepartmentController@store');
 Route::get('department/{id}', 'DepartmentController@show');
 Route::post('department/{id}', 'DepartmentController@update');
-
+Route::get('department/delete/{id}', 'DepartmentController@destroy');
+Route::get('department/restore/{id}', 'DepartmentController@restore');
 
 
 
