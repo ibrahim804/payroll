@@ -17,13 +17,13 @@ class DepartmentController extends Controller
 
     public function index()
     {
-        $department = Department::all();
+        $departments = Department::all();
 
         return
         [
             [
                 'status' => 'OK',
-                'departments' => $department,
+                'departments' => $departments,
             ]
         ];
     }
@@ -112,13 +112,28 @@ class DepartmentController extends Controller
 
     public function trashedIndex()
     {
-        $department = Department::onlyTrashed()->get();
+        $departments = Department::onlyTrashed()->get();
 
         return
         [
             [
                 'status' => 'OK',
-                'departments' => $department,
+                'departments' => $departments,
+            ]
+        ];
+    }
+
+    public function users($id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to show users');
+
+        $users = Department::findOrFail($id)->users;
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'users' => $users,
             ]
         ];
     }
