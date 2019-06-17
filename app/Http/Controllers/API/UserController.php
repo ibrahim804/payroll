@@ -256,7 +256,7 @@ class UserController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
 
-        User::withTrashed()->where('id', $id)->restore();
+        User::onlyTrashed()->where('id', $id)->restore();
 
         return
         [
