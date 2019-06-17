@@ -6,6 +6,7 @@ use App\Attendance;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Carbon\Carbon;
+use App\User;
 
 class AttendanceController extends Controller
 {
@@ -66,10 +67,7 @@ class AttendanceController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
 
-        $attendance = Attendance::where([
-            ['user_id', $id],
-            ['month', $month],
-        ])->get();
+        $attendance = User::findOrFail($id)->attendances->where('month', $month);
 
         return
         [
