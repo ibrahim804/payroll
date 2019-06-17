@@ -30,7 +30,7 @@ Route::get('logout', 'API\UserController@logout');
 Route::get('delete_user/{id}', 'API\UserController@delete');
 Route::get('restore_user/{id}', 'API\UserController@restore');
 // Route::get('forgot_password', 'API\UserController@forgot_password');
-Route::get('all/users', 'API\UserController@index');
+Route::get('users', 'API\UserController@index');
 
 
 Route::get('entry', 'AttendanceController@store');
