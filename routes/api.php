@@ -16,7 +16,13 @@ use Illuminate\Http\Request;
 Route::middleware('cors')->group(function(){
 
     Route::get('/', function(){
-        return 'Payroll version 1.0';
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Payroll version 1.0',
+            ]
+        ];
     });
 
     Route::post('login', 'API\UserController@login');
