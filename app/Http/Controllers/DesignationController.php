@@ -29,7 +29,7 @@ class DesignationController extends Controller
         ];
     }
 
-    public function store(Request $request)
+    public function store()
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Designation');
 
@@ -67,19 +67,26 @@ class DesignationController extends Controller
         ];
     }
 
-    public function update($id)
+    public function update(Request $request, $id) // designation id
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Designation');
 
         $designation = Designation::findOrFail($id);
+        $validate_attributes = $request->validate(['designation' => 'required|string']);
+
+        if($designation->department->designations->where('designation', $validate_attributes['designation'])->count())
+        {
+            return $this->getErrorMessage('Requested designation name already exists.');
+        }
+
         $designation_old_name = $designation->designation;
-        $designation->update(request()->validate(['designation' => 'required|string']));
+        $designation->update($validate_attributes);
 
         return
         [
             [
                 'status' => 'OK',
-                '$designation_old_name' => $designation_old_name,
+                'designation_old_name' => $designation_old_name,
                 'designation_new_name' => $designation->designation,
             ]
         ];
