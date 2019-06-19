@@ -34,7 +34,6 @@ class UserController extends Controller
                     'status' => 'OK',
                     'full_name' => $user->full_name,
                     'user_name' => $user->user_name,
-                    'email' => $user->email,
                     'token' => $success['token'],
                 ]
             ];
