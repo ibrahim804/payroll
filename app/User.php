@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Attendance;
 use App\Department;
+use App\Designation;
 
 class User extends Authenticatable
 {
@@ -76,6 +77,11 @@ class User extends Authenticatable
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function designation()
+    {
+        return $this->belongsTo(Designation::class);
     }
 }
 
