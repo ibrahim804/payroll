@@ -53,9 +53,13 @@ Route::middleware('cors')->group(function(){
     Route::get('department/restore/{id}', 'DepartmentController@restore');
 
     Route::get('designations', 'DesignationController@index');
+    Route::get('designations/trashed', 'DesignationController@trashedIndex');
     Route::post('designation', 'DesignationController@store');
     Route::get('designation/{id}', 'DesignationController@show');
     Route::post('designation/{id}', 'DesignationController@update');
+    Route::get('designation/delete/{id}', 'DesignationController@destroy');
+    Route::get('designation/restore/{id}', 'DesignationController@restore');
+
 
 });
 
