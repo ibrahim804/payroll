@@ -67,9 +67,22 @@ class DesignationController extends Controller
         ];
     }
 
-    public function update(Request $request, Designation $designation)
+    public function update($id)
     {
-        
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Designation');
+
+        $designation = Designation::findOrFail($id);
+        $designation_old_name = $designation->designation;
+        $designation->update(request()->validate(['designation' => 'required|string']));
+
+        return
+        [
+            [
+                'status' => 'OK',
+                '$designation_old_name' => $designation_old_name,
+                'designation_new_name' => $designation->designation,
+            ]
+        ];
     }
 
     public function destroy(Designation $designation)
