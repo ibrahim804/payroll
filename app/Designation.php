@@ -10,7 +10,10 @@ class Designation extends Model
 {
     //
 
-    protected $fillable = ['designation'];
+    protected $fillable = [
+        'department_id',
+        'designation',
+    ];
 
     public function users()
     {
