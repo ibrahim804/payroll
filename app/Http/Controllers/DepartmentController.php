@@ -100,7 +100,7 @@ class DepartmentController extends Controller
 
     public function restore($id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to destroy Department');
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to restore Department');
 
         Department::onlyTrashed()->where('id', $id)->restore();
 
