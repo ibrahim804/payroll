@@ -52,6 +52,8 @@ Route::middleware('cors')->group(function(){
     Route::get('department/delete/{id}', 'DepartmentController@destroy');
     Route::get('department/restore/{id}', 'DepartmentController@restore');
 
+    
+
 });
 
 
