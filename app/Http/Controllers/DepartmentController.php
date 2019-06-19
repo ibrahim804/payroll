@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Department;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
+use Validator;
 
 class DepartmentController extends Controller
 {
@@ -28,16 +29,15 @@ class DepartmentController extends Controller
         ];
     }
 
-    public function store()
+    public function store(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Department');
 
-        $validate_attributes = $this->validateDepartment();
+        $validator = $this->validateDepartment($request);
 
-        if(Department::where('department_name', $validate_attributes['department_name'])->count())
-            return $this->getErrorMessage('This department name already exits.');
+        if ($validator->fails()) return $this->getErrorMessage($validator->errors());
 
-        $department = Department::create($validate_attributes);
+        $department = Department::create($request->all());
 
         return
         [
@@ -61,14 +61,17 @@ class DepartmentController extends Controller
         ];
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Dept Info.');
 
         $department = Department::findOrFail($id);
+        $validator = $this->validateDepartment($request);
+
+        if ($validator->fails()) return $this->getErrorMessage($validator->errors());
+
         $department_old_name = $department->department_name;
-        $validate_attributes = $this->validateDepartment();
-        $department->update($validate_attributes);
+        $department->update($request->all());
 
         return
         [
@@ -138,10 +141,10 @@ class DepartmentController extends Controller
         ];
     }
 
-    private function validateDepartment()
+    private function validateDepartment(Request $request)
     {
-        return request()->validate([                           // For DATABASE Validation
-            'department_name' => 'required|string',
+        return Validator::make($request->all(), [
+            'department_name' => 'required|string|unique:departments',
         ]);
     }
 }
