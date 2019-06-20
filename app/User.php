@@ -14,6 +14,7 @@ use App\Attendance;
 use App\Department;
 use App\Designation;
 use App\Leave;
+use App\Salary;
 
 class User extends Authenticatable
 {
@@ -88,6 +89,11 @@ class User extends Authenticatable
     public function leaves()
     {
         return $this->hasMany(Leave::class);
+    }
+
+    public function salary()
+    {
+        return $this->hasOne(Salary::class);
     }
 }
 
