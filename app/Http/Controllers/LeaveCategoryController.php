@@ -4,82 +4,94 @@ namespace App\Http\Controllers;
 
 use App\Leave_category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\CustomsErrorsTrait;
+use Validator;
 
 class LeaveCategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    use CustomsErrorsTrait;
+
+    public function __construct()
+    {
+        $this->middleware('auth:api'); //->except(['register', 'login']);
+    }
+
     public function index()
     {
-        //
+        $leave_categories = Leave_category::all();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_categories' => $leave_categories,
+            ]
+        ];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave category');
+
+        $validator = $this->validateLeaveCategory($request);
+
+        if ($validator->fails()) return $this->getErrorMessage($validator->errors());
+
+        $leave_category = Leave_category::create($request->all());
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_category' => $leave_category,
+            ]
+        ];
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Leave_category  $leave_category
-     * @return \Illuminate\Http\Response
-     */
     public function show(Leave_category $leave_category)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Leave_category  $leave_category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Leave_category $leave_category)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Leave_category  $leave_category
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Leave_category $leave_category)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Leave_category  $leave_category
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Leave_category $leave_category)
     {
         //
     }
+
+    private function validateLeaveCategory(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'leave_type' => 'required|string|unique:leave_categories',
+        ]);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
