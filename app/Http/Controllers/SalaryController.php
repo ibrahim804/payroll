@@ -4,82 +4,97 @@ namespace App\Http\Controllers;
 
 use App\Salary;
 use Illuminate\Http\Request;
+use App\Http\Controllers\CustomsErrorsTrait;
+use Validator;
 
 class SalaryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    use CustomsErrorsTrait;
+
+    public function __construct()
+    {
+        $this->middleware('auth:api'); //->except(['register', 'login']);
+    }
+
     public function index()
     {
         //
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Salary');
+
+        $validator = $this->validateSalary($request);
+
+        if ($validator->fails()) return $this->getErrorMessage($validator->errors());
+
+        $salary = Salary::create($request->all());
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'salary' => $salary,
+            ]
+        ];
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Salary  $salary
-     * @return \Illuminate\Http\Response
-     */
     public function show(Salary $salary)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Salary  $salary
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Salary $salary)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Salary  $salary
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, Salary $salary)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Salary  $salary
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Salary $salary)
     {
         //
     }
+
+    private function validateSalary(Request $request)
+    {
+        return Validator::make($request->all(), [
+            'user_id' => 'required|string|unique:salaries',
+            'basic_salary' => 'required|string',
+            'house_rent_allowance' => 'required|string',
+            'medical_allowance' => 'required|string',
+            'special_allowance' => 'required|string',
+            'fuel_allowance' => 'required|string',
+            'phone_bill_allowance' => 'required|string',
+            'other_allowance' => 'required|string',
+            'tax_deduction' => 'required|string',
+            'provident_fund' => 'required|string',
+            'other_deduction' => 'required|string',
+        ]);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
