@@ -10,6 +10,7 @@ class Salary extends Model
     //
 
     protected $fillable = [
+        'user_id',
         'basic_salary',
         'house_rent_allowance',
         'medical_allowance',
