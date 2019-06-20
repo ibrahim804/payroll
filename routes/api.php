@@ -62,13 +62,18 @@ Route::middleware('cors')->group(function(){
     Route::get('designation/restore/{id}', 'DesignationController@restore');
 
 
-    Route::get('leave/categories', 'LeaveCategoryController@index');
-    Route::get('leave/categories/trashed', 'LeaveCategoryController@trashedIndex');
-    Route::post('leave/category', 'LeaveCategoryController@store');
-    Route::get('leave/category/{id}', 'LeaveCategoryController@show');
-    Route::post('leave/category/{id}', 'LeaveCategoryController@update');
-    Route::get('leave/category/delete/{id}', 'LeaveCategoryController@destroy');
-    Route::get('leave/category/restore/{id}', 'LeaveCategoryController@restore');
+    Route::get('leave-categories', 'LeaveCategoryController@index');
+    Route::get('leave-categories/trashed', 'LeaveCategoryController@trashedIndex');
+    Route::post('leave-category', 'LeaveCategoryController@store');
+    Route::get('leave-category/{id}', 'LeaveCategoryController@show');
+    Route::post('leave-category/{id}', 'LeaveCategoryController@update');
+    Route::get('leave-category/delete/{id}', 'LeaveCategoryController@destroy');
+    Route::get('leave-category/restore/{id}', 'LeaveCategoryController@restore');
+
+
+    Route::get('leaves/month/{month}', 'LeaveController@index');
+    Route::get('leaves/myleaves', 'LeaveController@myLeaves');
+    Route::post('leave', 'LeaveController@store');
 
 });
 
