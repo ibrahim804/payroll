@@ -64,6 +64,8 @@ Route::middleware('cors')->group(function(){
 
     Route::get('leave/categories', 'LeaveCategoryController@index');
     Route::post('leave/category', 'LeaveCategoryController@store');
+    Route::get('leave/category/{id}', 'LeaveCategoryController@show');
+    Route::post('leave/category/{id}', 'LeaveCategoryController@update');
 
 });
 
