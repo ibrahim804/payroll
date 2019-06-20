@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 class Salary extends Model
 {
@@ -20,4 +21,9 @@ class Salary extends Model
         'provident_fund',
         'other_deduction',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
