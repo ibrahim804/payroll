@@ -16,6 +16,7 @@ class CreateLeaveCategoriesTable extends Migration
         Schema::create('leave_categories', function (Blueprint $table) {
             $table->increments('id');
             $table->string('leave_type');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
