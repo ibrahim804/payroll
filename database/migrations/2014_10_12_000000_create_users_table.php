@@ -30,7 +30,7 @@ class CreateUsersTable extends Migration
             $table->string('phone');
             $table->integer('designation_id');
             $table->integer('department_id');
-            $table->integer('salary_id');
+            $table->integer('salary_id')->nullable();
             $table->integer('working_days_id');
             $table->date('joining_date');
             $table->boolean('status')->default(1)->nullable();
