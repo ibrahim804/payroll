@@ -85,9 +85,47 @@ class LeaveCategoryController extends Controller
         ];
     }
 
-    public function destroy(Leave_category $leave_category)
+    public function destroy($id)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to delete leave category');
+
+        Leave_category::findOrFail($id)->delete();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Requested leave category deleted successfully',
+            ]
+        ];
+    }
+
+    public function restore($id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to restore leave category');
+
+        Leave_category::onlyTrashed()->where('id', $id)->restore();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Requested leave category is restored successfully.',
+            ]
+        ];
+    }
+
+    public function trashedIndex()
+    {
+        $leave_categories = Leave_category::onlyTrashed()->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_categories' => $leave_categories,
+            ]
+        ];
     }
 
     private function validateLeaveCategory(Request $request)
