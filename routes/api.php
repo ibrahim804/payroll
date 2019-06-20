@@ -74,6 +74,7 @@ Route::middleware('cors')->group(function(){
     Route::get('leaves/month/{month}', 'LeaveController@index');
     Route::get('leaves/myleaves', 'LeaveController@myLeaves');
     Route::post('leave', 'LeaveController@store');
+    Route::get('leave/{id}', 'LeaveController@show');
 
 });
 
