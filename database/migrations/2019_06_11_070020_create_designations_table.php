@@ -17,6 +17,7 @@ class CreateDesignationsTable extends Migration
             $table->increments('id');
             $table->integer('department_id');
             $table->string('designation');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
