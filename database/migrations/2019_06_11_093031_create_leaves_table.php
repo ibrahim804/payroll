@@ -19,9 +19,10 @@ class CreateLeavesTable extends Migration
             $table->integer('leave_category_id');
             $table->text('leave_description');
             $table->timestamp('application_date');
+            $table->string('month');
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('approval_status');
+            $table->string('approval_status')->default('Pending');
             $table->timestamps();
         });
     }
