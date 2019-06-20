@@ -37,6 +37,10 @@ Route::middleware('cors')->group(function(){
     Route::get('users', 'API\UserController@index');
 
 
+    // Implement first
+    Route::post('salary', 'SalaryController@store');
+
+
     Route::get('entry', 'AttendanceController@store');
     Route::get('exit', 'AttendanceController@update');
     Route::get('present/list/{month}/{day}', 'AttendanceController@index');
@@ -75,6 +79,7 @@ Route::middleware('cors')->group(function(){
     Route::get('leaves/myleaves', 'LeaveController@myLeaves');
     Route::post('leave', 'LeaveController@store');
     Route::get('leave/{id}', 'LeaveController@show');
+    // Implement second
 
 });
 
