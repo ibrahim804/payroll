@@ -77,7 +77,6 @@ class UserController extends Controller
             'phone' => 'required|string',
             'designation_id' => 'required|string',
             'department_id' => 'required|string',
-            'salary_id' => 'required|string',
             'working_days_id' => 'required|string',
             'joining_date' => 'required|date',
         ]);
