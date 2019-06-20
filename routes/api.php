@@ -29,10 +29,10 @@ Route::middleware('cors')->group(function(){
     Route::post('register', 'API\UserController@register');
     Route::get('user', 'API\UserController@user');
     Route::post('update/{id}', 'API\UserController@update');
-    Route::post('change_password', 'API\UserController@change_password');
+    Route::post('change/password', 'API\UserController@change_password');
     Route::get('logout', 'API\UserController@logout');
-    Route::get('delete_user/{id}', 'API\UserController@delete');
-    Route::get('restore_user/{id}', 'API\UserController@restore');
+    Route::get('delete/user/{id}', 'API\UserController@delete');
+    Route::get('restore/user/{id}', 'API\UserController@restore');
     // Route::get('forgot_password', 'API\UserController@forgot_password');
     Route::get('users', 'API\UserController@index');
 
@@ -52,6 +52,7 @@ Route::middleware('cors')->group(function(){
     Route::get('department/delete/{id}', 'DepartmentController@destroy');
     Route::get('department/restore/{id}', 'DepartmentController@restore');
 
+
     Route::get('designations', 'DesignationController@index');
     Route::get('designations/trashed', 'DesignationController@trashedIndex');
     Route::post('designation', 'DesignationController@store');
@@ -60,6 +61,9 @@ Route::middleware('cors')->group(function(){
     Route::get('designation/delete/{id}', 'DesignationController@destroy');
     Route::get('designation/restore/{id}', 'DesignationController@restore');
 
+
+    Route::get('leave/categories', 'LeaveCategoryController@index');
+    Route::post('leave/category', 'LeaveCategoryController@store');
 
 });
 
