@@ -28,17 +28,20 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'employee_id',
         'full_name',
         'user_name',
         'email',
         'password',
         'date_of_birth',
+        'fathers_name',
         'gender',
+        'marital_status',
         'nationality',
+        'permanent_address',
+        'present_address',
         'passport_number',
         'photo_path',
-        'personal_address',
-        'city',
         'phone',
         'designation_id',
         'department_id',
