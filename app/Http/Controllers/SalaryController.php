@@ -89,11 +89,6 @@ class SalaryController extends Controller
         ];
     }
 
-    public function destroy(Salary $salary)
-    {
-        //
-    }
-
     private function validateSalary(Request $request)
     {
         return Validator::make($request->all(), [
