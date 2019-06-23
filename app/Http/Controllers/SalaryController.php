@@ -18,7 +18,15 @@ class SalaryController extends Controller
 
     public function index()
     {
-        //
+        $salaries = Salary::all();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'salaries' => $salaries,
+            ]
+        ];
     }
 
     public function store(Request $request)
