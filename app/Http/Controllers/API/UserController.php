@@ -169,8 +169,9 @@ class UserController extends Controller
 
         if($request->filled('department_id')) $soft_inputs['department_id'] = $request->input('department_id');
         if($request->filled('designation_id')) $soft_inputs['designation_id'] = $request->input('designation_id');
-        if($request->filled('working_days_id')) $soft_inputs['working_days_id'] = 0; // will be done later
         if($request->filled('joining_date')) $soft_inputs['joining_date'] = $request->input('joining_date');
+
+        $soft_inputs['working_days_id'] = 0; // WILL BE DONE LATER
 
         if($regOrUpdt == 1)
         {
