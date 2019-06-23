@@ -46,15 +46,12 @@ class LeaveController extends Controller
 
     public function store(Request $request)
     {
-        $validator = $this->validateLeave($request);
+        $validate_attributes = $this->validateLeave();
 
-        if($validator->fails()) return $this->getErrorMessage($validator->errors());
-
-        $inputs = $request->all();
-        $inputs['user_id'] = auth()->id();
-        $inputs['application_date'] = date("Y-m-d H:i:s", strtotime('+6 hours'));
-        $inputs['month'] = date("M", strtotime('+6 hours'));
-        $leave = Leave::create($inputs);
+        $validate_attributes['user_id'] = auth()->id();
+        $validate_attributes['application_date'] = date("Y-m-d H:i:s", strtotime('+6 hours'));
+        $validate_attributes['month'] = date("M", strtotime('+6 hours'));
+        $leave = Leave::create($validate_attributes);
 
         return
         [
@@ -90,9 +87,9 @@ class LeaveController extends Controller
         //
     }
 
-    private function validateLeave(Request $request)
+    private function validateLeave()
     {
-        return Validator::make($request->all(), [
+        return request()->validate([
             'leave_category_id' => 'required|string',
             'leave_description' => 'required|string',
             'start_date' => 'required|date',
