@@ -41,7 +41,8 @@ Route::middleware('cors')->group(function(){
     Route::post('salary', 'SalaryController@store');
     Route::get('salary/{id}', 'SalaryController@show');
     Route::post('salary/{user_id}', 'SalaryController@update');
-    // implement first
+    // Impelement first
+
 
     Route::get('entry', 'AttendanceController@store');
     Route::get('exit', 'AttendanceController@update');
