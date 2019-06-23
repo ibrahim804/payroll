@@ -18,8 +18,6 @@ class Cors
      */
     public function handle($request, Closure $next)
     {
-        // return $next($request);
-
         return $next($request)->header('Access-Control-Allow-Origin', '*');
 
         // return $next($request)
@@ -29,25 +27,27 @@ class Cors
         //     ->header('Access-Control-Max-Age', '10000')
         //     ->header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept, X-Requested-With');
 
-        header("Access-Control-Allow-Origin: *");
+        // ORIGINAL WAY OF CORS POLICY
 
-        $headers = [
-            'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, DELETE',
-            'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin, Authorization',
-        ];
-
-        if ($request->getMethod() == "OPTIONS"){
-            //The client-side application can set only headers allowed in Access-Control-Allow-Headers
-            return response()->json('OK', 200, $headers);
-        }
-
-        $response = $next($request);
-
-        foreach ($headers as $key => $value) {
-            $response->header($key, $value);
-        }
-
-        return $response;
+        // header("Access-Control-Allow-Origin: *");
+        //
+        // $headers = [
+        //     'Access-Control-Allow-Methods' => 'POST, GET, OPTIONS, PUT, DELETE',
+        //     'Access-Control-Allow-Headers' => 'Content-Type, X-Auth-Token, Origin, Authorization',
+        // ];
+        //
+        // if ($request->getMethod() == "OPTIONS"){
+        //     //The client-side application can set only headers allowed in Access-Control-Allow-Headers
+        //     return response()->json('OK', 200, $headers);
+        // }
+        //
+        // $response = $next($request);
+        //
+        // foreach ($headers as $key => $value) {
+        //     $response->header($key, $value);
+        // }
+        //
+        // return $response;
     }
 }
 
