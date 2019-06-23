@@ -26,12 +26,10 @@ class CreateUsersTable extends Migration
             $table->string('gender');
             $table->string('marital_status');
             $table->string('nationality')->default('bangladeshi');
-            $table->text('present_address');
             $table->text('permanent_address');
+            $table->text('present_address');
             $table->string('passport_number');
             $table->string('photo_path')->nullable();
-            $table->text('personal_address');
-            $table->string('city');
             $table->string('phone');
             $table->integer('designation_id');
             $table->integer('department_id');
