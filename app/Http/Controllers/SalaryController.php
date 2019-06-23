@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Salary;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
@@ -18,6 +19,8 @@ class SalaryController extends Controller
 
     public function index()
     {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all Salaries');
+
         $salaries = Salary::all();
 
         return
@@ -48,9 +51,21 @@ class SalaryController extends Controller
         ];
     }
 
-    public function show(Salary $salary)
+    public function show($id)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view his/her salary');
+
+        $salary = User::findOrFail($id)->salary;
+
+        if(!$salary) return $this->getErrorMessage('This use doesn\'t have any salary yet.');
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'salary' => $salary,
+            ]
+        ];
     }
 
     public function update(Request $request, Salary $salary)
