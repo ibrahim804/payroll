@@ -23,7 +23,8 @@ class UserController extends Controller
 
     public function login()
     {
-        if(Auth::attempt(['user_name' => request('user_name'), 'password' => request('password')]))
+        if( Auth::attempt(['user_name' => request('user_name'), 'password' => request('password')]) or
+            Auth::attempt(['email' => request('email'), 'password' => request('password')]) )
         {
             $user = Auth::user();
             $success['token'] = $user->createToken(config('app.name'))->accessToken;
@@ -34,6 +35,7 @@ class UserController extends Controller
                     'status' => 'OK',
                     'full_name' => $user->full_name,
                     'user_name' => $user->user_name,
+                    'email' => $user->email,
                     'token' => $success['token'],
                 ]
             ];
