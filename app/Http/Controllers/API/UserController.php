@@ -18,7 +18,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['login']);
+        $this->middleware('auth:api')->except(['login', 'register']); // remove register from here and ensure only admin is creating user
     }
 
     public function login()
@@ -63,7 +63,7 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can create user');
+        // if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can create user');
 
         $validator = Validator::make($request->all(), [
             'employee_id' => 'required|string',
