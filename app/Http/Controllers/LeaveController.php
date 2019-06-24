@@ -37,7 +37,6 @@ class LeaveController extends Controller
         $validate_attributes = $this->validateLeave();
 
         $validate_attributes['user_id'] = auth()->id();
-        $validate_attributes['application_date'] = date("Y-m-d H:i:s", strtotime('+6 hours'));
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
 
         $leave = Leave::create($validate_attributes);
@@ -85,7 +84,6 @@ class LeaveController extends Controller
                 'user_id' => $leave->user->id,
                 'leave_type' => $leave->leave_category->leave_type,
                 'description' => $leave->leave_description,
-                'application_date' => $leave->application_date,
                 'start_date' => $leave->start_date,
                 'end_date' => $leave->end_date,
             ]
