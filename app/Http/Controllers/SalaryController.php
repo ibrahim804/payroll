@@ -41,12 +41,16 @@ class SalaryController extends Controller
         if($validator->fails()) return $this->getErrorMessage($validator->errors());
 
         $salary = Salary::create($request->all());
+        $calculated_amounts = $this->calculatePayableAmount($salary);
 
         return
         [
             [
                 'status' => 'OK',
                 'salary' => $salary,
+                'gross_salary' => $calculated_amounts['gross_salary'],
+                'total_deduction' => $calculated_amounts['total_deduction'],
+                'net_salary' => $calculated_amounts['net_salary'],
             ]
         ];
     }
@@ -57,13 +61,18 @@ class SalaryController extends Controller
 
         $salary = User::findOrFail($user_id)->salary;
 
-        if(!$salary) return $this->getErrorMessage('This use doesn\'t have any salary yet.');
+        if(!$salary) return $this->getErrorMessage('This user doesn\'t have any salary yet.');
+
+        $calculated_amounts = $this->calculatePayableAmount($salary);
 
         return
         [
             [
                 'status' => 'OK',
                 'salary' => $salary,
+                'gross_salary' => $calculated_amounts['gross_salary'],
+                'total_deduction' => $calculated_amounts['total_deduction'],
+                'net_salary' => $calculated_amounts['net_salary'],
             ]
         ];
     }
@@ -79,12 +88,16 @@ class SalaryController extends Controller
         if($validator->fails()) return $this->getErrorMessage($validator->errors());
 
         $salary->update($this->fitUpdatableInputs($request));
+        $calculated_amounts = $this->calculatePayableAmount($salary);
 
         return
         [
             [
                 'status' => 'OK',
                 'salary' => $salary,
+                'gross_salary' => $calculated_amounts['gross_salary'],
+                'total_deduction' => $calculated_amounts['total_deduction'],
+                'net_salary' => $calculated_amounts['net_salary'],
             ]
         ];
     }
@@ -138,6 +151,21 @@ class SalaryController extends Controller
         if($request->filled('other_deduction')) $data['other_deduction'] = $request->input('other_deduction');
 
         return $data;
+    }
+
+    private function calculatePayableAmount(Salary $salary)
+    {
+        $amounts = [];
+
+        $amounts['gross_salary'] = $salary['basic_salary']
+                                 + $salary['house_rent_allowance'] + $salary['medical_allowance']
+                                 + $salary['special_allowance'] + $salary['fuel_allowance']
+                                 + $salary['phone_bill_allowance'] + $salary['other_allowance'];
+
+        $amounts['total_deduction'] = $salary['tax_deduction'] + $salary['provident_fund'] + $salary['other_deduction'];
+        $amounts['net_salary'] = $amounts['gross_salary'] - $amounts['total_deduction'];
+
+        return $amounts;
     }
 }
 
