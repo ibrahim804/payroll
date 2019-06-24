@@ -52,6 +52,8 @@ Route::middleware('cors')->group(function(){
     Route::get('departments', 'DepartmentController@index');
     Route::get('departments/trashed', 'DepartmentController@trashedIndex');
     Route::get('department/{id}/users', 'DepartmentController@users');
+    Route::get('department/{id}/designations', 'DepartmentController@designations');
+    Route::get('department/{dept_id}/designation/{desgn_id}', 'DepartmentController@thisDeptDesgnUser');
     Route::post('department', 'DepartmentController@store');
     Route::get('department/{id}', 'DepartmentController@show');
     Route::post('department/{id}', 'DepartmentController@update');
@@ -78,10 +80,9 @@ Route::middleware('cors')->group(function(){
 
 
     Route::get('leaves/month/{month}', 'LeaveController@index');
-    Route::get('leaves/myleaves', 'LeaveController@myLeaves');
     Route::post('leave', 'LeaveController@store');
-    Route::get('leave/{id}', 'LeaveController@show');
-    // Implement now
+    Route::get('leaves/{user_id}', 'LeaveController@show');
+    Route::post('leave/{id}', 'LeaveController@update');
 
 });
 
