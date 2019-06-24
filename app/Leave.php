@@ -8,17 +8,18 @@ use App\User;
 
 class Leave extends Model
 {
+    // const CREATED_AT = 'application_date';
+
     protected $fillable = [
         'user_id',
         'leave_category_id',
         'leave_description',
+        'application_date',
         'month',
         'start_date',
         'end_date',
         'approval_status',
     ];
-
-    //const CREATED_AT = 'application_date';
 
     public function leave_category()
     {
