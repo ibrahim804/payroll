@@ -61,6 +61,19 @@ class DepartmentController extends Controller
         ];
     }
 
+    public function designations($id)
+    {
+        $designations = Department::findOrFail($id)->designations;
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'designations' => $designations,
+            ]
+        ];
+    }
+
     public function update(Request $request, $id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Dept Info.');
