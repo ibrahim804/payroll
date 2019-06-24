@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Department;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
@@ -70,6 +71,30 @@ class DepartmentController extends Controller
             [
                 'status' => 'OK',
                 'designations' => $designations,
+            ]
+        ];
+    }
+
+    public function thisDeptDesgnUser($dept_id, $desgn_id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission');
+
+        $users = Department::findOrFail($dept_id)->users->where('designation_id', $desgn_id);
+        $i=0; $infos = [];
+
+        foreach($users as $user) {
+
+            $infos[$i] = new User;
+            $infos[$i]->id = $user->id;
+            $infos[$i]->full_name = $user->full_name;
+            $i++;
+        }
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'users' => $infos,
             ]
         ];
     }
