@@ -18,6 +18,7 @@ class CreateLeavesTable extends Migration
             $table->integer('user_id');
             $table->integer('leave_category_id');
             $table->text('leave_description');
+            $table->timestamp('application_date')->nullable();
             $table->string('month');
             $table->date('start_date');
             $table->date('end_date');
