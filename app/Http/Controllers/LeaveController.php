@@ -7,6 +7,7 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
+use Carbon\Carbon;
 
 class LeaveController extends Controller
 {
@@ -38,6 +39,7 @@ class LeaveController extends Controller
 
         $validate_attributes['user_id'] = auth()->id();
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
+        $validate_attributes['application_date'] = date('Y-m-d H:i:s', strtotime('+6 hours'));
 
         $leave = Leave::create($validate_attributes);
 
