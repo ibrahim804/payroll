@@ -36,11 +36,8 @@ class SalaryController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Salary');
 
-        $validator = $this->validateSalary($request);
-
-        if($validator->fails()) return $this->getErrorMessage($validator->errors());
-
-        $salary = Salary::create($request->all());
+        $validate_attributes = $this->validateSalary();
+        $salary = Salary::create($validate_attributes);
         $calculated_amounts = $this->calculatePayableAmount($salary);
 
         return
@@ -102,9 +99,9 @@ class SalaryController extends Controller
         ];
     }
 
-    private function validateSalary(Request $request)
+    private function validateSalary()
     {
-        return Validator::make($request->all(), [
+        return request()->validate ([
             'user_id' => 'required|string|unique:salaries',
             'basic_salary' => 'required|string',
             'house_rent_allowance' => 'required|string',
