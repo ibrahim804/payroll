@@ -34,6 +34,7 @@ class UserController extends Controller
 
             $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
+            $infos[$i]->salary = $this->calculateNetSalary($user->salary);
             $infos[$i]->department = $user->department->department_name;
             $infos[$i]->designation = $user->designation->designation;
 
@@ -47,6 +48,15 @@ class UserController extends Controller
                 'users' => $infos,
             ]
         ];
+    }
+
+    private function calculateNetSalary($salary)
+    {
+        return $salary['basic_salary']
+            +  $salary['house_rent_allowance'] + $salary['medical_allowance']
+            +  $salary['special_allowance'] + $salary['fuel_allowance']
+            +  $salary['phone_bill_allowance'] + $salary['other_allowance']
+            -  $salary['tax_deduction'] -  $salary['provident_fund'] - $salary['other_deduction'];
     }
 
     public function login()
