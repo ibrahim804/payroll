@@ -15,14 +15,9 @@ class CompanyController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    public function index()
-    {
-        //
-    }
-
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Access Denied');
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Can\'t store company information');
 
         $validate_attributes = $this->validateCompany();
         $company = Company::create($validate_attributes);
@@ -37,9 +32,24 @@ class CompanyController extends Controller
 
     }
 
-    public function show(Company $company)
+    public function show($id)
     {
-        //
+        $company = Company::findOrFail($id);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'name' => $company->name,
+                'email' => $company->email,
+                'address' => $company->address,
+                'country' => $company->country,
+                'phone' => $company->phone,
+                'mobile' => $company->mobile,
+                'website' => $company->website,
+                'working_days' => $company->working_day,
+            ]
+        ];
     }
 
     public function update(Request $request, Company $company)
@@ -62,7 +72,7 @@ class CompanyController extends Controller
             'phone' => 'string',
             'mobile' => 'string',
             'website' => 'string',
-            'working_days_id' => 'required|string',
+            'working_day_id' => 'required|string',
         ]);
     }
 }
