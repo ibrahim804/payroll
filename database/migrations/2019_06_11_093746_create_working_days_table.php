@@ -15,13 +15,13 @@ class CreateWorkingDaysTable extends Migration
     {
         Schema::create('working_days', function (Blueprint $table) {
             $table->increments('id');
-            $table->boolean('Sunday')->nullable()->default(0);
-            $table->boolean('Monday')->nullable()->default(0);
-            $table->boolean('Tuesday')->nullable()->default(0);
-            $table->boolean('Wednesday')->nullable()->default(0);
-            $table->boolean('Thursday')->nullable()->default(0);
-            $table->boolean('Friday')->nullable()->default(0);
-            $table->boolean('Saturday')->nullable()->default(0);
+            $table->string('Sunday')->default('false');
+            $table->string('Monday')->default('false');
+            $table->string('Tuesday')->default('false');
+            $table->string('Wednesday')->default('false');
+            $table->string('Thursday')->default('false');
+            $table->string('Friday')->default('false');
+            $table->string('Saturday')->default('false');
             $table->timestamps();
         });
     }
