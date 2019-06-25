@@ -31,7 +31,7 @@ class WorkingDayController extends Controller
         [
             [
                 'status' => 'OK',
-                'working_days_id' => $working_day->id,
+                'working_day_id' => $working_day->id,
                 'working_days' => $working_day,
             ]
         ];
