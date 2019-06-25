@@ -55,18 +55,16 @@ class WorkingDayController extends Controller
     private function validateWorkingDay()
     {
         return request()->validate([
-            'Saturday' => 'required|string',
-            'Sunday' => 'required|string',
-            'Monday' => 'required|string',
-            'Tuesday' => 'required|string',
-            'Wednesday' => 'required|string',
-            'Thursday' => 'required|string',
-            'Friday' => 'required|string',
+            'saturday' => 'required|string',
+            'sunday' => 'required|string',
+            'monday' => 'required|string',
+            'tuesday' => 'required|string',
+            'wednesday' => 'required|string',
+            'thursday' => 'required|string',
+            'friday' => 'required|string',
         ]);
     }
 }
-
-
 
 
 
