@@ -21,6 +21,34 @@ class UserController extends Controller
         $this->middleware('auth:api')->except(['login', 'register']); // remove register from here and ensure only admin is creating user
     }
 
+    public function index(Request $request)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+
+        $users = User::all();
+        $i = 0; $infos = [];
+
+        foreach($users as $user) {
+
+            $infos[$i] = new User;
+
+            $infos[$i]->id = $user->id;
+            $infos[$i]->full_name = $user->full_name;
+            $infos[$i]->department = $user->department->department_name;
+            $infos[$i]->designation = $user->designation->designation;
+
+            $i++;
+        }
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'users' => $infos,
+            ]
+        ];
+    }
+
     public function login()
     {
         if( Auth::attempt(['email' => request('email'), 'password' => request('password')]) or
@@ -270,19 +298,6 @@ class UserController extends Controller
             [
                 'status' => 'OK',
                 'message' => 'User restored successfully.',
-            ]
-        ];
-    }
-
-    public function index(Request $request)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'all_users' => User::all(),
             ]
         ];
     }
