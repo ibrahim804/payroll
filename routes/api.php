@@ -38,7 +38,7 @@ Route::middleware('cors')->group(function(){
 
 
     Route::post('company', 'CompanyController@store');                  // Need to be implemented more
-
+    Route::get('company/{id}', 'CompanyController@show');
 
 
     Route::get('salaries', 'SalaryController@index');                   // Need to be implemented more
