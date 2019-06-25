@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Working_day extends Model
 {
     protected $fillable = [
-        'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+        'sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
     ];
 
     protected $hidden = [
