@@ -62,6 +62,7 @@ class CompanyController extends Controller
             'phone' => 'string',
             'mobile' => 'string',
             'website' => 'string',
+            'working_days_id' => 'required|string',
         ]);
     }
 }
