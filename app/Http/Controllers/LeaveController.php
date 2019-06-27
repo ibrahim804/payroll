@@ -13,6 +13,8 @@ class LeaveController extends Controller
 {
     use CustomsErrorsTrait;
 
+    private $decision = array('Rejected', 'Accepted', 'Pending');
+
     public function __construct()
     {
         $this->middleware('auth:api'); //->except(['register', 'login']);
@@ -90,6 +92,23 @@ class LeaveController extends Controller
                 'description' => $leave->leave_description,
                 'start_date' => $leave->start_date,
                 'end_date' => $leave->end_date,
+            ]
+        ];
+    }
+
+    public function updateApprovalStatus(Request $request,$id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
+
+        $leave = Leave::findOrFail($id);
+        $value = request()->validate(['decision' => 'required|string']);
+        $leave->update(['approval_status' => $this->decision[(int) $value['decision']]]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'approval_status' => $leave->approval_status,
             ]
         ];
     }
