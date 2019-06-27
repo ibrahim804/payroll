@@ -96,7 +96,7 @@ class LeaveController extends Controller
         ];
     }
 
-    public function updateApprovalStatus(Request $request,$id)
+    public function updateApprovalStatus(Request $request, $id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
 
