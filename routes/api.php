@@ -97,7 +97,7 @@ Route::middleware('cors')->group(function(){
 
 
     Route::get('working-days', 'WorkingDayController@index');
-    Route::post('working-day', 'WorkingDayController@store');                       // Need to be implemented more
+    Route::post('working-day', 'WorkingDayController@store');                       // Need to be implemented more FIRST
 
 
     Route::post('file-upload', 'FileController@upload');                            // Need to be implemented more
