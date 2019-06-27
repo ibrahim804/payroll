@@ -39,7 +39,7 @@ Route::middleware('cors')->group(function(){
 
     Route::get('companies', 'CompanyController@index');
     Route::get('companies/trashed', 'CompanyController@trashedIndex');
-    Route::post('company', 'CompanyController@store');                  // Need to be implemented more
+    Route::post('company', 'CompanyController@store');
     Route::get('company/{id}', 'CompanyController@show');
     Route::post('company/{id}', 'CompanyController@update');
     Route::get('company/delete/{id}', 'CompanyController@destroy');
