@@ -47,7 +47,7 @@ Route::middleware('cors')->group(function(){
 
 
 
-    Route::get('salaries', 'SalaryController@index');                   // Need to be implemented more
+    Route::get('salaries', 'SalaryController@index');
     Route::post('salary', 'SalaryController@store');
     Route::get('salary/{user_id}', 'SalaryController@show');
     Route::post('salary/{user_id}', 'SalaryController@update');
@@ -93,7 +93,7 @@ Route::middleware('cors')->group(function(){
     Route::post('leave', 'LeaveController@store');
     Route::get('leaves/{user_id}', 'LeaveController@show');
     Route::post('leave/{id}', 'LeaveController@update');
-    // implement this
+
 
 
     Route::post('working-day', 'WorkingDayController@store');                       // Need to be implemented more
