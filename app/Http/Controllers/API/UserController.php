@@ -156,15 +156,38 @@ class UserController extends Controller
 
         if($user->isAdmin($user->id) == 'false' and $user->id != $id) return $this->getErrorMessage('Permission denied');
 
-        $validator = $this->getValidatorArray($request);
-
-        if($validator->fails())
-        {
-            return $this->getErrorMessage($validator->errors());
-        }
+        $validate_attributes = request()->validate([
+            'full_name' => 'string|min:3|max:25',
+            'user_name' => 'string|min:3|max:25|unique:users',
+            'email' => 'string|email|max:255|unique:users',
+            'date_of_birth' => 'date',
+            'fathers_name' => 'string|min:3|max:25',
+            'gender' => 'string',
+            'marital_status' => 'string',
+            'nationality' => 'string',
+            'permanent_address' => 'string|min:10|max:300',
+            'present_address' => 'string|min:10|max:300',
+            'passport_number' => 'string',
+            'phone' => 'string',
+        ]);
 
         $user_to_be_updated = User::findOrFail($id);
-        $user_to_be_updated->update($this->getProcessedInputs($request, 0));
+        $user_to_be_updated->update($validate_attributes);
+
+        if($user->isAdmin($user->id) == 'true')
+        {
+            $extra_attributes = request()->validate([
+                'employee_id' => 'string',
+                'designation_id' => 'string',
+                'department_id' => 'string',
+                'salary_id' => 'string',
+                'working_day_id' => 'string',
+                'joining_date' => 'date',
+                'status' => 'min:1|max:1',
+            ]);
+
+            $user_to_be_updated->update($extra_attributes);
+        }
 
         return
         [
@@ -199,28 +222,6 @@ class UserController extends Controller
         if($request->filled('designation_id')) $inputs['designation_id'] = $request->input('designation_id');
 
         return $inputs;
-    }
-
-    private function getValidatorArray(Request $request)
-    {
-        return Validator::make($request->all(), [
-            'full_name' => 'string|min:3|max:25',
-            'user_name' => 'string|min:3|max:25|unique:users',
-            'email' => 'string|email|max:255|unique:users',
-            'date_of_birth' => 'date',
-            'fathers_name' => 'string|min:3|max:25',
-            'gender' => 'string',
-            'marital_status' => 'string',
-            'nationality' => 'string',
-            'permanent_address' => 'string|min:10|max:300',
-            'present_address' => 'string|min:10|max:300',
-            'passport_number' => 'string',
-            'phone' => 'string',
-            'designation_id' => 'string',
-            'department_id' => 'string',
-            'joining_date' => 'date',
-            'status' => 'min:1|max:1',
-        ]);
     }
 
     public function change_password(Request $request)
