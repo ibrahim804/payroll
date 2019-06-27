@@ -37,8 +37,11 @@ Route::middleware('cors')->group(function(){
     Route::get('users', 'API\UserController@index');
 
 
+    Route::get('companies', 'CompanyController@index');
     Route::post('company', 'CompanyController@store');                  // Need to be implemented more
     Route::get('company/{id}', 'CompanyController@show');
+    Route::post('company/{id}', 'CompanyController@update');
+
 
 
     Route::get('salaries', 'SalaryController@index');                   // Need to be implemented more
