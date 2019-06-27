@@ -18,7 +18,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['login']); // remove register from here and ensure only admin is creating user
+        $this->middleware('auth:api')->except(['login']);
     }
 
     public function index(Request $request)
@@ -61,8 +61,7 @@ class UserController extends Controller
 
     public function login()
     {
-        if( Auth::attempt(['email' => request('email'), 'password' => request('password')]) or
-            Auth::attempt(['user_name' => request('user_name'), 'password' => request('password')]) )
+        if(Auth::attempt(['email' => request('email'), 'password' => request('password')]))
         {
             $user = Auth::user();
             $success['token'] = $user->createToken(config('app.name'))->accessToken;
@@ -72,18 +71,14 @@ class UserController extends Controller
                 [
                     'status' => 'OK',
                     'full_name' => $user->full_name,
-                    'user_name' => $user->user_name,
                     'email' => $user->email,
                     'token' => $success['token'],
                 ]
             ];
         }
 
-        else
-        {
-            //return response()->json(['error'=>'Unauthorised'], 401);
-            return $this->getErrorMessage('credentials are not matched.');
-        }
+        return $this->getErrorMessage('credentials are not matched.');
+
     }
 
     public function logout(Request $request)
