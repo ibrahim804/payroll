@@ -17,12 +17,12 @@ class WorkingDayController extends Controller
 
     public function index()
     {
-        //
+        
     }
 
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Access Denied');
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateWorkingDay();
         $working_day = Working_day::create($validate_attributes);
