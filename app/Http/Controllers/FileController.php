@@ -8,9 +8,11 @@ class FileController extends Controller
 {
     public function upload(Request $request)
     {
-        $validate_attributes = $this->validateFile();
-        $file_name = 'something.'.$request->input('type');
+        $validate_attributes = request()->validate(['file' => 'required|file|max:5120']);
+
+        $file_name = $request->file('file')->getClientOriginalName();
         $file_path = url('/files'.'/'.$file_name);
+
         $request->file('file')->move(public_path('/files'), $file_name);
 
         return
@@ -20,13 +22,5 @@ class FileController extends Controller
                 'url' => $file_path,
             ]
         ];
-    }
-
-    private function validateFile()
-    {
-        return request()->validate([
-            'file' => 'required|file|max:5120',
-            'type' => 'required|string',
-        ]);
     }
 }
