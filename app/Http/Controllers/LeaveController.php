@@ -98,7 +98,7 @@ class LeaveController extends Controller
             'leave_category_id' => 'required|string',
             'leave_description' => 'required|string',
             'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'end_date' => 'required|date', // |after:start_date
         ]);
     }
 }
