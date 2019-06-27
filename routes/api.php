@@ -89,13 +89,14 @@ Route::middleware('cors')->group(function(){
     Route::get('leave-category/restore/{id}', 'LeaveCategoryController@restore');
 
 
-    Route::get('leaves/month/{month}', 'LeaveController@index');                    // Need to be implemented more
+    Route::get('leaves/month/{month}', 'LeaveController@index');
     Route::post('leave', 'LeaveController@store');
     Route::get('leaves/{user_id}', 'LeaveController@show');
     Route::post('leave/{id}', 'LeaveController@update');
     Route::post('leave/approve/{id}', 'LeaveController@updateApprovalStatus');
 
 
+    Route::get('working-days', 'WorkingDayController@index');
     Route::post('working-day', 'WorkingDayController@store');                       // Need to be implemented more
 
 
