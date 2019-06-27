@@ -25,7 +25,7 @@ class FileController extends Controller
     private function validateFile()
     {
         return request()->validate([
-            'file' => 'required|file',
+            'file' => 'required|file|max:5120',
             'type' => 'required|string',
         ]);
     }
