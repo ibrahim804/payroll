@@ -84,9 +84,49 @@ class CompanyController extends Controller
         ];
     }
 
-    public function destroy(Company $company)
+    public function destroy($id)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to destroy Company');
+
+        Company::findOrFail($id)->delete();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Requested company deleted successfully',
+            ]
+        ];
+    }
+
+    public function restore($id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to restore Company');
+
+        Company::onlyTrashed()->where('id', $id)->restore();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Requested company is restored successfully.',
+            ]
+        ];
+    }
+
+    public function trashedIndex()
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view deleted Companies');
+
+        $companies = Company::onlyTrashed()->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'companies' => $companies,
+            ]
+        ];
     }
 
     private function validateCompany(string $operation)
