@@ -15,11 +15,26 @@ class CompanyController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
+    public function index()
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You are not allowed to show all companies information');
+
+        $companies = Company::all();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'companies' => $companies,
+            ]
+        ];
+    }
+
     public function store(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Can\'t store company information');
 
-        $validate_attributes = $this->validateCompany();
+        $validate_attributes = $this->validateCompany('store');
         $company = Company::create($validate_attributes);
 
         return
@@ -52,9 +67,21 @@ class CompanyController extends Controller
         ];
     }
 
-    public function update(Request $request, Company $company)
+    public function update(Request $request, $id)
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You Can\'t update company information');
+
+        $company = Company::findOrFail($id);
+        $validate_attributes = $this->validateCompany('update');
+        $company->update($validate_attributes);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'company' => $company,
+            ]
+        ];
     }
 
     public function destroy(Company $company)
@@ -62,17 +89,19 @@ class CompanyController extends Controller
         //
     }
 
-    private function validateCompany()
+    private function validateCompany(string $operation)
     {
+        if($operation != 'store' and $operation != 'update') return $this->getErrorMessage('wrong param passed.');
+
         return request()->validate([
-            'name' => 'required|string',
-            'email' => 'required|string|email',
-            'address' => 'required|string|min:15|max:300',
-            'country' => 'required|string',
+            'name' => ($operation == 'store') ? 'required|string|unique:companies' : 'string|unique:companies',
+            'email' => ($operation == 'store') ? 'required|string|email' : 'string|email',
+            'address' => ($operation == 'store') ? 'required|string|min:15|max:300' : 'string|min:15|max:300',
+            'country' => ($operation == 'store') ? 'required|string' : 'string',
             'phone' => 'string',
             'mobile' => 'string',
             'website' => 'string',
-            'working_day_id' => 'required|string',
+            'working_day_id' => ($operation == 'store') ? 'required|string' : 'string',
         ]);
     }
 }
