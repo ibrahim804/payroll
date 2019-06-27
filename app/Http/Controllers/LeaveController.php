@@ -67,7 +67,7 @@ class LeaveController extends Controller
         ];
     }
 
-    public function update($id) // check end_date >= start_date later
+    public function update(Request $request, $id)
     {
         $leave = Leave::findOrFail($id);
 
@@ -76,6 +76,8 @@ class LeaveController extends Controller
         $validate_attributes = request()->validate([
             'leave_category_id' => 'string', 'leave_description' => 'string', 'start_date' => 'date', 'end_date' => 'date',
         ]);
+
+        if(!$this->validateDatesWhileUpdating($request, $leave)) return $this->getErrorMessage('start date can\'t be greater than end date');
 
         $leave->update($validate_attributes);
 
@@ -98,8 +100,28 @@ class LeaveController extends Controller
             'leave_category_id' => 'required|string',
             'leave_description' => 'required|string',
             'start_date' => 'required|date',
-            'end_date' => 'required|date', // |after:start_date
+            'end_date' => 'required|date|after_or_equal:start_date',
         ]);
+    }
+
+    private function validateDatesWhileUpdating($request, $leave)
+    {
+        if(!($request->filled('start_date') or $request->filled('end_date'))) return 1;
+
+        else if($request->filled('start_date') and $request->filled('end_date'))
+        {
+            return ($request->input('end_date') >= $request->input('start_date')) ? 1 : 0;
+        }
+
+        else if($request->filled('start_date'))
+        {
+            return ($leave->end_date >= $request->input('start_date')) ? 1 : 0;
+        }
+
+        else if($request->filled('end_date'))
+        {
+            return ($request->input('end_date') >= $leave->start_date) ? 1 : 0;
+        }
     }
 }
 
