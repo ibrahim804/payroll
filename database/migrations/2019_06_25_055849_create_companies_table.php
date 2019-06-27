@@ -24,6 +24,7 @@ class CreateCompaniesTable extends Migration
             $table->string('website')->nullable();
             $table->integer('working_day_id');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
