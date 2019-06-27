@@ -15,6 +15,7 @@ use App\Department;
 use App\Designation;
 use App\Leave;
 use App\Salary;
+use App\Working_day;
 
 class User extends Authenticatable
 {
@@ -46,7 +47,7 @@ class User extends Authenticatable
         'designation_id',
         'department_id',
         'salary_id',
-        'working_days_id',
+        'working_day_id',
         'joining_date',
         'status',
     ];
@@ -98,6 +99,11 @@ class User extends Authenticatable
     public function salary()
     {
         return $this->hasOne(Salary::class);
+    }
+
+    public function working_day()
+    {
+        return $this->belongsTo(Working_day::class);
     }
 }
 
