@@ -46,7 +46,6 @@ Route::middleware('cors')->group(function(){
     Route::get('company/restore/{id}', 'CompanyController@restore');
 
 
-
     Route::get('salaries', 'SalaryController@index');
     Route::post('salary', 'SalaryController@store');
     Route::get('salary/{user_id}', 'SalaryController@show');
@@ -99,6 +98,10 @@ Route::middleware('cors')->group(function(){
     Route::post('working-day', 'WorkingDayController@store');
     Route::get('working-day/{user_id}', 'WorkingDayController@show');
     Route::post('working-day/{user_id}', 'WorkingDayController@update');
+
+
+    //
+    Route::post('payment', 'PaymentController@store');                                  // Need to implement first
 
 
     Route::post('file-upload', 'FileController@create_user');                            // Need to be implemented more
