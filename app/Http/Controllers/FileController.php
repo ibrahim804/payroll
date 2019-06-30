@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\User;
-use Validator;
 use App\MyErrorObject;
 
 class FileController extends Controller
@@ -88,26 +87,4 @@ class FileController extends Controller
         return $this->getErrorMessage('File can\'t be open.');
     }
 
-    private function validateUser($single_row)
-    {
-        return Validator::make($single_row, [
-            'employee_id' => 'string',
-            'full_name' => 'required|string|min:3|max:25',
-            'user_name' => 'string|min:3|max:25|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|max:30',
-            'date_of_birth' => 'date',
-            'fathers_name' => 'string|min:3|max:25',
-            'gender' => 'required|string',
-            'marital_status' => 'string',
-            'nationality' => 'string',
-            'permanent_address' => 'string|min:10|max:300',
-            'present_address' => 'string|min:10|max:300',
-            'passport_number' => 'string',
-            'phone' => 'required|string',
-            'designation_id' => 'string',
-            'department_id' => 'string',
-            'joining_date' => 'required|date',
-        ]);
-    }
 }
