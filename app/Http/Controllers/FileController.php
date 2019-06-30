@@ -18,9 +18,12 @@ class FileController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to upload file');
 
-        $validate_attributes = request()->validate(['file' => 'required|file|max:5120']);
+        $validator = request()->validate(['file' => 'required|file']); // required|file|max:5120, example of multiple mimes:csv,txt
+        $file = $request->file('file');
 
-        $file_name = $request->file('file')->getClientOriginalName();
+        if($file->getClientOriginalExtension() != 'csv') return $this->getErrorMessage('you uploaded a '.$file->getClientOriginalExtension().' file, only csv allowed.');
+
+        $file_name = $file->getClientOriginalName();
         $file_path = url('/files'.'/'.$file_name);
 
         $request->file('file')->move(public_path('/files'), $file_name);
