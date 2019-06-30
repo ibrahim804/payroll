@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
-use Validator;
 use App\Http\Controllers\CustomsErrorsTrait;
 
 class UserController extends Controller
@@ -98,25 +97,7 @@ class UserController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can create user');
 
-        $validator = Validator::make($request->all(), [
-            'employee_id' => 'string',
-            'full_name' => 'required|string|min:3|max:25',
-            'user_name' => 'string|min:3|max:25|unique:users',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|max:30',
-            'date_of_birth' => 'date',
-            'fathers_name' => 'string|min:3|max:25',
-            'gender' => 'required|string',
-            'marital_status' => 'string',
-            'nationality' => 'string',
-            'permanent_address' => 'string|min:10|max:300',
-            'present_address' => 'string|min:10|max:300',
-            'passport_number' => 'string',
-            'phone' => 'required|string',
-            'designation_id' => 'string',
-            'department_id' => 'string',
-            'joining_date' => 'required|date',
-        ]);
+        $validator = $this->validateUser($request->all());
 
         if ($validator->fails())
         {
