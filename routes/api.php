@@ -96,8 +96,9 @@ Route::middleware('cors')->group(function(){
     Route::post('leave/approve/{id}', 'LeaveController@updateApprovalStatus');
 
 
-    Route::get('working-days', 'WorkingDayController@index');
-    Route::post('working-day', 'WorkingDayController@store');                       // Need to be implemented more FIRST
+    Route::post('working-day', 'WorkingDayController@store');
+    Route::get('working-day/{user_id}', 'WorkingDayController@show');
+    Route::post('working-day/{user_id}', 'WorkingDayController@update');
 
 
     Route::post('file-upload', 'FileController@upload');                            // Need to be implemented more
