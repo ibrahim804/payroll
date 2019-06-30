@@ -101,7 +101,7 @@ Route::middleware('cors')->group(function(){
     Route::post('working-day/{user_id}', 'WorkingDayController@update');
 
 
-    Route::post('file-upload', 'FileController@upload');                            // Need to be implemented more
+    Route::post('file-upload', 'FileController@create_user');                            // Need to be implemented more
 
 });
 

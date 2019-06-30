@@ -16,7 +16,7 @@ class FileController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function upload(Request $request)
+    public function create_user(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to upload file');
 
