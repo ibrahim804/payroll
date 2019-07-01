@@ -15,4 +15,8 @@ class LeaveCount extends Model
         'leave_count_start',
         'leave_count_expired',
     ];
+
+    protected $hidden = [
+        'created_at', 'updated_at',
+    ];
 }
