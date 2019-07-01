@@ -16,7 +16,7 @@ class WorkingDayController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    public function store(Request $request)
+    public function store(Request $request) // must update company or user just after creating a working day
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
