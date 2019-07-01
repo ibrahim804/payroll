@@ -33,9 +33,9 @@ class UserController extends Controller
 
             $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
-            $infos[$i]->salary = $this->calculateNetSalary($user->salary);
-            $infos[$i]->department = $user->department->department_name;
-            $infos[$i]->designation = $user->designation->designation;
+            $infos[$i]->salary = ($user->salary) ? $this->calculateNetSalary($user->salary) : 'N/A';
+            $infos[$i]->department = ($user->department) ? $user->department->department_name : 'N/A';
+            $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
 
             $i++;
         }
