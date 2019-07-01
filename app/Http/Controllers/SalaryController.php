@@ -38,6 +38,7 @@ class SalaryController extends Controller
 
         $validate_attributes = $this->validateSalary();
         $salary = Salary::create($validate_attributes);
+        User::findOrFail($validate_attributes['user_id'])->update(['salary_id' => $salary->id]);
         $calculated_amounts = $this->calculatePayableAmount($salary);
 
         return
