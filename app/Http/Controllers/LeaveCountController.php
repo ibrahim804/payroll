@@ -54,9 +54,22 @@ class LeaveCountController extends Controller
         ];
     }
 
-    public function show(LeaveCount $leaveCount)
+    public function show($user_id, $leave_category_id)
     {
-        //
+        $leave_count = LeaveCount::where([
+            ['user_id', $user_id],
+            ['leave_category_id', $leave_category_id],
+        ])->first();
+
+        if(! $leave_count) return $this->getErrorMessage('This user has no leave count with this leave category.');
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_left' => $leave_count->leave_left,
+            ]
+        ];
     }
 
     public function update(Request $request, LeaveCount $leaveCount)
