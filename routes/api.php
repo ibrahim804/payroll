@@ -20,7 +20,7 @@ Route::middleware('cors')->group(function(){
         [
             [
                 'status' => 'OK',
-                'message' => 'Payroll version 1.0',
+                'message' => config('app.name'),
             ]
         ];
     });
