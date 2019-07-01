@@ -14,6 +14,7 @@ class LeaveController extends Controller
     use CustomsErrorsTrait;
 
     private $decision = array('Rejected', 'Accepted', 'Pending');
+    private $month_name = array('Nothing', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 
     public function __construct()
     {
@@ -24,13 +25,32 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leaves');
 
-        $leaves = Leave::where('month', $month)->get();
+        $leaves = Leave::where('month', $this->month_name[$month])->get();
+
+        $i = 0; $infos = [];
+
+        foreach($leaves as $leave) {
+
+            $infos[$i] = new User;
+
+            $infos[$i]->id = $leave->user->id;
+            $infos[$i]->full_name = $leave->user->full_name;
+            $infos[$i]->department_name = $leave->user->department->department_name;
+            $infos[$i]->designation = $leave->user->designation->designation;
+            $infos[$i]->leave_type = $leave->leave_category->leave_type;
+            $infos[$i]->leave_description = $leave->leave_description;
+            $infos[$i]->start_date = $leave->start_date;
+            $infos[$i]->end_date = $leave->end_date;
+            $infos[$i]->approval_status = $leave->approval_status;
+
+            $i++;
+        }
 
         return
         [
             [
                 'status' => 'OK',
-                'leaves' => $leaves,
+                'leaves' => $infos,
             ]
         ];
     }
