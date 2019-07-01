@@ -104,7 +104,6 @@ class SalaryController extends Controller
     {
         return request()->validate ([
             'user_id' => 'required|string|unique:salaries',
-            'leave_left' => 'required|string',
             'basic_salary' => 'required|string',
             'house_rent_allowance' => 'required|string',
             'medical_allowance' => 'required|string',
