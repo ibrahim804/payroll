@@ -28,6 +28,11 @@ class LeaveCountController extends Controller
 
         $validate_attributes = $this->validateLeaveCount();
 
+        if(\App\Leave_category::findOrFail($validate_attributes['leave_category_id'])->leave_type == 'Unpaid')
+        {
+            return $this->getErrorMessage('Unpaid leave has no leave count.');
+        }
+
         $flag = LeaveCount::where([
             ['user_id', $validate_attributes['user_id']],
             ['leave_category_id', $validate_attributes['leave_category_id']],
