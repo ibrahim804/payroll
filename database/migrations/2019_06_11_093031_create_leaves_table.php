@@ -22,6 +22,7 @@ class CreateLeavesTable extends Migration
             $table->string('month');
             $table->date('start_date');
             $table->date('end_date');
+            $table->integer('unpaid_count');
             $table->string('approval_status')->default('Pending');
             $table->timestamps();
         });
