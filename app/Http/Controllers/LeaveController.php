@@ -61,12 +61,16 @@ class LeaveController extends Controller
     {
         $validate_attributes = $this->validateLeave();
 
+        $leave_count = \App\LeaveCount::where([
+            ['user_id', auth()->id()],
+            ['leave_category_id', $validate_attributes['leave_category_id']],
+        ])->first();
+
+        if(! $leave_count) return $this->getErrorMessage('This user has no leave left record with this leave category');
+
         $validate_attributes['user_id'] = auth()->id();
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
         $validate_attributes['application_date'] = date('Y-m-d H:i:s', strtotime('+6 hours'));
-        $validate_attributes['unpaid_count'] = $this->calculateUnpaidLeave($validate_attributes);
-
-        if($validate_attributes['unpaid_count'] == -1) return $this->getErrorMessage('This user has no leave left record with this leave category');
 
         $leave = Leave::create($validate_attributes);
 
@@ -127,7 +131,13 @@ class LeaveController extends Controller
 
         $leave = Leave::findOrFail($id);
         $value = request()->validate(['decision' => 'required|string']);
-        $leave->update(['approval_status' => $this->decision[(int) $value['decision']]]);
+        $decision_str = $this->decision[(int) $value['decision']];
+
+        if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t edit anymore');
+        if($decision_str == $this->decision[1]) $leave->unpaid_count = $this->calculateUnpaidLeave($leave);
+
+        $leave->approval_status = $decision_str;
+        $leave->save();
 
         return
         [
@@ -168,19 +178,17 @@ class LeaveController extends Controller
         }
     }
 
-    private function calculateUnpaidLeave($validate_attributes)
+    private function calculateUnpaidLeave($leave)
     {
-        $start = new DateTime($validate_attributes['start_date']);
-        $finish = new DateTime($validate_attributes['end_date']);
+        $start = new DateTime($leave->start_date);
+        $finish = new DateTime($leave->end_date);
         $interval = $start->diff($finish);
         $requested_days = (int)$interval->format('%a') + 1;
 
         $leave_count = \App\LeaveCount::where([
-            ['user_id', $validate_attributes['user_id']],
-            ['leave_category_id', $validate_attributes['leave_category_id']],
+            ['user_id', $leave->user_id],
+            ['leave_category_id', $leave->leave_category_id],
         ])->first();
-
-        if(! $leave_count) return -1;
 
         if($requested_days <= $leave_count->leave_left)
         {
