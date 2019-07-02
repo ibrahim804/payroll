@@ -13,12 +13,12 @@ class FileController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
+        // $this->middleware('auth:api');
     }
 
     public function create_user(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to upload file');
+        // if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to upload file');
 
         $validator = request()->validate(['file' => 'required|file']); // required|file|max:5120, example of multiple mimes:csv,txt
         $file = $request->file('file');
@@ -66,7 +66,11 @@ class FileController extends Controller
                         $error_index++;
                     }
 
-                    else User::create($single_row);
+                    else
+                    {
+                        $single_row['password'] = bcrypt($single_row['password']);
+                        User::create($single_row);
+                    }
                 }
 
                 $row_count++;
