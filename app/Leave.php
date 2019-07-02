@@ -18,6 +18,7 @@ class Leave extends Model
         'month',
         'start_date',
         'end_date',
+        'unpaid_count',
         'approval_status',
     ];
 
