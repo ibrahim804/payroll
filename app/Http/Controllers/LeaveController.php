@@ -102,7 +102,7 @@ class LeaveController extends Controller
     {
         $leave = Leave::findOrFail($id);
 
-        if($leave->user->id != auth()->id()) return $this->getErrorMessage('You can\'t update others leave information.');
+        if($leave->user_id != auth()->id()) return $this->getErrorMessage('You can\'t update others leave information.');
         if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t update information.');
 
         $validate_attributes = request()->validate([
@@ -122,6 +122,37 @@ class LeaveController extends Controller
                 'description' => $leave->leave_description,
                 'start_date' => $leave->start_date,
                 'end_date' => $leave->end_date,
+            ]
+        ];
+    }
+
+    public function cancelLeave($id) // Please Implement to cancel latest accepted leave by force.
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
+
+        $leave = Leave::findOrFail($id);
+
+        if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no need to cancel');
+
+        $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
+
+        $leave_count = \App\LeaveCount::where([
+            ['user_id', $leave->user_id],
+            ['leave_category_id', $leave->leave_category_id],
+        ])->first();
+
+        $leave_count->leave_left = $leave_count->leave_left + ($days_diff - $leave->unpaid_count);
+        $leave->unpaid_count = 0;
+        $leave->approval_status = $this->decision[0];
+
+        $leave_count->save();
+        $leave->save();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave' => $leave,
             ]
         ];
     }
@@ -181,10 +212,7 @@ class LeaveController extends Controller
 
     private function calculateUnpaidLeave($leave)
     {
-        $start = new DateTime($leave->start_date);
-        $finish = new DateTime($leave->end_date);
-        $interval = $start->diff($finish);
-        $requested_days = (int)$interval->format('%a') + 1;
+        $requested_days = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
 
         $leave_count = \App\LeaveCount::where([
             ['user_id', $leave->user_id],
@@ -201,6 +229,15 @@ class LeaveController extends Controller
         $leave_count->update(['leave_left' => 0]);
 
         return $temp;
+    }
+
+    private function getDaysDiffOfTwoDates($start, $finish)
+    {
+        $start = new DateTime($start);
+        $finish = new DateTime($finish);
+        $interval = $start->diff($finish);
+
+        return (int)$interval->format('%a') + 1;
     }
 }
 
