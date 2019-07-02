@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
 use Carbon\Carbon;
+use DateTime;
 
 class LeaveController extends Controller
 {
@@ -63,6 +64,9 @@ class LeaveController extends Controller
         $validate_attributes['user_id'] = auth()->id();
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
         $validate_attributes['application_date'] = date('Y-m-d H:i:s', strtotime('+6 hours'));
+        $validate_attributes['unpaid_count'] = $this->calculateUnpaidLeave($validate_attributes);
+
+        if($validate_attributes['unpaid_count'] == -1) return $this->getErrorMessage('This user has no leave left record with this leave category');
 
         $leave = Leave::create($validate_attributes);
 
@@ -162,6 +166,32 @@ class LeaveController extends Controller
         {
             return ($request->input('end_date') >= $leave->start_date) ? 1 : 0;
         }
+    }
+
+    private function calculateUnpaidLeave($validate_attributes)
+    {
+        $start = new DateTime($validate_attributes['start_date']);
+        $finish = new DateTime($validate_attributes['end_date']);
+        $interval = $start->diff($finish);
+        $requested_days = (int)$interval->format('%a') + 1;
+
+        $leave_count = \App\LeaveCount::where([
+            ['user_id', $validate_attributes['user_id']],
+            ['leave_category_id', $validate_attributes['leave_category_id']],
+        ])->first();
+
+        if(! $leave_count) return -1;
+
+        if($requested_days <= $leave_count->leave_left)
+        {
+            $leave_count->update(['leave_left' => ($leave_count->leave_left - $requested_days)]);
+            return 0;
+        }
+
+        $temp = $requested_days - $leave_count->leave_left;
+        $leave_count->update(['leave_left' => 0]);
+
+        return $temp;
     }
 }
 
