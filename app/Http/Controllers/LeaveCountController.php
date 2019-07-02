@@ -27,11 +27,10 @@ class LeaveCountController extends Controller
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create any leave count');
 
         $validate_attributes = $this->validateLeaveCount();
+        $leave_category = \App\Leave_category::find($validate_attributes['leave_category_id']);
 
-        if(\App\Leave_category::findOrFail($validate_attributes['leave_category_id'])->leave_type == 'Unpaid')
-        {
-            return $this->getErrorMessage('Unpaid leave has no leave count.');
-        }
+        if(! $leave_category) return $this->getErrorMessage('No Leave category found.');
+        if($leave_category->leave_type == 'Unpaid') return $this->getErrorMessage('Unpaid leave has no leave count.');
 
         $flag = LeaveCount::where([
             ['user_id', $validate_attributes['user_id']],
