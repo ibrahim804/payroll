@@ -21,11 +21,12 @@ class LeaveController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    public function index($month)
+    public function index() // $month
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leaves');
 
-        $leaves = Leave::where('month', $this->month_name[$month])->get();
+        // $leaves = Leave::where('month', $this->month_name[$month])->get();
+        $leaves = Leave::all();
 
         $i = 0; $infos = [];
 
