@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\User;
+use App\Leave_category;
 
 class LeaveCount extends Model
 {
@@ -22,5 +23,10 @@ class LeaveCount extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function leave_category()
+    {
+        return $this->belongsTo(Leave_category::class);
     }
 }
