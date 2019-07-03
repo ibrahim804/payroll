@@ -24,6 +24,7 @@ class CreateLeavesTable extends Migration
             $table->date('end_date');
             $table->integer('unpaid_count')->nullable();
             $table->string('approval_status')->default('Pending');
+            $table->timestamp('last_accepted_at')->nullable();
             $table->timestamps();
         });
     }
