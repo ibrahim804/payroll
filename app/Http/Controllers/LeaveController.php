@@ -126,13 +126,25 @@ class LeaveController extends Controller
         ];
     }
 
-    public function cancelLeave($id) // Please Implement to cancel latest accepted leave by force.
+    public function cancelLeave($id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
 
         $leave = Leave::findOrFail($id);
 
         if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no cancel option');
+
+        $available_LeaveToBeCancelledFirst = Leave::where([
+
+                ['user_id', $leave->user_id],
+                ['leave_category_id', $leave->leave_category_id],
+
+            ])->orderBy('last_accepted_at', 'desc')->first();
+
+        if($available_LeaveToBeCancelledFirst->id != $leave->id)
+        {
+            return $this->getErrorMessage('This leave can\'t be canceled now, leave no '.$available_LeaveToBeCancelledFirst->id.' should be cancelled first.');
+        }
 
         $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
 
@@ -144,6 +156,7 @@ class LeaveController extends Controller
         $leave_count->leave_left = $leave_count->leave_left + ($days_diff - $leave->unpaid_count);
         $leave->unpaid_count = 0;
         $leave->approval_status = $this->decision[0];
+        $leave->last_accepted_at = NULL;
 
         $leave_count->save();
         $leave->save();
@@ -166,7 +179,12 @@ class LeaveController extends Controller
         $decision_str = $this->decision[(int) $value['decision']];
 
         if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t edit anymore');
-        if($decision_str == $this->decision[1]) $leave->unpaid_count = $this->calculateUnpaidLeave($leave);
+
+        if($decision_str == $this->decision[1])
+        {
+            $leave->unpaid_count = $this->calculateUnpaidLeave($leave);
+            $leave->last_accepted_at = date("Y-m-d H:i:s", strtotime("+6 hours"));
+        }
 
         $leave->approval_status = $decision_str;
         $leave->save();
