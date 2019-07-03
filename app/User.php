@@ -16,6 +16,7 @@ use App\Designation;
 use App\Leave;
 use App\Salary;
 use App\Working_day;
+use App\LeaveCount;
 
 class User extends Authenticatable
 {
@@ -104,6 +105,11 @@ class User extends Authenticatable
     public function working_day()
     {
         return $this->belongsTo(Working_day::class);
+    }
+
+    public function leave_counts()
+    {
+        return $this->hasMany(LeaveCount::class);
     }
 }
 
