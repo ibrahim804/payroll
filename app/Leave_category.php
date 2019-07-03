@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Leave;
+use App\LeaveCount;
 
 class Leave_category extends Model
 {
@@ -15,5 +16,10 @@ class Leave_category extends Model
     public function leaves()
     {
         return $this->hasMany(Leave::class);
+    }
+
+    public function leave_counts()
+    {
+        return $this->hasMany(LeaveCount::class);
     }
 }
