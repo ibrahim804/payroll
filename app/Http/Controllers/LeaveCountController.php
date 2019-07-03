@@ -53,10 +53,7 @@ class LeaveCountController extends Controller
         if(! $leave_category) return $this->getErrorMessage('No Leave category found.');
         if($leave_category->leave_type == 'Unpaid') return $this->getErrorMessage('Unpaid leave has no leave count.');
 
-        $flag = LeaveCount::where([
-            ['user_id', $validate_attributes['user_id']],
-            ['leave_category_id', $validate_attributes['leave_category_id']],
-        ])->count();
+        $flag = $leave_category->leave_counts->where('user_id', $validate_attributes['user_id'])->count();
 
         if($flag) return $this->getErrorMessage('Already exist');
 
