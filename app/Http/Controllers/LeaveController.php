@@ -103,7 +103,7 @@ class LeaveController extends Controller
         $leave = Leave::findOrFail($id);
 
         if($leave->user_id != auth()->id()) return $this->getErrorMessage('You can\'t update others leave information.');
-        if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t update information.');
+        if($leave->approval_status != $this->decision[2]) return $this->getErrorMessage('Leave already responsed, you can\'t update information.');
 
         $validate_attributes = request()->validate([
             'leave_category_id' => 'string', 'leave_description' => 'string', 'start_date' => 'date', 'end_date' => 'date',
@@ -132,7 +132,7 @@ class LeaveController extends Controller
 
         $leave = Leave::findOrFail($id);
 
-        if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no need to cancel');
+        if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no cancel option');
 
         $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
 
