@@ -19,14 +19,13 @@ class LeaveController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api'); //->except(['register', 'login']);
+        $this->middleware('auth:api');
     }
 
-    public function index() // $month
+    public function index()
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leaves');
 
-        // $leaves = Leave::where('month', $this->month_name[$month])->get();
         $leaves = Leave::all();
 
         $i = 0; $infos = [];
@@ -60,11 +59,7 @@ class LeaveController extends Controller
     public function store(Request $request)
     {
         $validate_attributes = $this->validateLeave();
-
-        $leave_count = \App\LeaveCount::where([
-            ['user_id', auth()->id()],
-            ['leave_category_id', $validate_attributes['leave_category_id']],
-        ])->first();
+        $leave_count = auth()->user()->leave_counts->where('leave_category_id', $validate_attributes['leave_category_id'])->count();
 
         if(! $leave_count) return $this->getErrorMessage('This user has no leave left record with this leave category');
 
@@ -148,11 +143,7 @@ class LeaveController extends Controller
 
         $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
 
-        $leave_count = \App\LeaveCount::where([
-            ['user_id', $leave->user_id],
-            ['leave_category_id', $leave->leave_category_id],
-        ])->first();
-
+        $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
         $leave_count->leave_left = $leave_count->leave_left + ($days_diff - $leave->unpaid_count);
         $leave->unpaid_count = 0;
         $leave->approval_status = $this->decision[0];
@@ -165,7 +156,7 @@ class LeaveController extends Controller
         [
             [
                 'status' => 'OK',
-                'leave' => $leave,
+                'approval_status' => $leave->approval_status,
             ]
         ];
     }
@@ -231,11 +222,7 @@ class LeaveController extends Controller
     private function calculateUnpaidLeave($leave)
     {
         $requested_days = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
-
-        $leave_count = \App\LeaveCount::where([
-            ['user_id', $leave->user_id],
-            ['leave_category_id', $leave->leave_category_id],
-        ])->first();
+        $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
 
         if($requested_days <= $leave_count->leave_left)
         {
