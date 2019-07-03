@@ -6,6 +6,7 @@ use App\LeaveCount;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\User;
+use App\Leave_category;
 use DateTime;
 
 class LeaveCountController extends Controller
@@ -27,7 +28,7 @@ class LeaveCountController extends Controller
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create any leave count');
 
         $validate_attributes = $this->validateLeaveCount();
-        $leave_category = \App\Leave_category::find($validate_attributes['leave_category_id']);
+        $leave_category = Leave_category::find($validate_attributes['leave_category_id']);
 
         if(! $leave_category) return $this->getErrorMessage('No Leave category found.');
         if($leave_category->leave_type == 'Unpaid') return $this->getErrorMessage('Unpaid leave has no leave count.');
@@ -60,6 +61,11 @@ class LeaveCountController extends Controller
 
     public function show($user_id, $leave_category_id)
     {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $user_id)
+        {
+            return $this->getErrorMessage('You don\'t have permission to check others leave count');
+        }
+
         $leave_count = LeaveCount::where([
             ['user_id', $user_id],
             ['leave_category_id', $leave_category_id],
