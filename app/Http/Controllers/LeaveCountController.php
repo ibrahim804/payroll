@@ -18,9 +18,28 @@ class LeaveCountController extends Controller
         $this->middleware('auth:api');
     }
 
-    public function index()
+    public function index() // need to implement
     {
+        // if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leave counts');
         //
+        // $leave_counts = LeaveCount::all();
+        //
+        // $i = 0; $infos = [];
+        //
+        // foreach($leave_counts as $leave_count) {
+        //
+        //     $infos[$i] = new LeaveCount;
+        //
+        //     $infos[$i]->id = $leave_count->id;
+        //     $infos[$i]->full_name = $leave_count->user->full_name;
+        //     $infos[$i]->leave_type = $leave_count-> ??
+        //     $infos[$i]->department = ($user->department) ? $user->department->department_name : 'N/A';
+        //     $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
+        //
+        //     $i++;
+        // }
+        //
+        // return $infos;
     }
 
     public function store(Request $request)
