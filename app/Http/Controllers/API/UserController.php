@@ -118,9 +118,14 @@ class UserController extends Controller
         ];
     }
 
-    public function user()
+    public function user($id)
     {
-        $user = Auth::user();
+        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id)
+        {
+            return $this->getErrorMessage('You don\'t have permission to view any user info');
+        }
+
+        $user = User::findOrFail($id);
 
         return
         [
