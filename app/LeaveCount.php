@@ -3,8 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-
-// Query will be enough bigger, so no need to make any relation with user and leave category.
+use App\User;
 
 class LeaveCount extends Model
 {
@@ -19,4 +18,9 @@ class LeaveCount extends Model
     protected $hidden = [
         'created_at', 'updated_at',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
