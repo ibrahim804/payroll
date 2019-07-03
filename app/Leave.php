@@ -20,6 +20,7 @@ class Leave extends Model
         'end_date',
         'unpaid_count',
         'approval_status',
+        'last_accepted_at',
     ];
 
     public function leave_category()
