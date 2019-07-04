@@ -15,7 +15,7 @@ class LeaveController extends Controller
     use CustomsErrorsTrait;
 
     private $decision = array('Rejected', 'Accepted', 'Pending');
-    private $month_name = array('Nothing', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+    // private $month_name = array('Nothing', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 
     private $dayOfWeek = [
                             'Sun' => 'sunday',
@@ -53,6 +53,8 @@ class LeaveController extends Controller
             $infos[$i]->leave_description = $leave->leave_description;
             $infos[$i]->start_date = $leave->start_date;
             $infos[$i]->end_date = $leave->end_date;
+            $infos[$i]->leave_length = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
+            $infos[$i]->leave_available = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first()->leave_left;
             $infos[$i]->approval_status = $leave->approval_status;
 
             $i++;
