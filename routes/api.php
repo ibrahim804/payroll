@@ -52,7 +52,7 @@ Route::middleware('cors')->group(function(){
 
 
     Route::get('salaries', 'SalaryController@index');
-    Route::post('salary', 'SalaryController@store');                            // Need to implement Second
+    Route::post('salary', 'SalaryController@store');
     Route::get('salary/{user_id}', 'SalaryController@show');
     Route::post('salary/{user_id}', 'SalaryController@update');
 
@@ -94,12 +94,11 @@ Route::middleware('cors')->group(function(){
 
 
     Route::get('leave-counts', 'LeaveCountController@index');
-    Route::post('leave-count', 'LeaveCountController@store');                                 // Need to implement First
+    Route::post('leave-count', 'LeaveCountController@store');
     Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
-    Route::post('leave-count/{id}', 'LeaveCountController@update');
+    Route::post('leave-count/{id}', 'LeaveCountController@update');                     // AUTO UPDATE OF USER'S LEAVE LEFT SHOULD BE IMPLEMENTED LATER
 
 
-    // Route::get('leaves/month/{month}', 'LeaveController@index');
     Route::get('leaves', 'LeaveController@index');
     Route::post('leave', 'LeaveController@store');
     Route::get('leaves/{user_id}', 'LeaveController@show');
@@ -114,18 +113,12 @@ Route::middleware('cors')->group(function(){
 
 
     //
-    Route::post('payment', 'PaymentController@store');                                  // Need to implement Third
+    Route::post('payment', 'PaymentController@store');                                  // Need to implement First
 
 
-    Route::post('file-upload', 'FileController@create_user');                            // Need to be implemented last
+    Route::post('file-upload', 'FileController@create_user');                            // Need to be implemented Second
 
 });
-
-
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 
 
 
