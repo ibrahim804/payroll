@@ -95,18 +95,27 @@ class LeaveCountController extends Controller
             [
                 'status' => 'OK',
                 'leave_left' => $leave_count->leave_left,
+                'leave_count_start' => $leave_count->leave_count_start,
+                'leave_count_expired' => $leave_count->leave_count_expired,
             ]
         ];
     }
 
-    public function update(Request $request, LeaveCount $leaveCount)
+    public function update($id)
     {
-        //
-    }
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update any leave count');
 
-    public function destroy(LeaveCount $leaveCount)
-    {
-        //
+        $leave_count = LeaveCount::findOrFail($id);
+        $validate_attributes = request()->validate(['leave_left' => 'string']);
+        $leave_count->update($validate_attributes);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_left' => $leave_count->leave_left,
+            ]
+        ];
     }
 
     private function validateLeaveCount()
