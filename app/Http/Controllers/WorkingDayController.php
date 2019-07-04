@@ -16,12 +16,17 @@ class WorkingDayController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    public function store(Request $request) // must update company or user just after creating a working day
+    public function store(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateWorkingDay(1);
+        $requested_user = User::findOrFail($validate_attributes['user_id']);
+
+        if($requested_user->working_day_id) return $this->getErrorMessage('This user already has a working day.');
+
         $working_day = Working_day::create($validate_attributes);
+        $requested_user->update(['working_day_id' => $working_day->id]);
 
         return
         [
@@ -60,14 +65,14 @@ class WorkingDayController extends Controller
         [
             [
                 'status' => 'OK',
-                'working_day' => $working_day, 
+                'working_day' => $working_day,
             ]
         ];
     }
 
     private function validateWorkingDay(int $StoreOrUpdate) // 1 for store, 0 for update
     {
-        return request()->validate([
+        $validate_attributes = request()->validate([
             'saturday' => ($StoreOrUpdate) ? 'required|string' : 'string',
             'sunday' => ($StoreOrUpdate) ? 'required|string' : 'string',
             'monday' => ($StoreOrUpdate) ? 'required|string' : 'string',
@@ -76,6 +81,14 @@ class WorkingDayController extends Controller
             'thursday' => ($StoreOrUpdate) ? 'required|string' : 'string',
             'friday' => ($StoreOrUpdate) ? 'required|string' : 'string',
         ]);
+
+        if($StoreOrUpdate)
+        {
+            $tempArray = request()->validate(['user_id' => 'required|string']);
+            $validate_attributes['user_id'] = $tempArray['user_id'];
+        }
+
+        return $validate_attributes;
     }
 }
 
