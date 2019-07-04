@@ -121,6 +121,34 @@ class LeaveController extends Controller
         ];
     }
 
+    public function updateApprovalStatus(Request $request, $id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
+
+        $leave = Leave::findOrFail($id);
+        $value = request()->validate(['decision' => 'required|string']);
+        $decision_str = $this->decision[(int) $value['decision']];
+
+        if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t update anymore');
+
+        if($decision_str == $this->decision[1])
+        {
+            $leave->unpaid_count = $this->calculateUnpaidLeave($leave);
+            $leave->last_accepted_at = date("Y-m-d H:i:s", strtotime("+6 hours"));
+        }
+
+        $leave->approval_status = $decision_str;
+        $leave->save();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'approval_status' => $leave->approval_status,
+            ]
+        ];
+    }
+
     public function cancelLeave($id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
@@ -150,34 +178,6 @@ class LeaveController extends Controller
         $leave->last_accepted_at = NULL;
 
         $leave_count->save();
-        $leave->save();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'approval_status' => $leave->approval_status,
-            ]
-        ];
-    }
-
-    public function updateApprovalStatus(Request $request, $id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
-
-        $leave = Leave::findOrFail($id);
-        $value = request()->validate(['decision' => 'required|string']);
-        $decision_str = $this->decision[(int) $value['decision']];
-
-        if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t edit anymore');
-
-        if($decision_str == $this->decision[1])
-        {
-            $leave->unpaid_count = $this->calculateUnpaidLeave($leave);
-            $leave->last_accepted_at = date("Y-m-d H:i:s", strtotime("+6 hours"));
-        }
-
-        $leave->approval_status = $decision_str;
         $leave->save();
 
         return
