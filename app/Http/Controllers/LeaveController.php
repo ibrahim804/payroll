@@ -17,6 +17,17 @@ class LeaveController extends Controller
     private $decision = array('Rejected', 'Accepted', 'Pending');
     private $month_name = array('Nothing', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
 
+    private $dayOfWeek = [
+                            'Sun' => 'sunday',
+                            'Mon' => 'monday',
+                            'Tue' => 'tuesday',
+                            'Wed' => 'wednesday',
+                            'Thu' => 'thursday',
+                            'Fri' => 'friday',
+                            'Sat' => 'saturday',
+    ];
+
+
     public function __construct()
     {
         $this->middleware('auth:api');
@@ -169,7 +180,8 @@ class LeaveController extends Controller
             return $this->getErrorMessage('This leave can\'t be canceled now, leave no '.$available_LeaveToBeCancelledFirst->id.' should be cancelled first.');
         }
 
-        $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
+        // $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
+        $days_diff = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
 
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
         $leave_count->leave_left = $leave_count->leave_left + ($days_diff - $leave->unpaid_count);
@@ -221,7 +233,8 @@ class LeaveController extends Controller
 
     private function calculateUnpaidLeave($leave)
     {
-        $requested_days = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
+        // $requested_days = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
+        $requested_days = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
 
         if($requested_days <= $leave_count->leave_left)
@@ -236,13 +249,33 @@ class LeaveController extends Controller
         return $temp;
     }
 
-    private function getDaysDiffOfTwoDates($start, $finish)
+    // private function getDaysDiffOfTwoDates($start, $finish)                         // Returns actual difference of two dates
+    // {
+    //     $start = new DateTime($start);
+    //     $finish = new DateTime($finish);
+    //     $interval = $start->diff($finish);
+    //
+    //     return (int)$interval->format('%a') + 1;
+    // }
+
+    private function getActualLeavesBetweenTwoDates($working_day, $start, $finish)  // Returns calculated working days between two dates
     {
         $start = new DateTime($start);
         $finish = new DateTime($finish);
-        $interval = $start->diff($finish);
 
-        return (int)$interval->format('%a') + 1;
+        $actualLeaveCount = 0;
+
+        while($start <= $finish)
+        {
+            if($working_day[$this->dayOfWeek[$start->format('D')]] == 'true' )
+            {
+                $actualLeaveCount++;
+            }
+
+            $start = date_add($start, date_interval_create_from_date_string('1 day'));
+        }
+
+        return $actualLeaveCount;
     }
 }
 
