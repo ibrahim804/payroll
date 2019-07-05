@@ -59,7 +59,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'photo_path', 'created_at', 'updated_at', 'deleted_at',
+        'created_at', 'updated_at', 'deleted_at',
         'password', 'remember_token',
     ];
 
