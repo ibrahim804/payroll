@@ -38,6 +38,7 @@ class UserController extends Controller
             $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
             $infos[$i]->casual_leave = $user->leave_counts->where('leave_category_id', 1)->first()->leave_left;
             $infos[$i]->sick_leave = $user->leave_counts->where('leave_category_id', 2)->first()->leave_left;
+            $infos[$i]->photo_path = url($user->photo_path);
 
             $i++;
         }
