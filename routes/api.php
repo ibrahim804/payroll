@@ -116,7 +116,8 @@ Route::middleware('cors')->group(function(){
     Route::post('payment', 'PaymentController@store');                                  // Need to implement First
 
 
-    Route::post('file-upload', 'FileController@create_user');                            // Need to be implemented Second
+    Route::post('file-upload/create/user', 'FileController@create_user');                            // Need to be implemented Second
+    Route::post('photo-upload/user/profile/{id}', 'FileController@setProfilePicture');
 
 });
 
