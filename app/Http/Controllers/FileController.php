@@ -18,8 +18,6 @@ class FileController extends Controller
 
     public function create_user(Request $request)
     {
-        // if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to upload file');
-
         $validator = request()->validate(['file' => 'required|file']); // required|file|max:5120, example of multiple mimes:csv,txt
         $file = $request->file('file');
 
@@ -91,4 +89,42 @@ class FileController extends Controller
         return $this->getErrorMessage('File can\'t be open.');
     }
 
+    public function setProfilePicture(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validate_attributes = request()->validate(['image' => 'required|image']);
+
+        $image = $request->file('image');
+        $image_name = $id.'.'.$image->getClientOriginalExtension();
+        $image->move(public_path('/profile_pictures'), $image_name);
+
+        $image_path = '/profile_pictures'.'/'.$image_name;
+        $user->update(['photo_path' => $image_path]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'image_path' => url($image_path),
+            ]
+        ];
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
