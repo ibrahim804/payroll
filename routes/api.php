@@ -37,6 +37,7 @@ Route::middleware('cors')->group(function(){
     Route::post('change/password', 'API\UserController@change_password');
     Route::get('logout', 'API\UserController@logout');
     Route::get('delete/user/{id}', 'API\UserController@delete');
+    Route::get('delete/photo/user/{id}', 'API\UserController@remove_photo');
     Route::get('restore/user/{id}', 'API\UserController@restore');
     // Route::get('forgot_password', 'API\UserController@forgot_password');
     Route::get('users', 'API\UserController@index');
