@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CustomsErrorsTrait;
+use File;
 
 class UserController extends Controller
 {
@@ -277,20 +278,40 @@ class UserController extends Controller
             ]
         ];
     }
+
+    public function remove_photo($id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id)
+        {
+            return $this->getErrorMessage('Permission denied.');
+        }
+
+        $user = User::findOrFail($id);
+
+        if(!$user->photo_path) return $this->getErrorMessage('No photo has been found.');
+
+        $actual_old_path = public_path($user->photo_path);
+        $extension = pathinfo($actual_old_path, PATHINFO_EXTENSION);   // Simple way of finding extension from path string
+        $actual_new_path = public_path().(new \App\MyErrorObject)->trashed_pictures.'/'.bin2hex(random_bytes(8)).'.'.$extension;
+
+        /* Another way of finding extension from path string
+            $infoPath = pathinfo(public_path('/uploads/my_image.jpg'));
+            $extension = $infoPath['extension'];
+        */
+
+        if(! File::exists($actual_old_path)) return $this->getErrorMessage('File doesn\'t exists');
+
+        File::move($actual_old_path, $actual_new_path);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Image removed successfully',
+            ]
+        ];
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
