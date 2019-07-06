@@ -92,14 +92,14 @@ class FileController extends Controller
     public function setProfilePicture(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
         $validate_attributes = request()->validate(['image' => 'required|image']);
+        $myObject = new MyErrorObject;
 
         $image = $request->file('image');
         $image_name = $id.'.'.$image->getClientOriginalExtension();
-        $image->move(public_path('/profile_pictures'), $image_name);
+        $image->move(public_path($myObject->profile_pictures), $image_name);
 
-        $image_path = '/profile_pictures'.'/'.$image_name;
+        $image_path = $myObject->profile_pictures.'/'.$image_name;
         $user->update(['photo_path' => $image_path]);
 
         return
