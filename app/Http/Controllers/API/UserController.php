@@ -299,9 +299,10 @@ class UserController extends Controller
             $extension = $infoPath['extension'];
         */
 
-        if(! File::exists($actual_old_path)) return $this->getErrorMessage('File doesn\'t exists');
+        if(! File::exists($actual_old_path)) return $this->getErrorMessage('File doesn\'t exists in this path');
 
         File::move($actual_old_path, $actual_new_path);
+        $user->update(['photo_path' => NULL]);
 
         return
         [
