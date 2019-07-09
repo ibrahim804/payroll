@@ -96,7 +96,7 @@ class FileController extends Controller
         $myObject = new MyErrorObject;
 
         $image = $request->file('image');
-        $image_name = $id.'.'.$image->getClientOriginalExtension();
+        $image_name = $id.'.'.bin2hex(random_bytes(8)).'.'.$image->getClientOriginalExtension();
         $image->move(public_path($myObject->profile_pictures), $image_name);
 
         $image_path = $myObject->profile_pictures.'/'.$image_name;
