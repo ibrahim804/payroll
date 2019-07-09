@@ -92,7 +92,7 @@ class FileController extends Controller
     public function setProfilePicture(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $validate_attributes = request()->validate(['image' => 'required|image']);
+        $validate_attributes = request()->validate(['image' => 'required|image|max:2048']); // can't greater than 2 mb
         $myObject = new MyErrorObject;
 
         $image = $request->file('image');

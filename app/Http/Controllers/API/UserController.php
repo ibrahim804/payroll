@@ -288,7 +288,7 @@ class UserController extends Controller
 
         $user = User::findOrFail($id);
 
-        if(!$user->photo_path) return $this->getErrorMessage('No photo has been found.');
+        if(!$user->photo_path) return $this->getErrorMessage('No photo has been found in this path.');
 
         $actual_old_path = public_path($user->photo_path);
         $extension = pathinfo($actual_old_path, PATHINFO_EXTENSION);   // Simple way of finding extension from path string
