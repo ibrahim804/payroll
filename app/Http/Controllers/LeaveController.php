@@ -45,7 +45,8 @@ class LeaveController extends Controller
 
             $infos[$i] = new User;
 
-            $infos[$i]->id = $leave->user->id;
+            $infos[$i]->id = $leave->id;
+            $infos[$i]->user_id = $leave->user->id;
             $infos[$i]->full_name = $leave->user->full_name;
             $infos[$i]->department_name = $leave->user->department->department_name;
             $infos[$i]->designation = $leave->user->designation->designation;
