@@ -22,7 +22,8 @@ class UserVerification extends Mailable
 
     public function build()
     {
-        return $this->subject('Request for password reset')
+        return $this->from('mirza@justanx.com', 'We Are X')
+                    ->subject('Request for password reset')
                     ->markdown('mail.forgot-password');
     }
 }
