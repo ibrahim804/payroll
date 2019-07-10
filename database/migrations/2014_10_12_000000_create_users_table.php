@@ -31,11 +31,13 @@ class CreateUsersTable extends Migration
             $table->string('passport_number')->nullable();
             $table->string('photo_path')->nullable();
             $table->string('phone');
+            $table->integer('company_id')->nullable();
             $table->integer('designation_id')->nullable();
             $table->integer('department_id')->nullable();
             $table->integer('salary_id')->nullable();
             $table->integer('working_day_id')->nullable();
             $table->date('joining_date');
+            $table->integer('verification_code')->nullable();
             $table->boolean('status')->default(1);
             $table->rememberToken();
             $table->timestamps();
