@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
 use File;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserVerification;
 
 class UserController extends Controller
 {
@@ -19,7 +21,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['login', 'register']);
+        $this->middleware('auth:api')->except(['login', 'register', 'forgot_password']);
     }
 
     public function index(Request $request)
@@ -247,7 +249,24 @@ class UserController extends Controller
 
     public function forgot_password(Request $request)
     {
-        return 'hello';
+        $validate_attributes = request()->validate(['email' => 'required|string']);
+        $user = User::where('email', $validate_attributes['email'])->first();
+
+        if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
+
+        $verification_code = mt_rand(100000, 999999);
+
+        Mail::to($user->email)->send(
+            new UserVerification($verification_code, $user->full_name)
+        );
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'A verification code is sent to your email, Check your inbox now.',
+            ]
+        ];
     }
 
     public function delete(Request $request, $id)
