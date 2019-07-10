@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['login', 'register', 'forgot_password']);
+        $this->middleware('auth:api')->except(['login', 'register', 'forgot_password', 'setNewPasswordAfterUserVerification']);
     }
 
     public function index(Request $request)
@@ -263,11 +263,42 @@ class UserController extends Controller
             new UserVerification($verification_code, $user->full_name, ($user->company) ? $user->company->name : '')
         );
 
+        $user->update(['verification_code' => $verification_code]);
+
         return
         [
             [
                 'status' => 'OK',
                 'message' => 'A verification code is sent to your email, Check your inbox now.',
+            ]
+        ];
+    }
+
+    public function setNewPasswordAfterUserVerification(Request $request)
+    {
+        $validate_attributes = request()->validate([            // these validations are not working for being out of auth:api. I don't know why. Check it later.
+            'email' => 'required|string',
+            'verification_code' => 'required|string',
+            'new_password' => 'required|string|min:6|max:30',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        $user = User::where('email', $validate_attributes['email'])->first();
+
+        if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
+        if(! $user->verification_code) return $this->getErrorMessage('Please go to forgot password option.');
+        if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('verification code doesn\'t matched');
+
+        $user->update([
+            'password' => bcrypt($validate_attributes['new_password']),
+            'verification_code' => NULL,
+        ]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'User password reset successfully.',
             ]
         ];
     }
