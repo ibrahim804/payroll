@@ -260,7 +260,7 @@ class UserController extends Controller
         $verification_code = mt_rand(100000, 999999);
 
         Mail::to($user->email)->send(
-            new UserVerification($verification_code, $user->full_name)
+            new UserVerification($verification_code, $user->full_name, ($user->company) ? $user->company->name : '')
         );
 
         return
