@@ -34,6 +34,7 @@ trait CustomsErrorsTrait
             'present_address' => 'string|min:10|max:300',
             'passport_number' => 'string',
             'phone' => 'required|string',
+			'company_id' => 'string',
             'designation_id' => 'string',
             'department_id' => 'string',
             'joining_date' => 'required|date',
