@@ -11,18 +11,19 @@ class UserVerification extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $code, $full_name;
+    public $code, $full_name, $company_name;
 
-    public function __construct($code, $full_name)
+    public function __construct($code, $full_name, $company_name)
     {
         $this->code = $code;
         $this->full_name = $full_name;
+        $this->company_name = $company_name;
     }
 
 
     public function build()
     {
-        return $this->from('mirza@justanx.com', 'We Are X')
+        return $this->from('mirza@justanx.com', $this->company_name)
                     ->subject('Request for password reset')
                     ->markdown('mail.forgot-password');
     }
