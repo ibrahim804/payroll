@@ -43,6 +43,8 @@ class LeaveController extends Controller
 
         foreach($leaves as $leave) {
 
+            if(! $leave->user) continue;
+
             $infos[$i] = new User;
 
             $infos[$i]->id = $leave->id;
