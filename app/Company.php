@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Working_day;
+use App\User;
 
 class Company extends Model
 {
@@ -28,5 +29,10 @@ class Company extends Model
     public function working_day()
     {
         return $this->belongsTo(Working_day::class);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
     }
 }
