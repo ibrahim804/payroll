@@ -38,6 +38,7 @@ class UserController extends Controller
             $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
             $infos[$i]->salary = ($user->salary) ? $this->calculateNetSalary($user->salary) : 'N/A';
+            $infos[$i]->company = ($user->company) ? $user->company->name : 'N/A';
             $infos[$i]->department = ($user->department) ? $user->department->department_name : 'N/A';
             $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
             $infos[$i]->casual_leave = $user->leave_counts->where('leave_category_id', 1)->first()->leave_left;
@@ -171,6 +172,7 @@ class UserController extends Controller
         {
             $extra_attributes = request()->validate([
                 'employee_id' => 'string',
+                'company_id' => 'string',
                 'designation_id' => 'string',
                 'department_id' => 'string',
                 'salary_id' => 'string',
@@ -211,6 +213,7 @@ class UserController extends Controller
         if($request->filled('permanent_address')) $inputs['permanent_address'] = $request->input('permanent_address');
         if($request->filled('present_address')) $inputs['present_address'] = $request->input('present_address');
         if($request->filled('passport_number')) $inputs['passport_number'] = $request->input('passport_number');
+        if($request->filled('company_id')) $inputs['company_id'] = $request->input('company_id');
         if($request->filled('department_id')) $inputs['department_id'] = $request->input('department_id');
         if($request->filled('designation_id')) $inputs['designation_id'] = $request->input('designation_id');
 
