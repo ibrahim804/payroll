@@ -45,11 +45,13 @@ class User extends Authenticatable
         'passport_number',
         'photo_path',
         'phone',
+        'company_id',
         'designation_id',
         'department_id',
         'salary_id',
         'working_day_id',
         'joining_date',
+        'verification_code',
         'status',
     ];
 
