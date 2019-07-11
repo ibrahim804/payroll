@@ -21,7 +21,7 @@ class UserController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['login', 'register', 'forgot_password', 'setNewPasswordAfterUserVerification']);
+        $this->middleware('auth:api')->except(['login', 'register', 'forgot_password', 'verifyVerificationCode', 'setNewPasswordAfterUserVerification']);
     }
 
     public function index(Request $request)
@@ -274,18 +274,27 @@ class UserController extends Controller
         ];
     }
 
-    public function setNewPasswordAfterUserVerification(Request $request)
+    public function verifyVerificationCode(Request $request)
     {
-        $validate_attributes = request()->validate([            // these validations are not working for being out of auth:api. I don't know why. Check it later.
+        $validate_attributes = request()->validate([
             'email' => 'required|string',
             'verification_code' => 'required|string',
-            'new_password' => 'required|string|min:6|max:30',
-            'confirm_password' => 'required|same:new_password',
         ]);
 
         $user = User::where('email', $validate_attributes['email'])->first();
 
         if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
+
+        if($user->verification_code == 1)
+        {
+            return
+            [
+                [
+                    'status' => 'OK',
+                    'message' => 'Verification code already verified, you can set your password now.',
+                ]
+            ];
+        }
 
         $user_updated_at = Carbon::createFromFormat('Y-m-d H:i:s', $user->updated_at);
         $current_time = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now());
@@ -293,8 +302,33 @@ class UserController extends Controller
 
         if($ageOfVerificationCode >= 60) $user->update(['verification_code' => NULL]);
 
-        if(! $user->verification_code) return $this->getErrorMessage('Either you didn\'t receive any verification code, or your code lifetime ended');
-        if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('Verification code doesn\'t matched');
+        if(! $user->verification_code) return $this->getErrorMessage('Either you didn\'t send forgot password request, or your code expired');
+        if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('Verification code isn\'t matched');
+
+        $user->update(['verification_code' => 1]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Verification code verified successfully.',
+            ]
+        ];
+
+    }
+
+    public function setNewPasswordAfterUserVerification(Request $request)
+    {
+        $validate_attributes = request()->validate([            // these validations are not working for being out of auth:api. I don't know why. Check it later.
+            'email' => 'required|string',
+            'new_password' => 'required|string|min:6|max:30',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+
+        $user = User::where('email', $validate_attributes['email'])->first();
+
+        if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
+        if($user->verification_code != 1) return $this->getErrorMessage('Please verify your verification code firstly to set new password');
 
         $user->update([
             'password' => bcrypt($validate_attributes['new_password']),
