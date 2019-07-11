@@ -11,10 +11,10 @@ use Validator;
 use File;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserVerification;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
-
     use CustomsErrorsTrait;
 
     public $successStatus = 200;
@@ -286,8 +286,15 @@ class UserController extends Controller
         $user = User::where('email', $validate_attributes['email'])->first();
 
         if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
-        if(! $user->verification_code) return $this->getErrorMessage('Please go to forgot password option.');
-        if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('verification code doesn\'t matched');
+
+        $user_updated_at = Carbon::createFromFormat('Y-m-d H:i:s', $user->updated_at);
+        $current_time = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now());
+        $ageOfVerificationCode = $user_updated_at->diffInSeconds($current_time);
+
+        if($ageOfVerificationCode >= 60) $user->update(['verification_code' => NULL]);
+
+        if(! $user->verification_code) return $this->getErrorMessage('Either you didn\'t receive any verification code, or your code lifetime ended');
+        if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('Verification code doesn\'t matched');
 
         $user->update([
             'password' => bcrypt($validate_attributes['new_password']),
