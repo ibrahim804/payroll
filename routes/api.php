@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-// use DB;
+use DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,20 +26,21 @@ Route::middleware('cors')->group(function(){
         ];
     });
 
-    // Route::get('database/{db}', function($db){
-    //     return DB::select("select * from $db");
-    // });
+    Route::get('database/{db}', function($db){
+        return DB::select("select * from $db");
+    });
 
     Route::post('login', 'API\UserController@login');
     Route::post('register', 'API\UserController@register');
     Route::get('user/{id}', 'API\UserController@user');
     Route::post('update/{id}', 'API\UserController@update');
-    Route::post('update/password', 'API\UserController@change_password');
     Route::get('logout', 'API\UserController@logout');
     Route::get('delete/user/{id}', 'API\UserController@delete');
     Route::get('delete/photo/user/{id}', 'API\UserController@remove_photo');
     Route::get('restore/user/{id}', 'API\UserController@restore');
+    Route::post('update/password', 'API\UserController@change_password');
     Route::post('forgot/password', 'API\UserController@forgot_password');
+    Route::post('verify/verification-code', 'API\UserController@verifyVerificationCode');
     Route::post('set/new-password', 'API\UserController@setNewPasswordAfterUserVerification');
     Route::get('users', 'API\UserController@index');
 
