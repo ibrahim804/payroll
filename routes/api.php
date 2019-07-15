@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use DB;
+// use DB;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,9 +26,9 @@ Route::middleware('cors')->group(function(){
         ];
     });
 
-    Route::get('database/{db}', function($db){
-        return DB::select("select * from $db");
-    });
+    // Route::get('database/{db}', function($db){
+    //     return DB::select("select * from $db");
+    // });
 
     Route::post('login', 'API\UserController@login');
     Route::post('register', 'API\UserController@register');
