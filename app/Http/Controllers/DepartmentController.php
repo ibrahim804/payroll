@@ -64,6 +64,8 @@ class DepartmentController extends Controller
 
     public function designations($id)
     {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view any Department\'s designations');
+
         $designations = Department::findOrFail($id)->designations;
 
         return
