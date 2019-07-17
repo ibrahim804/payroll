@@ -54,8 +54,6 @@ class DesignationController extends Controller
 
     public function show($id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view specific Designation');
-
         $designation_name = Designation::findOrFail($id)->designation;
 
         return
@@ -126,6 +124,8 @@ class DesignationController extends Controller
 
     public function trashedIndex()
     {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view trashed Designations');
+
         $designations = Designation::onlyTrashed()->get();
 
         return
