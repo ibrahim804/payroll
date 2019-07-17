@@ -13,11 +13,13 @@ class FileController extends Controller
 
     public function __construct()
     {
-        // $this->middleware('auth:api');
+        $this->middleware('auth:api');
     }
 
     public function create_user(Request $request)
     {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to register user through file uploading');
+
         $validator = request()->validate(['file' => 'required|file']); // required|file|max:5120, example of multiple mimes:csv,txt
         $file = $request->file('file');
 
@@ -89,18 +91,17 @@ class FileController extends Controller
         return $this->getErrorMessage('File can\'t be open.');
     }
 
-    public function setProfilePicture(Request $request, $id)
+    public function setProfilePicture(Request $request)
     {
-        $user = User::findOrFail($id);
         $validate_attributes = request()->validate(['image' => 'required|image|max:2048']); // can't greater than 2 mb
         $myObject = new MyErrorObject;
 
         $image = $request->file('image');
-        $image_name = $id.'.'.bin2hex(random_bytes(8)).'.'.$image->getClientOriginalExtension();
+        $image_name = auth()->id().'.'.bin2hex(random_bytes(8)).'.'.$image->getClientOriginalExtension();
         $image->move(public_path($myObject->profile_pictures), $image_name);
 
         $image_path = $myObject->profile_pictures.'/'.$image_name;
-        $user->update(['photo_path' => $image_path]);
+        auth()->user()->update(['photo_path' => $image_path]);
 
         return
         [
