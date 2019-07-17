@@ -120,7 +120,7 @@ Route::middleware('cors')->group(function(){
 
 
     Route::post('file-upload/create/user', 'FileController@create_user');                            // Need to be implemented Second
-    Route::post('photo-upload/user/profile/{id}', 'FileController@setProfilePicture');
+    Route::post('upload/user/profile-picture', 'FileController@setProfilePicture');
 
 });
 
