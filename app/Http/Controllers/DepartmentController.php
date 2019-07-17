@@ -153,6 +153,8 @@ class DepartmentController extends Controller
 
     public function trashedIndex()
     {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view deleted Departments');
+
         $departments = Department::onlyTrashed()->get();
 
         return
