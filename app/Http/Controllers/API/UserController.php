@@ -176,7 +176,6 @@ class UserController extends Controller
                 'designation_id' => 'string',
                 'department_id' => 'string',
                 'salary_id' => 'string',
-                'working_day_id' => 'string',
                 'joining_date' => 'date',
                 'status' => 'min:1|max:1',
             ]);
