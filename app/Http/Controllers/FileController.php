@@ -63,6 +63,8 @@ class FileController extends Controller
                         $myCustomErrors[] = new MyErrorObject;
                         $myCustomErrors[$error_index]->id = $row_count;
                         $myCustomErrors[$error_index]->error = $validator->errors();
+                        $myCustomErrors[$error_index]->profile_pictures = NULL;
+                        $myCustomErrors[$error_index]->trashed_pictures = NULL;
                         $error_index++;
                     }
 
