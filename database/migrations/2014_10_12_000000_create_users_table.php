@@ -38,7 +38,6 @@ class CreateUsersTable extends Migration
             $table->integer('working_day_id')->nullable();
             $table->date('joining_date');
             $table->integer('verification_code')->nullable();
-            $table->boolean('status')->default(1);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
