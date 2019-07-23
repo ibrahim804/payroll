@@ -177,7 +177,6 @@ class UserController extends Controller
                 'department_id' => 'string',
                 'salary_id' => 'string',
                 'joining_date' => 'date',
-                'status' => 'min:1|max:1',
             ]);
 
             $user_to_be_updated->update($extra_attributes);
