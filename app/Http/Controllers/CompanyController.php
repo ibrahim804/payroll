@@ -141,7 +141,6 @@ class CompanyController extends Controller
             'phone' => 'string',
             'mobile' => 'string',
             'website' => 'string',
-            'working_day_id' => ($operation == 'store') ? 'required|string' : 'string',
         ]);
     }
 }
