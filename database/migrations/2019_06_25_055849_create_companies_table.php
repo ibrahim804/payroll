@@ -22,7 +22,7 @@ class CreateCompaniesTable extends Migration
             $table->string('phone')->nullable();
             $table->string('mobile')->nullable();
             $table->string('website')->nullable();
-            $table->integer('working_day_id');
+            $table->integer('working_day_id')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
