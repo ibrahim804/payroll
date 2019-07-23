@@ -53,7 +53,6 @@ class User extends Authenticatable
         'working_day_id',
         'joining_date',
         'verification_code',
-        'status',
     ];
 
     /**
