@@ -14,6 +14,7 @@ class FileController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
+        // $this->middleware('auth:api')->except(['create_user']);
     }
 
     public function create_user(Request $request)
@@ -51,7 +52,11 @@ class FileController extends Controller
         {
             while (($row = fgetcsv($handle, 1000, $delimiter)) !== false)
             {
-                if (!$header) $header = $row;
+                if (!$header)
+                {
+                    // $header = $row;
+                    $header = array('full_name', 'email', 'password', 'gender', 'phone', 'joining_date');
+                }
 
                 else
                 {
