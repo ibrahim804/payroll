@@ -29,7 +29,7 @@ class LeaveCategoryController extends Controller
         ];
     }
 
-    public function store(Request $request)
+    public function store(Request $request) // Unpaid leave has no leave count
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave category');
 
