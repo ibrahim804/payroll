@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 
 Route::middleware('cors')->group(function(){
 
-    Route::get('/', function(){
+    Route::get('/', function(){                         // A sample get request for testing
         return
         [
             [
@@ -99,7 +99,7 @@ Route::middleware('cors')->group(function(){
     Route::get('leave-counts', 'LeaveCountController@index');
     Route::post('leave-count', 'LeaveCountController@store');
     Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
-    Route::post('leave-count/{id}', 'LeaveCountController@update');                     // AUTO UPDATE OF USER'S LEAVE LEFT SHOULD BE IMPLEMENTED LATER
+    Route::post('leave-count/{id}', 'LeaveCountController@update');
 
 
     Route::get('leaves', 'LeaveController@index');
@@ -115,11 +115,10 @@ Route::middleware('cors')->group(function(){
     Route::post('working-day/{user_id}', 'WorkingDayController@update');
 
 
-    //
-    Route::post('payment', 'PaymentController@store');                                  // Need to implement First
+    // Routes for payment . . .
 
 
-    Route::post('file-upload/create/user', 'FileController@create_user');                            // Need to be implemented Second
+    Route::post('file-upload/create/user', 'FileController@create_user');
     Route::post('upload/user/profile-picture', 'FileController@setProfilePicture');
 
 });
