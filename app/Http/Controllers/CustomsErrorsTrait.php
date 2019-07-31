@@ -5,7 +5,6 @@ use Validator;
 
 trait CustomsErrorsTrait
 {
-
 	public function getErrorMessage($message)
     {
         return
@@ -16,6 +15,11 @@ trait CustomsErrorsTrait
             ]
         ];
     }
+
+	/*
+		Input: request array
+		returns values of mentioned parameter after being validated by Laravel built in Validator
+	*/
 
 	public function validateUser($inputs)
 	{
