@@ -30,7 +30,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $fillable = [
+    protected $fillable = [                                         // fillable fields can be stored manually
         'employee_id',
         'full_name',
         'user_name',
@@ -60,7 +60,7 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = [
+    protected $hidden = [                                           // never show these fields in json response
         'created_at', 'updated_at', 'deleted_at',
         'password', 'remember_token',
     ];
@@ -74,47 +74,47 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function isAdmin($user_id)
+    public function isAdmin($user_id)                               // this method returns whether the user is admin or not
     {
         return ($user_id == $this->admin_id) ? 'true' : 'false';
     }
 
-    public function attendances()
+    public function attendances()                                   // returns all attendances of a user. one(user) to many(attendances) relationship.
     {
         return $this->hasMany(Attendance::class);
     }
 
-    public function department()
+    public function department()                                    // returns department of a user. many(users) to one(department) relationship.
     {
         return $this->belongsTo(Department::class);
     }
 
-    public function designation()
+    public function designation()                                   // returns designation of a user. many(users) to one(designation) relationship.
     {
         return $this->belongsTo(Designation::class);
     }
 
-    public function leaves()
+    public function leaves()                                        // returns all leaves of a user. one(user) to many(leaves) relationship.
     {
         return $this->hasMany(Leave::class);
     }
 
-    public function salary()
+    public function salary()                                        // returns salary of a user. one(user) to one(salary) relationship.
     {
         return $this->hasOne(Salary::class);
     }
 
-    public function working_day()
+    public function working_day()                                   // returns working_day of a user. many(users) to one(working_day) relationship.
     {
         return $this->belongsTo(Working_day::class);
     }
 
-    public function leave_counts()
+    public function leave_counts()                                  // returns all leave_counts of a user. one(user) to many(leave_counts) relationship.
     {
         return $this->hasMany(LeaveCount::class);
     }
 
-    public function company()
+    public function company()                                       // returns company of a user. many(user) to one(company) relationship.
     {
         return $this->belongsTo(Company::class);
     }
