@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('full_name');
             $table->string('user_name')->unique()->nullable();
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->timestamp('email_verified_at')->nullable();     // no need in this application
             $table->string('password');
             $table->date('date_of_birth')->nullable();
             $table->string('fathers_name')->nullable();
@@ -37,7 +37,7 @@ class CreateUsersTable extends Migration
             $table->integer('salary_id')->nullable();
             $table->integer('working_day_id')->nullable();
             $table->date('joining_date');
-            $table->integer('verification_code')->nullable();
+            $table->integer('verification_code')->nullable();       // code is sent to user's email when password is forgot
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
