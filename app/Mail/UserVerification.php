@@ -23,7 +23,7 @@ class UserVerification extends Mailable
 
     public function build()                         // auto call. Mail is sent from here
     {
-        return $this->from('mirza@justanx.com', $this->company_name)
+        return $this->from(config('mail.username'), $this->company_name)
                     ->subject('Request for password reset')
                     ->markdown('mail.forgot-password');     // forgot-password is mail template under mail Directory.
     }
