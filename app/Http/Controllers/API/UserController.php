@@ -191,27 +191,25 @@ class UserController extends Controller
 
         if($user->isAdmin($user->id) == 'false' and $user->id != $id) return $this->getErrorMessage('Permission denied');
 
-        $validate_attributes = request()->validate([
-            'full_name' => 'string|min:3|max:25',
-            'user_name' => 'string|min:3|max:25|unique:users',
-            'email' => 'string|email|max:255|unique:users',
-            'date_of_birth' => 'date',
-            'fathers_name' => 'string|min:3|max:25',
-            'gender' => 'string',
-            'marital_status' => 'string',
-            'nationality' => 'string',
-            'permanent_address' => 'string|min:10|max:300',
-            'present_address' => 'string|min:10|max:300',
-            'passport_number' => 'string',
-            'phone' => 'string',
-        ]);
+        if($user->id == $id)
+        {
+            $validate_attributes = request()->validate([
+                'full_name' => 'string|min:3|max:25',
+                'user_name' => 'string|min:3|max:25|unique:users',
+                'email' => 'string|email|max:255|unique:users',
+                'date_of_birth' => 'date',
+                'fathers_name' => 'string|min:3|max:25',
+                'gender' => 'string',
+                'marital_status' => 'string',
+                'nationality' => 'string',
+                'permanent_address' => 'string|min:10|max:300',
+                'present_address' => 'string|min:10|max:300',
+                'passport_number' => 'string',
+                'phone' => 'string',
+            ]);
 
-        $user_to_be_updated = User::findOrFail($id);                // finding user we're going to update
-        $user_to_be_updated->update($validate_attributes);          // update with required params
-
-        /*
-            User can't update the following infos, but admin can.
-        */
+            $user->update($validate_attributes);
+        }
 
         if($user->isAdmin($user->id) == 'true')
         {
@@ -224,6 +222,7 @@ class UserController extends Controller
                 'joining_date' => 'date',
             ]);
 
+            $user_to_be_updated = User::findOrFail($id);
             $user_to_be_updated->update($extra_attributes);
         }
 
