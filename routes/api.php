@@ -16,19 +16,35 @@ use Illuminate\Http\Request;
 
 Route::middleware('cors')->group(function(){
 
-    Route::get('/', function(){                         // A sample get request for testing
+    Route::get('/', function(){
         return
         [
             [
-                'status' => 'OK',
+                'status' => 'OK, simple get request',
                 'message' => config('app.name'),
             ]
         ];
     });
 
-    // Route::get('database/{db}', function($db){
-    //     return DB::select("select * from $db");
-    // });
+    Route::post('/test_post', function(){
+        return
+        [
+            [
+                'status' => 'OK, simple post request',
+                'value' => request('value'),
+            ]
+        ];
+    });
+
+    Route::get('database/{db}', function($db){
+        return
+        [
+            [
+                'status' => 'OK, here are all '.$db,
+                $db => DB::select("select * from $db"),
+            ]
+        ];
+    });
 
     Route::post('login', 'API\UserController@login');
     Route::post('register', 'API\UserController@register');
