@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('cors')->group(function(){
+Route::group(['middleware' => 'cors'] ,function(){
 
     Route::get('/', function(){
         return
