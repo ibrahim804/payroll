@@ -98,7 +98,7 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $user_id) return $this->getErrorMessage('You don\'t have permission to view leave');
 
-        $leaves = User::findOrFail($user_id)->leaves;
+        $leaves = User::find($user_id)->leaves;
 
         return
         [
@@ -111,7 +111,7 @@ class LeaveController extends Controller
 
     public function update(Request $request, $id)
     {
-        $leave = Leave::findOrFail($id);
+        $leave = Leave::find($id);
 
         if($leave->user_id != auth()->id()) return $this->getErrorMessage('You can\'t update others leave information.');
         if($leave->approval_status != $this->decision[2]) return $this->getErrorMessage('Leave already responsed, you can\'t update information.');
@@ -141,7 +141,7 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
 
-        $leave = Leave::findOrFail($id);
+        $leave = Leave::find($id);
         $value = request()->validate(['decision' => 'required|string']);
         $decision_str = $this->decision[(int) $value['decision']];
 
@@ -169,7 +169,7 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
 
-        $leave = Leave::findOrFail($id);
+        $leave = Leave::find($id);
 
         if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no cancel option');
 
