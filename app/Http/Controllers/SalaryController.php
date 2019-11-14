@@ -105,15 +105,15 @@ class SalaryController extends Controller
         return request()->validate ([
             'user_id' => 'required|string|unique:salaries',
             'basic_salary' => 'required|string',
-            'house_rent_allowance' => 'required|string',
-            'medical_allowance' => 'required|string',
-            'special_allowance' => 'required|string',
-            'fuel_allowance' => 'required|string',
-            'phone_bill_allowance' => 'required|string',
-            'other_allowance' => 'required|string',
-            'tax_deduction' => 'required|string',
-            'provident_fund' => 'required|string',
-            'other_deduction' => 'required|string',
+            'house_rent_allowance' => 'string',
+            'medical_allowance' => 'string',
+            'special_allowance' => 'string',
+            'fuel_allowance' => 'string',
+            'phone_bill_allowance' => 'string',
+            'other_allowance' => 'string',
+            'tax_deduction' => 'string',
+            'provident_fund' => 'string',
+            'other_deduction' => 'string',
         ]);
     }
 
