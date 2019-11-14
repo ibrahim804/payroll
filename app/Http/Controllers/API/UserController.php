@@ -316,14 +316,16 @@ class UserController extends Controller
 
     public function forgot_password(Request $request)
     {
-        $validate_attributes = request()->validate(['email' => 'required|string']);
-        $user = User::where('email', $validate_attributes['email'])->first();
+        $email = $request->input('email');
+        if(!$email) return $this->getErrorMessage('Please, enter your email');
+
+        $user = User::where('email', $email)->first();
 
         if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
 
         $verification_code = mt_rand(100000, 999999);           // generate a 6 digit code
 
-        Mail::to($user->email)->send(
+        Mail::to($email)->send(
             new UserVerification($verification_code, $user->full_name, ($user->company) ? $user->company->name : '')
         );
 
@@ -376,7 +378,7 @@ class UserController extends Controller
         $current_time = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now());
         $ageOfVerificationCode = $user_updated_at->diffInSeconds($current_time);                // get the age of verification code
 
-        if($ageOfVerificationCode >= 60) $user->update(['verification_code' => NULL]);          // verification code get expired after one minute
+        if($ageOfVerificationCode >= 120) $user->update(['verification_code' => NULL]);          // verification code get expired after one minute
 
         if(! $user->verification_code) return $this->getErrorMessage('Either you didn\'t send forgot password request, or your code expired');
         if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('Verification code isn\'t matched');
