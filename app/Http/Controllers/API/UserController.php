@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\User;
+use App\Designation;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
@@ -170,7 +171,7 @@ class UserController extends Controller
             return $this->getErrorMessage('You don\'t have permission to view any user info');
         }
 
-        $user = User::findOrFail($id);              // if not found, returns an exception
+        $user = User::find($id);              // if not found, returns an exception
 
         return
         [
@@ -222,7 +223,15 @@ class UserController extends Controller
                 'joining_date' => 'date',
             ]);
 
-            $user_to_be_updated = User::findOrFail($id);
+            $user_to_be_updated = User::find($id);
+
+            if($extra_attributes['designation_id'])
+            {
+                $designation = Designation::find($extra_attributes['designation_id']);
+                if($designation) $extra_attributes['department_id'] = $designation->department_id;
+                else $extra_attributes['designation_id'] = NUll;
+            }
+
             $user_to_be_updated->update($extra_attributes);
         }
 
@@ -436,7 +445,7 @@ class UserController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
 
-        User::findOrFail($id)->delete();
+        User::find($id)->delete();
 
         return
         [
@@ -474,7 +483,7 @@ class UserController extends Controller
             return $this->getErrorMessage('Permission denied.');
         }
 
-        $user = User::findOrFail($id);
+        $user = User::find($id);
 
         if(!$user->photo_path) return $this->getErrorMessage('No photo has been found in this path.');      // If photo exists, path must have a value
 
