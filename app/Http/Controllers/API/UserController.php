@@ -354,12 +354,15 @@ class UserController extends Controller
 
     public function verifyVerificationCode(Request $request)
     {
-        $validate_attributes = request()->validate([
-            'email' => 'required|string',
-            'verification_code' => 'required|string',
-        ]);
+        $email = $request->input('email');
+        $verification_code = $request->input('verification_code');
 
-        $user = User::where('email', $validate_attributes['email'])->first();
+        if(!$email or !$verification_code)
+        {
+          return $this->getErrorMessage('Email and Verification code must be given');
+        }
+
+        $user = User::where('email', $email)->first();
 
         if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
 
@@ -381,7 +384,7 @@ class UserController extends Controller
         if($ageOfVerificationCode >= 120) $user->update(['verification_code' => NULL]);          // verification code get expired after one minute
 
         if(! $user->verification_code) return $this->getErrorMessage('Either you didn\'t send forgot password request, or your code expired');
-        if($validate_attributes['verification_code'] != $user->verification_code) return $this->getErrorMessage('Verification code isn\'t matched');
+        if($verification_code != $user->verification_code) return $this->getErrorMessage('Verification code isn\'t matched');
 
         $user->update(['verification_code' => 1]);                                              // OK, user is not verified and allowed to set new password
 
