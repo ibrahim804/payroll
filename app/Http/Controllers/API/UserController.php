@@ -105,6 +105,7 @@ class UserController extends Controller
                     'full_name' => $user->full_name,
                     'email' => $user->email,
                     'token' => $success['token'],
+                    'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
                 ]
             ];
         }
@@ -156,6 +157,7 @@ class UserController extends Controller
                 'full_name' => $user->full_name,
                 'email' => $user->email,
                 'token' => $success['token'],
+                'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
             ]
         ];
     }
