@@ -106,6 +106,7 @@ class UserController extends Controller
                     'email' => $user->email,
                     'token' => $success['token'],
                     'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
+                    'id' => $user->id,
                 ]
             ];
         }
@@ -158,6 +159,7 @@ class UserController extends Controller
                 'email' => $user->email,
                 'token' => $success['token'],
                 'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
+                'id' => $user->id,
             ]
         ];
     }
@@ -186,11 +188,24 @@ class UserController extends Controller
 
     public function get_me()
     {
+        $user = auth()->user();
+
         return
         [
             [
                 'status' => 'OK',
-                'description' => auth()->user(),
+                'description' => [
+                    'company_name' => $user->company->name,
+                    'department_name' => $user->department->department_name,
+                    'designation' => $user->designation->designation,
+                    'email' => $user->email,
+                    'full_name' => $user->full_name,
+                    'id' => $user->id,
+                    'joining_date' => $user->joining_date,
+                    'phone' => $user->phone,
+                    'present_address' => ($user->present_address)? $user->present_address: 'N/A',
+                    'net_salary' => ($user->salary)? $this->calculateNetSalary($user->salary): 'N/A',
+                ]
             ]
         ];
     }
