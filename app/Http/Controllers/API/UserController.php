@@ -184,6 +184,17 @@ class UserController extends Controller
         ];
     }
 
+    public function get_me()
+    {
+        return
+        [
+            [
+                'status' => 'OK',
+                'description' => auth()->user(),
+            ]
+        ];
+    }
+
     /*
         Specific user can update her/his info. But admin can anyone's.
     */
