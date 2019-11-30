@@ -119,6 +119,20 @@ class FileController extends Controller
         ];
     }
 
+    public function getProfilePicture()
+    {
+        $image_path = public_path(auth()->user()->photo_path);
+        $base64String = base64_encode(file_get_contents($image_path));
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'base64' => $base64String,
+            ]
+        ];
+    }
+
 }
 
 
