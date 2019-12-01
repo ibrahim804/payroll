@@ -18,6 +18,7 @@ use App\Salary;
 use App\Working_day;
 use App\LeaveCount;
 use App\Company;
+use App\ProvidentFund;
 
 class User extends Authenticatable
 {
@@ -117,6 +118,11 @@ class User extends Authenticatable
     public function company()                                       // returns company of a user. many(user) to one(company) relationship.
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function provident_funds()
+    {
+        return $this->hasMany(ProvidentFund::class);
     }
 }
 
