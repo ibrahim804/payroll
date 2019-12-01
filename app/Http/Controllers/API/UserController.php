@@ -51,15 +51,15 @@ class UserController extends Controller
 
             $infos[$i] = new User;
 
-            $infos[$i]->id = $user->id;
+            // $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
-            $infos[$i]->salary = ($user->salary) ? $this->calculateNetSalary($user->salary) : 'N/A';
+            // $infos[$i]->salary = ($user->salary) ? $this->calculateNetSalary($user->salary) : 'N/A';
             $infos[$i]->company = ($user->company) ? $user->company->name : 'N/A';
             $infos[$i]->department = ($user->department) ? $user->department->department_name : 'N/A';
             $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
             $infos[$i]->casual_leave = $user->leave_counts->where('leave_category_id', 1)->first()->leave_left;
             $infos[$i]->sick_leave = $user->leave_counts->where('leave_category_id', 2)->first()->leave_left;
-            $infos[$i]->photo_path = url($user->photo_path);
+            // $infos[$i]->photo_path = url($user->photo_path);
 
             $i++;
         }
