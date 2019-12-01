@@ -210,6 +210,22 @@ class UserController extends Controller
         ];
     }
 
+    public function exists_email()
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+
+        $validate_attributes = request()->validate(['email' => 'required|string']);
+        $u_count = User::where('email', $validate_attributes['email'])->count();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'exists' => ($u_count)? 'yes': 'no',
+            ]
+        ];
+    }
+
     /*
         Specific user can update her/his info. But admin can anyone's.
     */

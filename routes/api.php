@@ -48,6 +48,7 @@ Route::group(['middleware' => 'cors'] ,function(){
 
     Route::post('login', 'API\UserController@login');
     Route::post('register', 'API\UserController@register');
+    Route::post('exists/email', 'API\UserController@exists_email');
     Route::get('user/{id}', 'API\UserController@user');
     Route::get('user-me',   'API\UserController@get_me');
     Route::post('update/{id}', 'API\UserController@update');
