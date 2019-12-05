@@ -51,7 +51,7 @@ class UserController extends Controller
 
             $infos[$i] = new User;
 
-            // $infos[$i]->id = $user->id;
+            $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
             // $infos[$i]->salary = ($user->salary) ? $this->calculateNetSalary($user->salary) : 'N/A';
             $infos[$i]->company = ($user->company) ? $user->company->name : 'N/A';
@@ -195,16 +195,16 @@ class UserController extends Controller
             [
                 'status' => 'OK',
                 'description' => [
-                    'company_name' => $user->company->name,
-                    'department_name' => $user->department->department_name,
-                    'designation' => $user->designation->designation,
+                    'company_name' => ($user->company) ? $user->company->name : 'N/A',
+                    'department_name' => ($user->department) ? $user->department->department_name : 'N/A',
+                    'designation' => ($user->designation) ? $user->designation->designation : 'N/A',
                     'email' => $user->email,
                     'full_name' => $user->full_name,
                     'id' => $user->id,
                     'joining_date' => $user->joining_date,
                     'phone' => $user->phone,
                     'present_address' => ($user->present_address)? $user->present_address: 'N/A',
-                    'net_salary' => ($user->salary)? $this->calculateNetSalary($user->salary): 'N/A',
+                    'net_salary' => ($user->salary) ? $this->calculateNetSalary($user->salary): 'N/A',
                 ]
             ]
         ];
