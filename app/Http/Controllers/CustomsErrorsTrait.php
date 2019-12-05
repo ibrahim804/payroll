@@ -41,6 +41,7 @@ trait CustomsErrorsTrait
 			'company_id' => 'nullable|string',
             'designation_id' => 'nullable|string',
             'department_id' => 'nullable|string',
+			'working_day_id' => 'nullable|string',
             'joining_date' => 'required|string',
         ]);
 	}
