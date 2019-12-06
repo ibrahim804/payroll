@@ -105,15 +105,15 @@ class SalaryController extends Controller
         return request()->validate ([
             'user_id' => 'required|string|unique:salaries',
             'basic_salary' => 'required|string',
-            'house_rent_allowance' => 'string',
-            'medical_allowance' => 'string',
-            'special_allowance' => 'string',
-            'fuel_allowance' => 'string',
-            'phone_bill_allowance' => 'string',
-            'other_allowance' => 'string',
-            'tax_deduction' => 'string',
-            'provident_fund' => 'string',
-            'other_deduction' => 'string',
+            'house_rent_allowance' => 'nullable|string',
+            'medical_allowance' => 'nullable|string',
+            'special_allowance' => 'nullable|string',
+            'fuel_allowance' => 'nullable|string',
+            'phone_bill_allowance' => 'nullable|string',
+            'other_allowance' => 'nullable|string',
+            'tax_deduction' => 'nullable|string',
+            'provident_fund' => 'nullable|string',
+            'other_deduction' => 'nullable|string',
         ]);
     }
 
@@ -121,15 +121,15 @@ class SalaryController extends Controller
     {
         return Validator::make($request->all(), [
             'basic_salary' => 'string',
-            'house_rent_allowance' => 'string',
-            'medical_allowance' => 'string',
-            'special_allowance' => 'string',
-            'fuel_allowance' => 'string',
-            'phone_bill_allowance' => 'string',
-            'other_allowance' => 'string',
-            'tax_deduction' => 'string',
-            'provident_fund' => 'string',
-            'other_deduction' => 'string',
+            'house_rent_allowance' => 'nullable|string',
+            'medical_allowance' => 'nullable|string',
+            'special_allowance' => 'nullable|string',
+            'fuel_allowance' => 'nullable|string',
+            'phone_bill_allowance' => 'nullable|string',
+            'other_allowance' => 'nullable|string',
+            'tax_deduction' => 'nullable|string',
+            'provident_fund' => 'nullable|string',
+            'other_deduction' => 'nullable|string',
         ]);
     }
 
