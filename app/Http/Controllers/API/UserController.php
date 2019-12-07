@@ -226,6 +226,26 @@ class UserController extends Controller
         ];
     }
 
+    public function user_dept_desg($id)
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+
+        $user = User::find($id);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'full_name' => $user->full_name,
+                'department_id' => $user->department_id,
+                'department_name' => $user->department->department_name,
+                'designation_id' => $user->designation_id,
+                'designation' => $user->designation->designation,
+            ]
+        ];
+
+    }
+
     /*
         Specific user can update her/his info. But admin can anyone's.
     */

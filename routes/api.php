@@ -51,6 +51,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::post('exists/email', 'API\UserController@exists_email');
     Route::get('user/{id}', 'API\UserController@user');
     Route::get('user-me',   'API\UserController@get_me');
+    Route::get('user-dept-desg/{id}', 'API\UserController@user_dept_desg');
     Route::post('update/{id}', 'API\UserController@update');
     Route::get('logout', 'API\UserController@logout');
     Route::get('delete/user/{id}', 'API\UserController@delete');
