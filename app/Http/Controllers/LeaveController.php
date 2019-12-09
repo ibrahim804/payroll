@@ -98,7 +98,17 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $user_id) return $this->getErrorMessage('You don\'t have permission to view leave');
 
-        $leaves = User::find($user_id)->leaves;
+        $user = User::find($user_id);
+        $leaves = $user->leaves;
+
+        for($i = 0; $i < sizeof($leaves); $i++){
+            $leaves[$i]->requested_duration = $this->getActualLeavesBetweenTwoDates(
+                $user->working_day, $leaves[$i]->start_date, $leaves[$i]->end_date
+            );
+            $leaves[$i]->leave_available = $user->leave_counts->where(
+                'leave_category_id', $leaves[$i]->leave_category_id
+            )->first()->leave_left;
+        }
 
         return
         [
