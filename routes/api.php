@@ -124,6 +124,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('leaves', 'LeaveController@index');
     Route::post('leave', 'LeaveController@store');
     Route::get('leaves/{user_id}', 'LeaveController@show');
+    Route::get('leave/available-duration/{leave_category_id}/{start_date}/{end_date}', 'LeaveController@showCountsDuration');
     Route::post('leave/{id}', 'LeaveController@update');
     Route::post('leave/approve/{id}', 'LeaveController@updateApprovalStatus');
     Route::get('leave/cancel/{id}', 'LeaveController@cancelLeave');

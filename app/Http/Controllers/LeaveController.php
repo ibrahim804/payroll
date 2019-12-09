@@ -109,6 +109,22 @@ class LeaveController extends Controller
         ];
     }
 
+    public function showCountsDuration($leave_category_id, $start_date, $end_date)
+    {
+        $user = auth()->user();
+        $leave_count = $user->leave_counts->where('leave_category_id', $leave_category_id)->first();
+        $days_diff = $this->getActualLeavesBetweenTwoDates($user->working_day, $start_date, $end_date);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_left' => $leave_count->leave_left,
+                'duration' => $days_diff,
+            ]
+        ];
+    }
+
     public function update(Request $request, $id)
     {
         $leave = Leave::find($id);
