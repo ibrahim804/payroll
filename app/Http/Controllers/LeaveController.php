@@ -104,7 +104,7 @@ class LeaveController extends Controller
         [
             [
                 'status' => 'OK',
-                'leave' => $leaves,
+                'leaves' => $leaves,
             ]
         ];
     }
