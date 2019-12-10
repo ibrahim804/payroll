@@ -19,6 +19,8 @@ use App\Working_day;
 use App\LeaveCount;
 use App\Company;
 use App\ProvidentFund;
+use App\LoanHistory;
+use App\LoanRequest;
 
 class User extends Authenticatable
 {
@@ -123,6 +125,16 @@ class User extends Authenticatable
     public function provident_funds()
     {
         return $this->hasMany(ProvidentFund::class);
+    }
+
+    public function loan_histories()
+    {
+        return $this->hasMany(LoanHistory::class);
+    }
+
+    public function loan_requests()
+    {
+        return $this->hasMany(LoanRequest::class);
     }
 }
 
