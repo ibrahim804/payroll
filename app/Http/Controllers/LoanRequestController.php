@@ -80,22 +80,22 @@ class LoanRequestController extends Controller
         ];
     }
 
-    public function show($user_id)
-    {
-        if(auth()->id() != $user_id) return $this->getErrorMessage('Can\'t show others Loan request');
-
-        $loan_request = LoanRequest::where('user_id', $user_id)->latest()->first();
-
-        if(! $loan_request) return $this->getErrorMessage('You don\'t have any loan request yet');
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'loan_request' => $loan_request,
-            ]
-        ];
-    }
+    // public function show($user_id) // no need
+    // {
+    //     if(auth()->id() != $user_id) return $this->getErrorMessage('Can\'t show others Loan request');
+    //
+    //     $loan_request = LoanRequest::where('user_id', $user_id)->latest()->first();
+    //
+    //     if(! $loan_request) return $this->getErrorMessage('You don\'t have any loan request yet');
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'loan_request' => $loan_request,
+    //         ]
+    //     ];
+    // }
 
     public function update($id)
     {

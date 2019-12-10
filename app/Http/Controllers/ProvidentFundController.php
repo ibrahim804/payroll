@@ -85,11 +85,9 @@ class ProvidentFundController extends Controller
         ];
     }
 
-    public function show($user_id)
+    public function show()
     {
-        if(auth()->id() != $user_id) return $this->getErrorMessage('Employee can check only his provident_fund');
-
-        $provident_fund = ProvidentFund::where('user_id', $user_id)->latest()->first();
+        $provident_fund = ProvidentFund::where('user_id', auth()->id())->latest()->first();
 
         return
         [

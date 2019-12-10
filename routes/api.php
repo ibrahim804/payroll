@@ -138,16 +138,16 @@ Route::group(['middleware' => 'cors'] ,function(){
     // Routes for payment . . .
 
     Route::post('provident-fund', 'ProvidentFundController@store');
-    Route::get('provident-fund/{user_id}', 'ProvidentFundController@show');
+    Route::get('provident-fund', 'ProvidentFundController@show');
 
 
     Route::get('loan-requests', 'LoanRequestController@index');
     Route::post('loan-request', 'LoanRequestController@store');
-    Route::get('loan-request/{user_id}', 'LoanRequestController@show');
     Route::post('loan-request/{id}', 'LoanRequestController@update');
 
 
-    Route::post('loan-history', 'LoanHistoryController@store');
+    Route::post('loan-history', 'LoanHistoryController@store');     // pay back loan, user
+    Route::get('loan-histories', 'LoanHistoryController@index');    // all transaction, user
 
 
     Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv

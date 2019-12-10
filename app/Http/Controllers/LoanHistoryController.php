@@ -6,12 +6,11 @@ use App\LoanHistory;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\MyErrorObject;
+use App\User;
 
 class LoanHistoryController extends Controller
 {
     use CustomsErrorsTrait;
-    // if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('permission Denied');
-    // if(auth()->id() != $user_id) return $this->getErrorMessage('Can\'t show others Loan request');
     private $myObject;
 
     public function __construct()
@@ -22,7 +21,15 @@ class LoanHistoryController extends Controller
 
     public function index()
     {
-        //
+        $loan_histories = LoanHistory::where('user_id', auth()->id())->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'loan_histories' => $loan_histories->sortByDesc('created_at'),
+            ]
+        ];
     }
 
     public function store()
@@ -71,16 +78,6 @@ class LoanHistoryController extends Controller
                 'loan_history' => $loan_history,
             ]
         ];
-    }
-
-    public function show()
-    {
-        //
-    }
-
-    public function update()
-    {
-        //
     }
 
     private function validateLoanHisrory()
