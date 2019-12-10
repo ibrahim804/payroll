@@ -21,10 +21,26 @@ class ProvidentFundController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    public function index()
-    {
-        //
-    }
+    // public function index()
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+    //
+    //     $all_pf = ProvidentFund::all();
+    //     $provident_funds = [];
+    //
+    //     for($index = sizeof($all_pf)-1; $index >= 0; $index--)
+    //     {
+    //         // code
+    //     }
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'provident_funds' => $provident_funds,
+    //         ]
+    //     ];
+    // }
 
     public function store()
     {
@@ -69,9 +85,19 @@ class ProvidentFundController extends Controller
         ];
     }
 
-    public function show()
+    public function show($user_id)
     {
-        //
+        if(auth()->id() != $user_id) return $this->getErrorMessage('Employee can check only his provident_fund');
+
+        $provident_fund = ProvidentFund::where('user_id', $user_id)->latest()->first();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'provident_fund' => $provident_fund,
+            ]
+        ];
     }
 
     private function validateProvidentFund()
