@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\User;
 use Carbon\Carbon;
+use App\Leave;
 
 class PaymentController extends Controller
 {
@@ -26,11 +27,26 @@ class PaymentController extends Controller
             ['year', date("Y", strtotime('+6 hours'))],
         ])->pluck('user_id');
 
+        $leaves = Leave::where([
+            ['month', date("M", strtotime('+6 hours'))],
+            ['year', date("Y", strtotime('+6 hours'))],
+            ['approval_status', 'Accepted'],
+            ['unpaid_count', '>', 0],
+        ])->get();
+
+        $userCountMap = collect([]);
+
+        foreach ($leaves as $leave) {
+            if($userCountMap->has($leave->user_id)) $userCountMap[$leave->user_id] += (int)$leave->unpaid_count;
+            else $userCountMap[$leave->user_id] = (int)$leave->unpaid_count;
+        }
+
         return
         [
             [
                 'status' => 'OK',
                 'payments_user_id' => $payments_user_id,
+                'userCountMap' => $userCountMap,
             ]
         ];
     }
