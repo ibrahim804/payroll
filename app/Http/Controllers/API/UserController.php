@@ -205,6 +205,8 @@ class UserController extends Controller
                     'phone' => $user->phone,
                     'present_address' => ($user->present_address)? $user->present_address: 'N/A',
                     'net_salary' => ($user->salary) ? $this->calculateNetSalary($user->salary): 'N/A',
+                    'provident_fund' => ($user->provident_funds->count() > 0) ?
+                                        $user->provident_funds()->latest()->first()->closing_balance : 'N/A',
                 ]
             ]
         ];
