@@ -116,7 +116,6 @@ class SalaryController extends Controller
             'phone_bill_allowance' => 'nullable|string',
             'other_allowance' => 'nullable|string',
             'tax_deduction' => 'nullable|string',
-            'provident_fund' => 'nullable|string',
             'other_deduction' => 'nullable|string',
         ]);
     }
@@ -132,7 +131,6 @@ class SalaryController extends Controller
             'phone_bill_allowance' => 'nullable|string',
             'other_allowance' => 'nullable|string',
             'tax_deduction' => 'nullable|string',
-            'provident_fund' => 'nullable|string',
             'other_deduction' => 'nullable|string',
         ]);
     }
@@ -149,7 +147,6 @@ class SalaryController extends Controller
         if($request->filled('phone_bill_allowance')) $data['phone_bill_allowance'] = $request->input('phone_bill_allowance');
         if($request->filled('other_allowance')) $data['other_allowance'] = $request->input('other_allowance');
         if($request->filled('tax_deduction')) $data['tax_deduction'] = $request->input('tax_deduction');
-        if($request->filled('provident_fund')) $data['provident_fund'] = $request->input('provident_fund');
         if($request->filled('other_deduction')) $data['other_deduction'] = $request->input('other_deduction');
 
         return $data;
