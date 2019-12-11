@@ -10,9 +10,10 @@ class Payment extends Model
 
     protected $fillable = [
         'user_id',
-        'salary_id',
         'employee_monthly_cost',
         'payable_amount',
         'payment_date',
+        'month',
+        'year',
     ];
 }

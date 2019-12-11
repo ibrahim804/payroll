@@ -135,7 +135,8 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::post('working-day/{user_id}', 'WorkingDayController@update');
 
 
-    // Routes for payment . . .
+    Route::post('payment', 'PaymentController@store');
+
 
     Route::post('provident-fund', 'ProvidentFundController@store');
     Route::get('provident-fund', 'ProvidentFundController@show');

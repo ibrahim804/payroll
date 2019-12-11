@@ -16,10 +16,11 @@ class CreatePaymentsTable extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('user_id');
-            $table->integer('salary_id');
             $table->double('employee_monthly_cost');
             $table->double('payable_amount');
             $table->timestamp('payment_date');
+            $table->string('month');
+            $table->string('year');
             $table->timestamps();
         });
     }
