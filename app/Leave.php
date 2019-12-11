@@ -16,6 +16,7 @@ class Leave extends Model
         'leave_description',
         'application_date',
         'month',
+        'year',
         'start_date',
         'end_date',
         'unpaid_count',

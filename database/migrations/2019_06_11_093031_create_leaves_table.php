@@ -20,6 +20,7 @@ class CreateLeavesTable extends Migration
             $table->text('leave_description');
             $table->timestamp('application_date')->nullable();
             $table->string('month');
+            $table->string('year');
             $table->date('start_date');
             $table->date('end_date');
             $table->integer('unpaid_count')->nullable();
