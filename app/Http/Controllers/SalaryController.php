@@ -7,14 +7,17 @@ use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
+use App\MyErrorObject;
 
 class SalaryController extends Controller
 {
     use CustomsErrorsTrait;
+    private $myObject;
 
     public function __construct()
     {
         $this->middleware('auth:api'); //->except(['register', 'login']);
+        $this->myObject = new MyErrorObject;
     }
 
     public function index()
@@ -37,6 +40,7 @@ class SalaryController extends Controller
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Salary');
 
         $validate_attributes = $this->validateSalary();
+        $validate_attributes['provident_fund'] = (double)$validate_attributes['basic_salary'] * $this->myObject->deposit_rate;
         $salary = Salary::create($validate_attributes);
         User::findOrFail($validate_attributes['user_id'])->update(['salary_id' => $salary->id]);
         $calculated_amounts = $this->calculatePayableAmount($salary);
