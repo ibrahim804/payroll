@@ -80,7 +80,8 @@ class LeaveController extends Controller
         if(! $leave_count) return $this->getErrorMessage('This user has no leave left record with this leave category');
 
         $validate_attributes['user_id'] = auth()->id();
-        $validate_attributes['month'] = date("M", strtotime('+6 hours'));
+        $validate_attributes['month'] = (new DateTime($validate_attributes['start_date']))->format('M');
+        $validate_attributes['year'] = (new DateTime($validate_attributes['start_date']))->format('Y');
         $validate_attributes['application_date'] = date('Y-m-d H:i:s', strtotime('+6 hours'));
 
         $leave = Leave::create($validate_attributes);
@@ -147,6 +148,12 @@ class LeaveController extends Controller
         ]);
 
         if(!$this->validateDatesWhileUpdating($request, $leave)) return $this->getErrorMessage('start date can\'t be greater than end date');
+
+        if($request->filled('start_date'))
+        {
+            $validate_attributes['month'] = (new DateTime($validate_attributes['start_date']))->format('M');
+            $validate_attributes['year'] = (new DateTime($validate_attributes['start_date']))->format('Y');
+        }
 
         $leave->update($validate_attributes);
 
