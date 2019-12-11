@@ -19,7 +19,20 @@ class PaymentController extends Controller
 
     public function index()
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+
+        $payments_user_id = Payment::where([
+            ['month', date("M", strtotime('+6 hours'))],
+            ['year', date("Y", strtotime('+6 hours'))],
+        ])->pluck('user_id');
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'payments_user_id' => $payments_user_id,
+            ]
+        ];
     }
 
     public function store(Request $request)

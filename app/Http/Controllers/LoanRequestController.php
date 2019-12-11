@@ -42,9 +42,7 @@ class LoanRequestController extends Controller
     public function store()
     {
         $validate_attributes = $this->validateLoanRequest();
-
-        if(auth()->id() != $validate_attributes['user_id']) return $this->getErrorMessage('his his, her her');
-
+        $validate_attributes['user_id'] = auth()->id();
         $validate_attributes['application_date'] = date('Y-m-d H:i:s', strtotime('+6 hours'));
         $validate_attributes['requested_amount'] = (double)$validate_attributes['requested_amount'];
         $provident_fund = ProvidentFund::where(
@@ -134,7 +132,6 @@ class LoanRequestController extends Controller
     private function validateLoanRequest()
     {
         return request()->validate ([
-            'user_id' => 'required|string',
             'requested_amount' => 'required|string',
         ]);
     }
