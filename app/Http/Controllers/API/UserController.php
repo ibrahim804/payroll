@@ -190,6 +190,12 @@ class UserController extends Controller
     {
         $user = auth()->user();
 
+        $pf_counts = $user->provident_funds->count();
+        $pf_amount = ($pf_counts > 0) ? $user->provident_funds()->latest()->first()->closing_balance : 0;
+        $lh_counts = $user->loan_histories->count();
+        $lh_loan = ($lh_counts > 0) ? $user->loan_histories()->latest()->first()->current_loan_amount : 0;
+        $pf_avail = $pf_amount - $lh_loan;
+
         return
         [
             [
@@ -205,8 +211,9 @@ class UserController extends Controller
                     'phone' => $user->phone,
                     'present_address' => ($user->present_address)? $user->present_address: 'N/A',
                     'net_salary' => ($user->salary) ? $this->calculateNetSalary($user->salary): 'N/A',
-                    'provident_fund' => ($user->provident_funds->count() > 0) ?
-                                        $user->provident_funds()->latest()->first()->closing_balance : 'N/A',
+                    'provident_fund' => $pf_amount,
+                    'on_loan' => $lh_loan,
+                    'available_pf' => $pf_avail,
                 ]
             ]
         ];
