@@ -146,6 +146,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('loan-requests', 'LoanRequestController@index');
     Route::post('loan-request', 'LoanRequestController@store');
     Route::post('loan-request/{id}', 'LoanRequestController@update');
+    Route::get('loan-pending-request', 'LoanRequestController@show');
 
 
     Route::post('loan-history', 'LoanHistoryController@store');     // pay back loan, user
