@@ -80,6 +80,25 @@ class LoanHistoryController extends Controller
         ];
     }
 
+    public function checkEligibility()
+    {
+        $isExist = LoanHistory::where([
+            ['user_id', auth()->id()],
+            ['month', date("M", strtotime('+6 hours'))],
+            ['year', date("Y", strtotime('+6 hours'))],
+        ])->count();
+
+        if($isExist > 0) return $this->getErrorMessage('Already paid for this month of year');
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'You are eligible',
+            ]
+        ];
+    }
+
     private function validateLoanHisrory()
     {
         return request()->validate ([
