@@ -8,7 +8,7 @@ use App\User;
 class LoanHistory extends Model
 {
     protected $fillable = ['user_id', 'month', 'year', 'month_count',
-        'actual_loan_amount', 'yearly_interest_rate', 'current_loan_amount', 'paid_amount', 'loan_status', 'approval_status'];
+        'actual_loan_amount', 'yearly_interest_rate', 'current_loan_amount', 'paid_amount', 'loan_status'];
 
     protected $hidden = [];
 

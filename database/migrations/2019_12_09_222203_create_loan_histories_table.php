@@ -24,7 +24,6 @@ class CreateLoanHistoriesTable extends Migration
             $table->double('current_loan_amount');
             $table->double('paid_amount');
             $table->string('loan_status');
-            $table->string('approval_status')->default('Pending');
             $table->timestamps();
         });
     }
