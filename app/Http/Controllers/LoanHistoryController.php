@@ -32,6 +32,11 @@ class LoanHistoryController extends Controller
         ];
     }
 
+    public function getAllPayBacksRequests()
+    {
+        
+    }
+
     public function store()
     {
         $validate_attributes = $this->validateLoanHisrory();
