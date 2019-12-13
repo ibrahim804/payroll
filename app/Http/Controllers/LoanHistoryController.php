@@ -12,6 +12,7 @@ class LoanHistoryController extends Controller
 {
     use CustomsErrorsTrait;
     private $myObject;
+    private $decision = array('Rejected', 'Accepted', 'Pending');
 
     public function __construct()
     {
@@ -21,7 +22,10 @@ class LoanHistoryController extends Controller
 
     public function index()
     {
-        $loan_histories = LoanHistory::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
+        $loan_histories = LoanHistory::where([
+            ['user_id', auth()->id()],
+            ['approval_status', $this->decision[1]],
+        ])->orderBy('created_at', 'desc')->get();
 
         return
         [
@@ -34,7 +38,34 @@ class LoanHistoryController extends Controller
 
     public function getAllPayBacksRequests()
     {
-        
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+
+        $loan_histories = LoanHistory::where('user_id', '>', 1)->orderBy('approval_status', 'desc')->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'loan_histories' => $loan_histories,
+            ]
+        ];
+    }
+
+    public function approveLoanPayBack($id)
+    {
+        $loan_history = LoanHistory::find($id);
+
+        if($loan_history->approval_status == $this->decision[1]) return $this->getErrorMessage('Already Accepted');
+
+        $loan_history->update(['approval_status' => $this->decision[1]]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Loan Pay Back Accepted',
+            ]
+        ];
     }
 
     public function store()
