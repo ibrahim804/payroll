@@ -7,11 +7,13 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\MyErrorObject;
 use App\User;
+use App\LoanPayBack;
 
 class LoanHistoryController extends Controller
 {
     use CustomsErrorsTrait;
     private $myObject;
+    private $decision = array('Rejected', 'Accepted', 'Pending');
 
     public function __construct()
     {
@@ -32,8 +34,15 @@ class LoanHistoryController extends Controller
         ];
     }
 
-    public function store()
+    public function store()     // PayBack Request
     {
+        $onPendingCount = LoanPayBack::where([
+            ['user_id', auth()->id()],
+            ['approval_status', $this->decision[2]],
+        ])->count();
+
+        if($onPendingCount > 0) return $this->getErrorMessage('Your last loan payment request on pending');
+
         $validate_attributes = $this->validateLoanHisrory();
 
         $isExist = LoanHistory::where([
@@ -69,13 +78,15 @@ class LoanHistoryController extends Controller
             $validate_attributes['loan_status'] = $this->myObject->loan_statuses[2];
         }
 
-        $loan_history = LoanHistory::create($validate_attributes);
+        $validate_attributes['approval_status'] = $this->decision[2];   // NEW
+        $loan_pay_back = LoanPayBack::create($validate_attributes);
+        // $loan_history = LoanHistory::create($validate_attributes); Previous
 
         return
         [
             [
                 'status' => 'OK',
-                'loan_history' => $loan_history,
+                'loan_pay_back' => $loan_pay_back,
             ]
         ];
     }
@@ -95,6 +106,50 @@ class LoanHistoryController extends Controller
             [
                 'status' => 'OK',
                 'message' => 'You are eligible',
+            ]
+        ];
+    }
+
+    public function getAllPendingPayBacks()
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+
+        $loan_pay_backs = LoanPayBack::where('approval_status', $this->decision[2])->get();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'loan_pay_backs' => $loan_pay_backs,
+            ]
+        ];
+    }
+
+    public function acceptLoanPayBackRequest($id)
+    {
+        $loan_pay_back = LoanPayBack::find($id);
+
+        if(! $loan_pay_back) return $this->getErrorMessage('Not Found');
+
+        $validate_attributes = [];
+        $validate_attributes['user_id'] = $loan_pay_back->user_id;
+        $validate_attributes['month'] = $loan_pay_back->month;
+        $validate_attributes['year'] = $loan_pay_back->year;
+        $validate_attributes['month_count'] = $loan_pay_back->month_count;
+        $validate_attributes['actual_loan_amount'] = $loan_pay_back->actual_loan_amount;
+        $validate_attributes['yearly_interest_rate'] = $loan_pay_back->yearly_interest_rate;
+        $validate_attributes['current_loan_amount'] = $loan_pay_back->current_loan_amount;
+        $validate_attributes['paid_amount'] = $loan_pay_back->paid_amount;
+        $validate_attributes['loan_status'] = $loan_pay_back->loan_status;
+
+        $loan_history = LoanHistory::create($validate_attributes);
+        $loan_pay_back->update(['approval_status' => $this->decision[1]]);
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'loan_history' => $loan_history,
             ]
         ];
     }

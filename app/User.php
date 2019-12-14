@@ -21,6 +21,7 @@ use App\Company;
 use App\ProvidentFund;
 use App\LoanHistory;
 use App\LoanRequest;
+use App\LoanPayBack;
 
 class User extends Authenticatable
 {
@@ -135,6 +136,11 @@ class User extends Authenticatable
     public function loan_requests()
     {
         return $this->hasMany(LoanRequest::class);
+    }
+
+    public function loan_pay_backs()
+    {
+        return $this->hasMany(LoanPayBack::class);
     }
 }
 

@@ -149,9 +149,11 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('loan-pending-request', 'LoanRequestController@show');
 
 
-    Route::post('loan-history', 'LoanHistoryController@store');     // pay back loan, user
+    Route::get('loan-history/pay/eligibility', 'LoanHistoryController@checkEligibility'); // check user
+    Route::post('loan-history', 'LoanHistoryController@store');     // pay back loan request
+    Route::get('loan-pay-backs', 'LoanHistoryController@getAllPendingPayBacks'); // pending pay backs request
+    Route::get('loan-pay-back-accept/{id}', 'LoanHistoryController@acceptLoanPayBackRequest'); // accept pay back request
     Route::get('loan-histories', 'LoanHistoryController@index');    // all transaction, user
-    Route::get('loan-history/pay/eligibility', 'LoanHistoryController@checkEligibility');
 
 
     Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv
