@@ -115,12 +115,30 @@ class LoanHistoryController extends Controller
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
         $loan_pay_backs = LoanPayBack::where('approval_status', $this->decision[2])->get();
+        $allowed_pendings = [];
+        $index = 0;
+
+        foreach ($loan_pay_backs as $loan_pay_back) {
+            if(
+                $loan_pay_back->month != date("M", strtotime('+6 hours')) ||
+                $loan_pay_back->year != date("Y", strtotime('+6 hours'))
+            ) {
+                $loan_pay_back->update(['approval_status' => $this->decision[0]]);
+            } else {
+                $loan_pay_back->full_name = $loan_pay_back->user->full_name;
+                $loan_pay_back->department = $loan_pay_back->user->department->department_name;
+                $loan_pay_back->designation = $loan_pay_back->user->designation->designation;
+                $loan_pay_back->previoud_paid = $loan_pay_back->user->loan_histories()->latest()->first()->paid_amount;
+                $allowed_pendings[$index] = $loan_pay_back;
+                $index ++;
+            }
+        }
 
         return
         [
             [
                 'status' => 'OK',
-                'loan_pay_backs' => $loan_pay_backs,
+                'loan_pay_backs' => $allowed_pendings,
             ]
         ];
     }
