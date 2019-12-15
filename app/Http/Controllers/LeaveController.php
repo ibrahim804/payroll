@@ -239,6 +239,28 @@ class LeaveController extends Controller
         ];
     }
 
+    public function removeLeave($id)
+    {
+        $leave = Leave::find($id);
+
+        if($leave->user->id != auth()->id()) return $this->getErrorMessage('Permission Denied');
+
+        if($leave->approval_status != $this->decision[2])
+        {
+            return $this->getErrorMessage('Leave already responsed, you can\'t remove it');
+        }
+
+        $leave->delete();
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'message' => 'Leave Removed',
+            ]
+        ];
+    }
+
     private function validateLeave()
     {
         return request()->validate([

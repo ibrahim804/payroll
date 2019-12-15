@@ -128,6 +128,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::post('leave/{id}', 'LeaveController@update');
     Route::post('leave/approve/{id}', 'LeaveController@updateApprovalStatus');
     Route::get('leave/cancel/{id}', 'LeaveController@cancelLeave');
+    Route::get('leave/remove/{id}', 'LeaveController@removeLeave');
 
 
     Route::post('working-day', 'WorkingDayController@store');
