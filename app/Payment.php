@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\User;
 
 class Payment extends Model
 {
@@ -16,4 +17,9 @@ class Payment extends Model
         'month',
         'year',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

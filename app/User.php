@@ -22,6 +22,7 @@ use App\ProvidentFund;
 use App\LoanHistory;
 use App\LoanRequest;
 use App\LoanPayBack;
+use App\Payment;
 
 class User extends Authenticatable
 {
@@ -121,6 +122,11 @@ class User extends Authenticatable
     public function company()                                       // returns company of a user. many(user) to one(company) relationship.
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
     public function provident_funds()

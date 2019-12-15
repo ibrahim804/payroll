@@ -8,6 +8,8 @@ use App\Http\Controllers\CustomsErrorsTrait;
 use App\User;
 use Carbon\Carbon;
 use App\Leave;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Payment as PaymentMail;
 
 class PaymentController extends Controller
 {
@@ -74,6 +76,7 @@ class PaymentController extends Controller
         if($isExist) return $this->getErrorMessage('You have paid this user already for this month');
 
         $payment = Payment::create($validate_attributes);
+        $this->sendPaymentToMail($payment);
 
         return
         [
@@ -84,6 +87,14 @@ class PaymentController extends Controller
         ];
     }
 
+    private function sendPaymentToMail($payment)
+    {
+        $user = $payment->user;
+
+        Mail::to($user->email)->send(
+            new PaymentMail($payment, ($user->company) ? $user->company->name : '')
+        );
+    }
 
     public function show(Payment $payment)
     {
