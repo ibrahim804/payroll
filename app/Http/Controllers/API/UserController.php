@@ -448,16 +448,16 @@ class UserController extends Controller
 
         if(! $user) return $this->getErrorMessage('User with this email doesn\'t exist');
 
-        if($user->verification_code == 1)
-        {
-            return
-            [
-                [
-                    'status' => 'OK',
-                    'message' => 'Verification code already verified, you can set your password now.',
-                ]
-            ];
-        }
+        // if($user->verification_code == 1)
+        // {
+        //     return
+        //     [
+        //         [
+        //             'status' => 'OK',
+        //             'message' => 'Verification code already verified, you can set your password now.',
+        //         ]
+        //     ];
+        // }
 
         $user_updated_at = Carbon::createFromFormat('Y-m-d H:i:s', $user->updated_at);          // when verification code is created.
         $current_time = Carbon::createFromFormat('Y-m-d H:i:s', Carbon::now());
