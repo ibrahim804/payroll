@@ -118,6 +118,23 @@ class LeaveCountController extends Controller
         ];
     }
 
+    public function employeeIndex($user_id)
+    {
+        $user = User::find($user_id);
+
+        if($user_id != auth()->id()) return $this->getErrorMessage('Permission Denied');
+
+        $leave_counts = $user->leave_counts;
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'leave_counts' => $leave_counts,
+            ]
+        ];
+    }
+
     private function validateLeaveCount()
     {
         return request()->validate ([

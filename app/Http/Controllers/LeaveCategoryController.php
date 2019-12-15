@@ -19,12 +19,18 @@ class LeaveCategoryController extends Controller
     public function index()
     {
         $leave_categories = Leave_category::all();
+        $available_categories = [];
+
+        for($i = 0; $i < 2; $i++)
+        {
+            $available_categories[$i] = $leave_categories[$i];
+        }
 
         return
         [
             [
                 'status' => 'OK',
-                'leave_categories' => $leave_categories,
+                'leave_categories' => $available_categories,
             ]
         ];
     }
