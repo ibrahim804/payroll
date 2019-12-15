@@ -76,7 +76,6 @@ class PaymentController extends Controller
         if($isExist) return $this->getErrorMessage('You have paid this user already for this month');
 
         $payment = Payment::create($validate_attributes);
-        $this->sendPaymentToMail($payment);
 
         return
         [
@@ -87,9 +86,10 @@ class PaymentController extends Controller
         ];
     }
 
-    private function sendPaymentToMail($payment)
+    public function sendPaymentToMail($user_id)
     {
-        $user = $payment->user;
+        $user = User::find($user_id);
+        $payment = $user->payments()->latest()->first();
 
         Mail::to($user->email)->send(
             new PaymentMail($payment, ($user->company) ? $user->company->name : '')
