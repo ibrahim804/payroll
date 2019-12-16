@@ -13,6 +13,8 @@ use File;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\UserVerification;
 use Carbon\Carbon;
+use App\MyErrorObject;
+use App\LeaveCount;
 
 class UserController extends Controller
 {
@@ -149,6 +151,7 @@ class UserController extends Controller
         */
 
         $user = User::create($this->getProcessedInputsWhileCreatingUser($request));
+        $this->createEmployeesLeaveCounts($user);
         $success['token'] = $user->createToken(config('app.name'))->accessToken;    // syntex
 
         return
@@ -167,6 +170,33 @@ class UserController extends Controller
     /*
         User can view only her/his user onfo, none else. But admin can
     */
+
+/*
+'user_id',
+'leave_category_id',
+'leave_left',
+'leave_count_start',
+'leave_count_expired',
+*/
+    private function createEmployeesLeaveCounts($user)
+    {
+        $myObject = new MyErrorObject;
+
+        $validate_attributes = [];
+        $validate_attributes['user_id'] = $user->id;
+        $validate_attributes['leave_count_start'] = $user->joining_date;
+        $joining_date_seconds = strtotime($validate_attributes['leave_count_start']);
+        $new_date_seconds = strtotime('+ 1 year', $joining_date_seconds);
+        $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
+
+        $validate_attributes['leave_category_id'] = 1;
+        $validate_attributes['leave_left'] = $myObject->casual_gift;
+        LeaveCount::create($validate_attributes);
+
+        $validate_attributes['leave_category_id'] = 2;
+        $validate_attributes['leave_left'] = $myObject->sick_gift;
+        LeaveCount::create($validate_attributes);
+    }
 
     public function user($id)
     {
