@@ -295,54 +295,42 @@ class UserController extends Controller
 
         if($user->isAdmin($user->id) == 'false' and $user->id != $id) return $this->getErrorMessage('Permission denied');
 
-        if($user->id == $id)
-        {
-            $validate_attributes = request()->validate([
-                'full_name' => 'string|min:3|max:25',
-                'user_name' => 'string|min:3|max:25|unique:users',
-                'email' => 'string|email|max:255|unique:users',
-                'date_of_birth' => 'date',
-                'fathers_name' => 'string|min:3|max:25',
-                'gender' => 'string',
-                'marital_status' => 'string',
-                'nationality' => 'string',
-                'permanent_address' => 'string|min:10|max:300',
-                'present_address' => 'string|min:10|max:300',
-                'passport_number' => 'string',
-                'phone' => 'string',
-            ]);
+        $validate_attributes = request()->validate([
+            'full_name' => 'nullable|string|min:3|max:25',
+            'email' => 'nullable|string|email|max:255|unique:users',
+            'date_of_birth' => 'nullable|date',
+            'fathers_name' => 'nullable|string|min:3|max:25',
+            'gender' => 'nullable|string',
+            'marital_status' => 'nullable|string',
+            'nationality' => 'nullable|string',
+            'permanent_address' => 'nullable|string|min:10|max:300',
+            'present_address' => 'nullable|string|min:10|max:300',
+            'passport_number' => 'nullable|string',
+            'phone' => 'nullable|string',
+        ]);
 
-            $user->update($validate_attributes);
-        }
+        $inputs = [];
 
-        if($user->isAdmin($user->id) == 'true')
-        {
-            $extra_attributes = request()->validate([
-                'employee_id' => 'string',
-                'company_id' => 'string',
-                'designation_id' => 'string',
-                'department_id' => 'string',
-                'salary_id' => 'string',
-                'joining_date' => 'date',
-            ]);
+        if($validate_attributes['full_name']) $inputs['full_name'] = $request->input('full_name');
+        if($validate_attributes['email']) $inputs['email'] = $request->input('email');
+        if($validate_attributes['gender']) $inputs['gender'] = $request->input('gender');
+        if($validate_attributes['phone']) $inputs['phone'] = $request->input('phone');
+        if($validate_attributes['date_of_birth']) $inputs['date_of_birth'] = $request->input('date_of_birth');
+        if($validate_attributes['fathers_name']) $inputs['fathers_name'] = $request->input('fathers_name');
+        if($validate_attributes['marital_status']) $inputs['marital_status'] = $request->input('marital_status');
+        if($validate_attributes['nationality']) $inputs['nationality'] = $request->input('nationality');
+        if($validate_attributes['permanent_address']) $inputs['permanent_address'] = $request->input('permanent_address');
+        if($validate_attributes['present_address']) $inputs['present_address'] = $request->input('present_address');
+        if($validate_attributes['passport_number']) $inputs['passport_number'] = $request->input('passport_number');
 
-            $user_to_be_updated = User::find($id);
-
-            if($extra_attributes['designation_id'])
-            {
-                $designation = Designation::find($extra_attributes['designation_id']);
-                if($designation) $extra_attributes['department_id'] = $designation->department_id;
-                else $extra_attributes['designation_id'] = NUll;
-            }
-
-            $user_to_be_updated->update($extra_attributes);
-        }
+        $user->update($inputs);
 
         return
         [
             [
                 'status' => 'OK',
-                'message' => 'Info Updated',
+                'inputs' => $inputs,
+                'user' => $user,
             ]
         ];
     }
