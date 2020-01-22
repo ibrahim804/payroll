@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "6ae6894ee4ed2aea933b634ee464fbee",
+    "content-hash": "b59ce58777c741ef1cda4d12c3464dac",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -63,12 +63,12 @@
             "version": "v0.11.4",
             "source": {
                 "type": "git",
-                "url": "https://github.com/barryvdh/laravel-cors.git",
+                "url": "https://github.com/fruitcake/laravel-cors.git",
                 "reference": "03492f1a3bc74a05de23f93b94ac7cc5c173eec9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/barryvdh/laravel-cors/zipball/03492f1a3bc74a05de23f93b94ac7cc5c173eec9",
+                "url": "https://api.github.com/repos/fruitcake/laravel-cors/zipball/03492f1a3bc74a05de23f93b94ac7cc5c173eec9",
                 "reference": "03492f1a3bc74a05de23f93b94ac7cc5c173eec9",
                 "shasum": ""
             },
@@ -293,31 +293,30 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.9.2",
+            "version": "v2.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9"
+                "reference": "c2b8e6e82732a64ecde1cddf9e1e06cb8556e3d8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
-                "reference": "22800bd651c1d8d2a9719e2a3dc46d5108ebfcc9",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c2b8e6e82732a64ecde1cddf9e1e06cb8556e3d8",
+                "reference": "c2b8e6e82732a64ecde1cddf9e1e06cb8556e3d8",
                 "shasum": ""
             },
             "require": {
                 "doctrine/cache": "^1.0",
                 "doctrine/event-manager": "^1.0",
                 "ext-pdo": "*",
-                "php": "^7.1"
+                "php": "^7.2"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^5.0",
-                "jetbrains/phpstorm-stubs": "^2018.1.2",
-                "phpstan/phpstan": "^0.10.1",
-                "phpunit/phpunit": "^7.4",
-                "symfony/console": "^2.0.5|^3.0|^4.0",
-                "symfony/phpunit-bridge": "^3.4.5|^4.0.5"
+                "doctrine/coding-standard": "^6.0",
+                "jetbrains/phpstorm-stubs": "^2019.1",
+                "phpstan/phpstan": "^0.11.3",
+                "phpunit/phpunit": "^8.4.1",
+                "symfony/console": "^2.0.5|^3.0|^4.0|^5.0"
             },
             "suggest": {
                 "symfony/console": "For helpful console commands such as SQL execution and import of files."
@@ -328,7 +327,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.9.x-dev",
+                    "dev-master": "2.10.x-dev",
                     "dev-develop": "3.0.x-dev"
                 }
             },
@@ -343,16 +342,16 @@
             ],
             "authors": [
                 {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
                     "name": "Roman Borschel",
                     "email": "roman@code-factory.org"
                 },
                 {
                     "name": "Benjamin Eberlei",
                     "email": "kontakt@beberlei.de"
-                },
-                {
-                    "name": "Guilherme Blanco",
-                    "email": "guilhermeblanco@gmail.com"
                 },
                 {
                     "name": "Jonathan Wage",
@@ -364,14 +363,25 @@
             "keywords": [
                 "abstraction",
                 "database",
+                "db2",
                 "dbal",
+                "mariadb",
+                "mssql",
                 "mysql",
-                "persistence",
+                "oci8",
+                "oracle",
+                "pdo",
                 "pgsql",
-                "php",
-                "queryobject"
+                "postgresql",
+                "queryobject",
+                "sasql",
+                "sql",
+                "sqlanywhere",
+                "sqlite",
+                "sqlserver",
+                "sqlsrv"
             ],
-            "time": "2018-12-31T03:27:51+00:00"
+            "time": "2020-01-04T12:56:21+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -4140,6 +4150,7 @@
                 "psr",
                 "psr-7"
             ],
+            "abandoned": "laminas/laminas-diactoros",
             "time": "2019-07-10T16:13:25+00:00"
         }
     ],
