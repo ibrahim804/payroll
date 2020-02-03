@@ -117,7 +117,7 @@ Route::group(['middleware' => 'cors'] ,function(){
 
     Route::get('leave-counts', 'LeaveCountController@index');
     Route::post('leave-count', 'LeaveCountController@store');
-    Route::get ('leave-count/{user_id}', 'LeaveCountController@employeeIndex');
+    Route::get ('leave-counts-of-user', 'LeaveCountController@employeeIndex');
     Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
     Route::post('leave-count/{id}', 'LeaveCountController@update');
 
