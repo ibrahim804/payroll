@@ -86,9 +86,11 @@ class PaymentController extends Controller
         ];
     }
 
-    public function sendPaymentToMail($user_id)
+    public function sendPaymentToMail()
     {
-        $user = User::find($user_id);
+        $validate_attributes = request()->validate(['user_id' => 'required|string']);
+        $user = User::find($validate_attributes['user_id']);
+
         $payment = $user->payments()->latest()->first();
 
         Mail::to($user->email)->send(

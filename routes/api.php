@@ -139,7 +139,7 @@ Route::group(['middleware' => 'cors'] ,function(){
 
     Route::post('payment', 'PaymentController@store');
     Route::get('payments', 'PaymentController@index');
-    Route::get('payment/send-payment-to-mail/{user_id}', 'PaymentController@sendPaymentToMail');
+    Route::post('payment/send-payment-to-mail', 'PaymentController@sendPaymentToMail');
 
 
     Route::post('provident-fund', 'ProvidentFundController@store');
