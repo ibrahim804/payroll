@@ -103,13 +103,11 @@ class LeaveController extends Controller
         ];
     }
 
-    public function show($user_id)
+    public function show()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $user_id) return $this->getErrorMessage('You don\'t have permission to view leave');
-
         $this->renewLeaveCountAll();
 
-        $user = User::find($user_id);
+        $user = auth()->user();
         $leaves = $user->leaves;
 
         for($i = 0; $i < sizeof($leaves); $i++){
