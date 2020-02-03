@@ -291,11 +291,9 @@ class UserController extends Controller
         Specific user can update her/his info. But admin can anyone's.
     */
 
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        $user = Auth::user();                       // catch the user
-
-        if($user->isAdmin($user->id) == 'false' and $user->id != $id) return $this->getErrorMessage('Permission denied');
+        $user = Auth::user();
 
         $validate_attributes = request()->validate([
             'full_name' => 'nullable|string|min:3|max:25',
