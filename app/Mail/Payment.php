@@ -14,13 +14,14 @@ class Payment extends Mailable
     public $payment, $company_name, $full_name, $month, $year;
     public $basic, $house, $medical, $fuel, $phone, $special, $other_a, $tax, $pf, $other_d, $gross, $total_d, $net, $unpaid, $leave_d, $payable;
 
-    public function __construct($payment, $company_name)
+    public function __construct($payment, $unpaid_leave_count, $company_name)
     {
         $this->payment = $payment;
         $this->company_name = $company_name;
         $this->full_name = $this->payment->user->full_name;
         $this->month = $this->payment->month;
         $this->year = $this->payment->year;
+        $this->unpaid = $unpaid_leave_count;
 
         $this->setOtherVariables();
     }
@@ -49,7 +50,8 @@ class Payment extends Mailable
         $this->leave_d = $this->payment->employee_monthly_cost;
         $this->payable = $this->payment->payable_amount;
 
-        $this->unpaid = (int) (($this->leave_d * 22) / $this->net);
+        // $this->unpaid = (int) (($this->leave_d * 22) / $this->net);    // calculation error encountered
+
     }
 
     private function calculatePayableAmount($salary)

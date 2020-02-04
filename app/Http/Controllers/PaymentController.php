@@ -61,7 +61,7 @@ class PaymentController extends Controller
         $user = User::find($validate_attributes['user_id']);
 
         if(! $user) return $this->getErrorMessage('User not found');
-        if(! $user->salary) return $this->getErrorMessage('Salary infor of this user not found');
+        if(! $user->salary) return $this->getErrorMessage('This employee has no salary information');
 
         $validate_attributes['payment_date'] = date("Y-m-d H:i:s", strtotime('+6 hours'));
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
@@ -88,13 +88,17 @@ class PaymentController extends Controller
 
     public function sendPaymentToMail()
     {
-        $validate_attributes = request()->validate(['user_id' => 'required|string']);
+        $validate_attributes = request()->validate([
+          'user_id' => 'required|string',
+          'unpaid_leave_count' => 'required|string',
+        ]);
+
         $user = User::find($validate_attributes['user_id']);
 
         $payment = $user->payments()->latest()->first();
 
         Mail::to($user->email)->send(
-            new PaymentMail($payment, ($user->company) ? $user->company->name : '')
+            new PaymentMail($payment, $validate_attributes['unpaid_leave_count'], ($user->company) ? $user->company->name : '')
         );
     }
 
