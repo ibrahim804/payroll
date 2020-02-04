@@ -43,7 +43,7 @@ class LeaveController extends Controller
 
         $this->renewLeaveCountAll();
 
-        $leaves = Leave::all();
+        $leaves = Leave::orderBy('created_at',  'desc')->get();
 
         $i = 0; $infos = [];
 

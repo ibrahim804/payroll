@@ -61,7 +61,7 @@ class PaymentController extends Controller
         $user = User::find($validate_attributes['user_id']);
 
         if(! $user) return $this->getErrorMessage('User not found');
-        if(! $user->salary) return $this->getErrorMessage('This employee has no salary information');
+        if(! $user->salary) return $this->getErrorMessage('This employee has no salary information, set salary info.');
 
         $validate_attributes['payment_date'] = date("Y-m-d H:i:s", strtotime('+6 hours'));
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
