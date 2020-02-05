@@ -110,7 +110,6 @@ class UserController extends Controller
                     'email' => $user->email,
                     'token' => $success['token'],
                     'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
-                    'id' => $user->id,
                 ]
             ];
         }
@@ -164,7 +163,6 @@ class UserController extends Controller
                 'email' => $user->email,
                 'token' => $success['token'],
                 'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
-                'id' => $user->id,
             ]
         ];
     }
@@ -378,22 +376,13 @@ class UserController extends Controller
         The following route will be called when user knows her/his password but wants to update
     */
 
-    public function change_password(Request $request)
+    public function change_password()
     {
-        $validator = Validator::make($request->all(), [
-            'current_password' => 'required',
-            'new_password' => 'required|string|min:6|max:30',
-            'confirm_password' => 'required|same:new_password',
-        ]);
+        $validate_attributes = $this->validatePassword();
 
-        if ($validator->fails())
+        if(Auth::guard('web')->attempt(['id' => auth()->id(), 'password' => $validate_attributes['current_password']]))
         {
-            return $this->getErrorMessage($validator->errors());
-        }
-
-        if(Auth::guard('web')->attempt(['id' => auth()->id(), 'password' => $request->input('current_password')]))
-        {
-            $new_password = bcrypt($request->input('new_password'));        // new_password should be hashed beforing storing
+            $new_password = bcrypt($validate_attributes['new_password']);        // new_password should be hashed beforing storing
             auth()->user()->update(['password' => $new_password]);
 
             return
@@ -599,6 +588,14 @@ class UserController extends Controller
                 'message' => 'Image removed successfully',
             ]
         ];
+    }
+
+    private function validatePassword() {
+        return request()->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:6|max:30',
+            'confirm_password' => 'required|same:new_password',
+        ]);
     }
 }
 
