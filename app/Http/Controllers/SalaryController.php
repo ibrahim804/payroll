@@ -59,9 +59,25 @@ class SalaryController extends Controller
 
     public function show($user_id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $user_id) return $this->getErrorMessage('You don\'t have permission to view his/her salary');
+        if(auth()->user()->isAdmin(auth()->id()) == 'false')
+        {
+            return $this->getErrorMessage('You don\'t have permission to view his/her salary');
+        }
 
-        $salary = User::findOrFail($user_id)->salary;
+        $user = User::find($user_id);
+
+        if(! $user) return $this->getErrorMessage('User doesn\'t exist');
+
+        return $this->getSalary($user);
+    }
+
+    public function showMySalary() {
+        return $this->getSalary(auth()->user());
+    }
+
+    private function getSalary($user) {
+
+        $salary = $user->salary;
 
         if(!$salary) return $this->getErrorMessage('This user doesn\'t have any salary yet.');
 

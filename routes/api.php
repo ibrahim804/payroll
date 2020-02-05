@@ -76,6 +76,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('salaries', 'SalaryController@index');
     Route::post('salary', 'SalaryController@store');
     Route::get('salary/{user_id}', 'SalaryController@show');
+    Route::get('salary-mine', 'SalaryController@showMySalary');
     Route::post('salary/{user_id}', 'SalaryController@update');
 
 
