@@ -484,7 +484,7 @@ class UserController extends Controller
         if($ageOfVerificationCode >= 120) $user->update(['verification_code' => NULL]);          // verification code get expired after one minute
 
         if(! $user->verification_code) return $this->getErrorMessage('Either you didn\'t send forgot password request, or your code expired');
-        if($verification_code != $user->verification_code) return $this->getErrorMessage('Verification code isn\'t matched');
+        if($verification_code != $user->verification_code) return $this->getErrorMessage('Verification code doesn\'t match');
 
         $user->update(['verification_code' => 1]);                                              // OK, user is not verified and allowed to set new password
 
