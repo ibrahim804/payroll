@@ -19,23 +19,17 @@ class LeaveCategoryController extends Controller
     public function index()
     {
         $leave_categories = Leave_category::all();
-        $available_categories = [];
-
-        for($i = 0; $i < 2; $i++)
-        {
-            $available_categories[$i] = $leave_categories[$i];
-        }
 
         return
         [
             [
                 'status' => 'OK',
-                'leave_categories' => $available_categories,
+                'leave_categories' => $leave_categories,
             ]
         ];
     }
 
-    public function store(Request $request) // Unpaid leave has no leave count
+    public function store(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave category');
 
@@ -91,60 +85,57 @@ class LeaveCategoryController extends Controller
         ];
     }
 
-    public function destroy($id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to delete leave category');
-
-        Leave_category::findOrFail($id)->delete();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'Requested leave category deleted successfully',
-            ]
-        ];
-    }
-
-    public function restore($id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to restore leave category');
-
-        Leave_category::onlyTrashed()->where('id', $id)->restore();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'Requested leave category is restored successfully.',
-            ]
-        ];
-    }
-
-    public function trashedIndex()
-    {
-        $leave_categories = Leave_category::onlyTrashed()->get();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'leave_categories' => $leave_categories,
-            ]
-        ];
-    }
+    // public function destroy($id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to delete leave category');
+    //
+    //     Leave_category::findOrFail($id)->delete();
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'message' => 'Requested leave category deleted successfully',
+    //         ]
+    //     ];
+    // }
+    //
+    // public function restore($id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to restore leave category');
+    //
+    //     Leave_category::onlyTrashed()->where('id', $id)->restore();
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'message' => 'Requested leave category is restored successfully.',
+    //         ]
+    //     ];
+    // }
+    //
+    // public function trashedIndex()
+    // {
+    //     $leave_categories = Leave_category::onlyTrashed()->get();
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'leave_categories' => $leave_categories,
+    //         ]
+    //     ];
+    // }
 
     private function validateLeaveCategory(Request $request)
     {
         return Validator::make($request->all(), [
             'leave_type' => 'required|string|unique:leave_categories',
+            'default_limit' => 'required|string',
         ]);
     }
 }
-
-
-
-
 
 
 

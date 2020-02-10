@@ -11,7 +11,7 @@ class Leave_category extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['leave_type'];
+    protected $fillable = ['leave_type', 'default_limit'];
 
     public function leaves()
     {
