@@ -152,19 +152,7 @@ class UserController extends Controller
         */
 
         $user = User::create($this->getProcessedInputsWhileCreatingUser($request));
-        $this->createEmployeesLeaveCounts($user);
-        $success['token'] = $user->createToken(config('app.name'))->accessToken;    // syntex
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'full_name' => $user->full_name,
-                'email' => $user->email,
-                'token' => $success['token'],
-                'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
-            ]
-        ];
+        return redirect('api/leave-count'.'/'.$user->id.'/'.$user->joining_date);
     }
 
     /*
@@ -521,74 +509,74 @@ class UserController extends Controller
 
     // SoftDelete
 
-    public function delete(Request $request, $id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+    // public function delete(Request $request, $id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+    //
+    //     User::find($id)->delete();
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'message' => 'User deleted successfully',
+    //         ]
+    //     ];
+    // }
 
-        User::find($id)->delete();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'User deleted successfully',
-            ]
-        ];
-    }
-
-    public function restore(Request $request, $id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
-
-        User::onlyTrashed()->where('id', $id)->restore();                       // Deleted user can be restored when it is trashed.
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'User restored successfully.',
-            ]
-        ];
-    }
+    // public function restore(Request $request, $id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
+    //
+    //     User::onlyTrashed()->where('id', $id)->restore();                       // Deleted user can be restored when it is trashed.
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'message' => 'User restored successfully.',
+    //         ]
+    //     ];
+    // }
 
     /* If user wants to remove her/his profile picture
         Their are two directories /public/images. one is profile_pictures(all profile pictures are here), another is trashed_pictures(all removed profile pictures are here)
         So when user remove photo, the system basically move profile picture from profile_pictures directory to trashed_pictures directory
     */
 
-    public function remove_photo($id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id)    // User can remove her/his profile picture, Admin can anyone's
-        {
-            return $this->getErrorMessage('Permission denied.');
-        }
-
-        $user = User::find($id);
-
-        if(!$user->photo_path) return $this->getErrorMessage('No photo has been found in this path.');      // If photo exists, path must have a value
-
-        $actual_old_path = public_path($user->photo_path);              // physical path where the photo is
-        $extension = pathinfo($actual_old_path, PATHINFO_EXTENSION);    // extension is needed to rename that profile picture in trashed_pictures directory,
-        $actual_new_path = public_path().(new \App\MyErrorObject)->trashed_pictures.'/'.bin2hex(random_bytes(8)).'.'.$extension;        // where to save(trashed_pictures location)
-
-        /* Another way of finding extension from path string
-            $infoPath = pathinfo(public_path('/uploads/my_image.jpg'));
-            $extension = $infoPath['extension'];
-        */
-
-        if(! File::exists($actual_old_path)) return $this->getErrorMessage('File doesn\'t exists in this path');    // before moving, we need to ensure that, photo really exists in this actual path
-
-        File::move($actual_old_path, $actual_new_path);     // profile_pictures to trashed_pictures
-        $user->update(['photo_path' => NULL]);              // No photo in profile_pictures directory
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'Image removed successfully',
-            ]
-        ];
-    }
+    // public function remove_photo($id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id)    // User can remove her/his profile picture, Admin can anyone's
+    //     {
+    //         return $this->getErrorMessage('Permission denied.');
+    //     }
+    //
+    //     $user = User::find($id);
+    //
+    //     if(!$user->photo_path) return $this->getErrorMessage('No photo has been found in this path.');      // If photo exists, path must have a value
+    //
+    //     $actual_old_path = public_path($user->photo_path);              // physical path where the photo is
+    //     $extension = pathinfo($actual_old_path, PATHINFO_EXTENSION);    // extension is needed to rename that profile picture in trashed_pictures directory,
+    //     $actual_new_path = public_path().(new \App\MyErrorObject)->trashed_pictures.'/'.bin2hex(random_bytes(8)).'.'.$extension;        // where to save(trashed_pictures location)
+    //
+    //     /* Another way of finding extension from path string
+    //         $infoPath = pathinfo(public_path('/uploads/my_image.jpg'));
+    //         $extension = $infoPath['extension'];
+    //     */
+    //
+    //     if(! File::exists($actual_old_path)) return $this->getErrorMessage('File doesn\'t exists in this path');    // before moving, we need to ensure that, photo really exists in this actual path
+    //
+    //     File::move($actual_old_path, $actual_new_path);     // profile_pictures to trashed_pictures
+    //     $user->update(['photo_path' => NULL]);              // No photo in profile_pictures directory
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'message' => 'Image removed successfully',
+    //         ]
+    //     ];
+    // }
 
     private function validatePassword() {
         return request()->validate([

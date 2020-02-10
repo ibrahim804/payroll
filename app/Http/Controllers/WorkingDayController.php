@@ -57,37 +57,37 @@ class WorkingDayController extends Controller
         ];
     }
 
-    public function show($id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id) return $this->getErrorMessage('Permission Denied');
-
-        $working_day = User::findOrFail($id)->working_day;
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'working_day' => $working_day,
-            ]
-        ];
-    }
-
-    public function update($id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can update one\'s working day info');
-
-        $working_day = User::findOrFail($id)->working_day;
-        $validate_attributes = $this->validateWorkingDay(0);
-        $working_day->update($validate_attributes);
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'working_day' => $working_day,
-            ]
-        ];
-    }
+    // public function show($id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id) return $this->getErrorMessage('Permission Denied');
+    //
+    //     $working_day = User::findOrFail($id)->working_day;
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'working_day' => $working_day,
+    //         ]
+    //     ];
+    // }
+    //
+    // public function update($id)
+    // {
+    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can update one\'s working day info');
+    //
+    //     $working_day = User::findOrFail($id)->working_day;
+    //     $validate_attributes = $this->validateWorkingDay(0);
+    //     $working_day->update($validate_attributes);
+    //
+    //     return
+    //     [
+    //         [
+    //             'status' => 'OK',
+    //             'working_day' => $working_day,
+    //         ]
+    //     ];
+    // }
 
     private function validateWorkingDay(int $StoreOrUpdate) // 1 for store, 0 for update
     {

@@ -51,9 +51,9 @@ class Handler extends ExceptionHandler
     public function render($request, Exception $exception)
     {
 
-        if ($exception instanceof Exception) {
-            return $this->getErrorMessage('Something went wrong. Please check out your header, token, route and credentials');
-        }
+        // if ($exception instanceof Exception) {
+        //     return $this->getErrorMessage('Something went wrong. Please check out your header, token, route and credentials');
+        // }
 
         return parent::render($request, $exception);
     }

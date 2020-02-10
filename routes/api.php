@@ -54,9 +54,9 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('user-dept-desg/{id}', 'API\UserController@user_dept_desg');
     Route::post('update-user', 'API\UserController@update');
     Route::get('logout', 'API\UserController@logout');
-    Route::get('delete/user/{id}', 'API\UserController@delete');
-    Route::get('delete/photo/user/{id}', 'API\UserController@remove_photo');
-    Route::get('restore/user/{id}', 'API\UserController@restore');
+    // Route::get('delete/user/{id}', 'API\UserController@delete');
+    // Route::get('delete/photo/user/{id}', 'API\UserController@remove_photo');
+    // Route::get('restore/user/{id}', 'API\UserController@restore');
     Route::post('update-password', 'API\UserController@change_password');
     Route::post('forgot/password', 'API\UserController@forgot_password');
     Route::post('verify/verification-code', 'API\UserController@verifyVerificationCode');
@@ -65,12 +65,12 @@ Route::group(['middleware' => 'cors'] ,function(){
 
 
     Route::get('companies', 'CompanyController@index');
-    Route::get('companies/trashed', 'CompanyController@trashedIndex');
+    // Route::get('companies/trashed', 'CompanyController@trashedIndex');
     Route::post('company', 'CompanyController@store');
     Route::get('company/{id}', 'CompanyController@show');
     Route::post('company/{id}', 'CompanyController@update');
-    Route::get('company/delete/{id}', 'CompanyController@destroy');
-    Route::get('company/restore/{id}', 'CompanyController@restore');
+    // Route::get('company/delete/{id}', 'CompanyController@destroy');
+    // Route::get('company/restore/{id}', 'CompanyController@restore');
 
 
     Route::get('salaries', 'SalaryController@index');
@@ -87,55 +87,55 @@ Route::group(['middleware' => 'cors'] ,function(){
 
 
     Route::get('departments', 'DepartmentController@index');
-    Route::get('departments/trashed', 'DepartmentController@trashedIndex');
+    // Route::get('departments/trashed', 'DepartmentController@trashedIndex');
     Route::get('department/{id}/users', 'DepartmentController@users');
     Route::get('department/{id}/designations', 'DepartmentController@designations');
     Route::get('department/{dept_id}/designation/{desgn_id}', 'DepartmentController@thisDeptDesgnUser');
     Route::post('department', 'DepartmentController@store');
     Route::get('department/{id}', 'DepartmentController@show');
     Route::post('department/{id}', 'DepartmentController@update');
-    Route::get('department/delete/{id}', 'DepartmentController@destroy');
-    Route::get('department/restore/{id}', 'DepartmentController@restore');
+    // Route::get('department/delete/{id}', 'DepartmentController@destroy');
+    // Route::get('department/restore/{id}', 'DepartmentController@restore');
 
 
     Route::get('designations', 'DesignationController@index');
-    Route::get('designations/trashed', 'DesignationController@trashedIndex');
+    // Route::get('designations/trashed', 'DesignationController@trashedIndex');
     Route::post('designation', 'DesignationController@store');
     Route::get('designation/{id}', 'DesignationController@show');
     Route::post('designation/{id}', 'DesignationController@update');
-    Route::get('designation/delete/{id}', 'DesignationController@destroy');
-    Route::get('designation/restore/{id}', 'DesignationController@restore');
+    // Route::get('designation/delete/{id}', 'DesignationController@destroy');
+    // Route::get('designation/restore/{id}', 'DesignationController@restore');
 
 
     Route::get('leave-categories', 'LeaveCategoryController@index');
-    Route::get('leave-categories/trashed', 'LeaveCategoryController@trashedIndex');
+    // Route::get('leave-categories/trashed', 'LeaveCategoryController@trashedIndex');
     Route::post('leave-category', 'LeaveCategoryController@store');
     Route::get('leave-category/{id}', 'LeaveCategoryController@show');
     Route::post('leave-category/{id}', 'LeaveCategoryController@update');
-    Route::get('leave-category/delete/{id}', 'LeaveCategoryController@destroy');
-    Route::get('leave-category/restore/{id}', 'LeaveCategoryController@restore');
+    // Route::get('leave-category/delete/{id}', 'LeaveCategoryController@destroy');
+    // Route::get('leave-category/restore/{id}', 'LeaveCategoryController@restore');
 
 
-    Route::get('leave-counts', 'LeaveCountController@index');
-    Route::post('leave-count', 'LeaveCountController@store');
+    // Route::get('leave-counts', 'LeaveCountController@index');
+    Route::get('leave-count/{user_id}/{joining_date}', 'LeaveCountController@store');
     Route::get ('leave-counts-of-user', 'LeaveCountController@employeeIndex');
-    Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
-    Route::post('leave-count/{id}', 'LeaveCountController@update');
+    // Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
+    // Route::post('leave-count/{id}', 'LeaveCountController@update');
 
 
     Route::get('leaves', 'LeaveController@index');
     Route::post('leave', 'LeaveController@store');
     Route::get('leavesOfAUser', 'LeaveController@show');
     Route::get('leave/available-duration/{leave_category_id}/{start_date}/{end_date}', 'LeaveController@showCountsDuration');
-    Route::post('leave/{id}', 'LeaveController@update');
+    // Route::post('leave/{id}', 'LeaveController@update');
     Route::post('leave/approve/{id}', 'LeaveController@updateApprovalStatus');
     Route::get('leave/cancel/{id}', 'LeaveController@cancelLeave');
     Route::get('leave/remove/{id}', 'LeaveController@removeLeave');
 
 
     Route::post('working-day', 'WorkingDayController@store');
-    Route::get('working-day/{user_id}', 'WorkingDayController@show');
-    Route::post('working-day/{user_id}', 'WorkingDayController@update');
+    // Route::get('working-day/{user_id}', 'WorkingDayController@show');
+    // Route::post('working-day/{user_id}', 'WorkingDayController@update');
 
 
     Route::post('payment', 'PaymentController@store');
@@ -160,9 +160,9 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('loan-histories', 'LoanHistoryController@index');    // all transaction, user
 
 
-    Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv
-    Route::post('upload/user/profile-picture', 'FileController@setProfilePicture');
-    Route::get('get-profile-picture', 'FileController@getProfilePicture');
+    // Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv
+    // Route::post('upload/user/profile-picture', 'FileController@setProfilePicture');
+    // Route::get('get-profile-picture', 'FileController@getProfilePicture');
 
 });
 
