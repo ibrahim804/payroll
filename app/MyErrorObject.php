@@ -9,4 +9,5 @@ class MyErrorObject
     public $trashed_pictures = '/images/trashed_pictures';
     public $deposit_rate = 0.1;
     public $pf_yearly_rate = 0.12;
+    public $loan_statuses = array('started', 'running', 'finished');
 }
