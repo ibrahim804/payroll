@@ -111,13 +111,14 @@ Route::group(['middleware' => 'cors'] ,function(){
     // Route::get('leave-categories/trashed', 'LeaveCategoryController@trashedIndex');
     Route::post('leave-category', 'LeaveCategoryController@store');
     Route::get('leave-category/{id}', 'LeaveCategoryController@show');
-    Route::post('leave-category/{id}', 'LeaveCategoryController@update');
+    // Route::post('leave-category/{id}', 'LeaveCategoryController@update');
     // Route::get('leave-category/delete/{id}', 'LeaveCategoryController@destroy');
     // Route::get('leave-category/restore/{id}', 'LeaveCategoryController@restore');
 
 
     // Route::get('leave-counts', 'LeaveCountController@index');
-    Route::get('leave-count/{user_id}/{joining_date}', 'LeaveCountController@store');
+    Route::get('leave-count/{user_id}/{joining_date}', 'LeaveCountController@store');           // CALLED BY REDIRECT, NOT FROM API CALL
+    Route::get('leave-count/{leave_category_id}', 'LeaveCountController@createAfterNewLeaveCategoryCreation');     // CALLED BY REDIRECT, NOT FROM API CALL
     Route::get ('leave-counts-of-user', 'LeaveCountController@employeeIndex');
     // Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
     // Route::post('leave-count/{id}', 'LeaveCountController@update');

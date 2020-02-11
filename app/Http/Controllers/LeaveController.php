@@ -225,7 +225,8 @@ class LeaveController extends Controller
 
         if($available_LeaveToBeCancelledFirst->id != $leave->id)
         {
-            return $this->getErrorMessage('This leave can\'t be canceled now, leave no '.$available_LeaveToBeCancelledFirst->id.' should be cancelled first.');
+            // return $this->getErrorMessage('This leave can\'t be canceled now, leave no '.$available_LeaveToBeCancelledFirst->id.' should be cancelled first.');
+            return $this->getErrorMessage('This is not the latest leave of this category');
         }
 
         // $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
