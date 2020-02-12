@@ -62,18 +62,16 @@ class LeaveCountController extends Controller
         if($user->leave_counts->count() > 0) return $this->getErrorMessage('Already exists');
 
         $validate_attributes = [];
-        $loop_count = 0;
 
         foreach ($leave_categories as $leave_category) {
             $validate_attributes['user_id'] = $user->id;
-            $validate_attributes['leave_category_id'] = $leave_categories[$loop_count]->id;
-            $validate_attributes['leave_left'] = $leave_categories[$loop_count]->default_limit;
+            $validate_attributes['leave_category_id'] = $leave_category->id;
+            $validate_attributes['leave_left'] = $leave_category->default_limit;
             $validate_attributes['leave_count_start'] = $user->joining_date;
             $validate_attributes['leave_count_expired'] = new DateTime($validate_attributes['leave_count_start']);
             $validate_attributes['leave_count_expired'] = date_add($validate_attributes['leave_count_expired'], date_interval_create_from_date_string('1 year'));
 
             $leave_count = LeaveCount::create($validate_attributes);
-            $loop_count++;
         }
 
         return
@@ -88,7 +86,7 @@ class LeaveCountController extends Controller
 
     public function createAfterNewLeaveCategoryCreation($leave_category_id)   // CALLED BY REDIRECT (AFTER NEW LEAVE CATEGORY CREATION), NOT BY ROUTE.
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave category');
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave count');
 
         $leave_category = Leave_category::find($leave_category_id);
         $all_users = User::all();
