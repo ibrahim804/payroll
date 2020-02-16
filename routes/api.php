@@ -161,7 +161,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('loan-histories', 'LoanHistoryController@index');    // all transaction, user
 
 
-    // Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv
+    Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv
     // Route::post('upload/user/profile-picture', 'FileController@setProfilePicture');
     // Route::get('get-profile-picture', 'FileController@getProfilePicture');
 
