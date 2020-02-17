@@ -48,7 +48,7 @@ class LeaveCountController extends Controller
     //     return $infos;
     // }
 
-    public function store($user_id, $joining_date)      // CALLED BY REDIRECT (AFTER USER REGISTRATION), NOT BY ROUTE.
+    public function store($user_id, $joining_date)      // CALLED BY REDIRECT FROM register METHOD IN UserController (AFTER USER REGISTRATION), NOT BY ROUTE.
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create any leave count');
 

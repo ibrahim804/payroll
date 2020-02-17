@@ -53,6 +53,8 @@ class UserController extends Controller
 
             $infos[$i] = new User;
 
+            if($user->isAdmin($user->id) == 'true') continue;
+
             $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
             $infos[$i]->email = $user->email;
@@ -152,7 +154,7 @@ class UserController extends Controller
         */
 
         $user = User::create($this->getProcessedInputsWhileCreatingUser($request));
-        return redirect('api/leave-count'.'/'.$user->id.'/'.$user->joining_date);
+        return redirect('api/leave-count'.'/'.$user->id.'/'.$user->joining_date);       // REDIRECTS TO STORE METHOD
     }
 
     /*
