@@ -86,6 +86,16 @@ class LeaveController extends Controller
 
         if(! $leave_count) return $this->getErrorMessage('This user has no leave left record with this leave category');
 
+        $invalid_type = Leave_category::find($validate_attributes['leave_category_id'])->leave_type;
+
+        if(
+            ($invalid_type == $this->myObject->gender_specialized_leave_categories[0] and auth()->user()->gender == 'female') or
+            ($invalid_type == $this->myObject->gender_specialized_leave_categories[1] and auth()->user()->gender == 'male')
+
+        ) {
+            return $this->getErrorMessage('Before taking this type of leave, change your gender first');
+        }
+
         $validate_attributes['user_id'] = auth()->id();
         $validate_attributes['month'] = (new DateTime($validate_attributes['start_date']))->format('M');
         $validate_attributes['year'] = (new DateTime($validate_attributes['start_date']))->format('Y');
@@ -190,6 +200,16 @@ class LeaveController extends Controller
 
         if($leave->approval_status == $this->decision[1]) return $this->getErrorMessage('Leave already Accepted, you can\'t update anymore');
 
+        $invalid_type = $leave->leave_category->leave_type;
+
+        if(
+            ($invalid_type == $this->myObject->gender_specialized_leave_categories[0] and $leave->user->gender == 'female') or
+            ($invalid_type == $this->myObject->gender_specialized_leave_categories[1] and $leave->user->gender == 'male')
+
+        ) {
+            return $this->getErrorMessage('Gender doesn\'t match');
+        }
+
         if($decision_str == $this->decision[1])
         {
             $leave->unpaid_count = $this->calculateUnpaidLeave($leave);
@@ -208,7 +228,7 @@ class LeaveController extends Controller
         ];
     }
 
-    public function cancelLeave($id)
+    public function cancelLeave($id)    // needs to work with new leave_categories, paternity, maternity...
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
 
@@ -258,7 +278,7 @@ class LeaveController extends Controller
 
         if($leave->approval_status != $this->decision[2])
         {
-            return $this->getErrorMessage('Leave already responsed, you can\'t remove it');
+            return $this->getErrorMessage('Leave already responded, you can\'t remove it');
         }
 
         $leave->delete();
@@ -304,20 +324,48 @@ class LeaveController extends Controller
 
     private function calculateUnpaidLeave($leave)
     {
-        // $requested_days = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
+        if($this->calculateForGenderSpecialLeave($leave) == 1) return 0;
+
         $requested_days = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
 
         if($requested_days <= $leave_count->leave_left)
         {
-            $leave_count->update(['leave_left' => ($leave_count->leave_left - $requested_days)]);
+            // $leave_count->update(['leave_left' => ($leave_count->leave_left - $requested_days)]);
+            $this->updateLeaveCountsOfSameCategories($leave, ($leave_count->leave_left - $requested_days));
             return 0;
         }
 
         $temp = $requested_days - $leave_count->leave_left;
+        // $leave_count->update(['leave_left' => 0]);
+        $this->updateLeaveCountsOfSameCategories($leave, 0);
+        
+        return $temp;
+    }
+
+    private function updateLeaveCountsOfSameCategories($leave, $cnt)
+    {
+        $leave_counts = $leave->user->leave_counts->where('leave_category_id', '<', 4); // HARD-CODED
+
+        foreach($leave_counts as $leave_count) {
+            $leave_count->update(['leave_left' => $cnt]);
+        }
+    }
+
+    private function calculateForGenderSpecialLeave($leave)   // misty khawan :)        returns boolean
+    {
+        if(
+            $leave->leave_category->leave_type != $this->myObject->gender_specialized_leave_categories[0] and
+            $leave->leave_category->leave_type != $this->myObject->gender_specialized_leave_categories[1]
+        ) {
+            return 0;
+        }
+
+        $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
         $leave_count->update(['leave_left' => 0]);
 
-        return $temp;
+        return 1;
+
     }
 
     // private function getDaysDiffOfTwoDates($start, $finish)                         // Returns actual difference of two dates

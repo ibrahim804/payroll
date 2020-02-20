@@ -20,6 +20,7 @@ class CreateLeaveCountsTable extends Migration
             $table->integer('leave_left');
             $table->date('leave_count_start');
             $table->date('leave_count_expired');
+            $table->integer('times_already_taken')->default(0);
             $table->timestamps();
         });
     }

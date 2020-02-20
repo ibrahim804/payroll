@@ -14,6 +14,7 @@ class LeaveCount extends Model
         'leave_left',
         'leave_count_start',
         'leave_count_expired',
+        'times_already_taken',
     ];
 
     protected $hidden = [

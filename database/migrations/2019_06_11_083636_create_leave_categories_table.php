@@ -17,6 +17,7 @@ class CreateLeaveCategoriesTable extends Migration
             $table->increments('id');
             $table->string('leave_type');
             $table->integer('default_limit');
+            $table->integer('times_can_take')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

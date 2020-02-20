@@ -48,7 +48,7 @@ class LeaveCountController extends Controller
     //     return $infos;
     // }
 
-    public function store($user_id, $joining_date)      // CALLED BY REDIRECT FROM register METHOD IN UserController (AFTER USER REGISTRATION), NOT BY ROUTE.
+    public function store($user_id)      // CALLED BY REDIRECT FROM register METHOD IN UserController (AFTER USER REGISTRATION), NOT BY ROUTE.
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create any leave count');
 
@@ -63,7 +63,15 @@ class LeaveCountController extends Controller
 
         $validate_attributes = [];
 
-        foreach ($leave_categories as $leave_category) {
+        foreach ($leave_categories as $leave_category) { // casual and sick and block and (paternity or maternity)
+
+            if(
+                ($user->gender == 'male' and $leave_category->leave_type == $this->myObject->gender_specialized_leave_categories[1]) or
+                ($user->gender == 'female' and $leave_category->leave_type == $this->myObject->gender_specialized_leave_categories[0])
+            ) {
+                continue;
+            }
+
             $validate_attributes['user_id'] = $user->id;
             $validate_attributes['leave_category_id'] = $leave_category->id;
             $validate_attributes['leave_left'] = $leave_category->default_limit;
@@ -93,6 +101,14 @@ class LeaveCountController extends Controller
         $validate_attributes = [];
 
         foreach ($all_users as $user) {
+
+            if(
+                ($user->gender == 'male' and $leave_category->leave_type == $this->myObject->gender_specialized_leave_categories[1]) or
+                ($user->gender == 'female' and $leave_category->leave_type == $this->myObject->gender_specialized_leave_categories[0])
+            ) {
+                continue;
+            }
+
             $validate_attributes['user_id'] = $user->id;
             $validate_attributes['leave_category_id'] = $leave_category->id;
             $validate_attributes['leave_left'] = $leave_category->default_limit;

@@ -117,8 +117,8 @@ Route::group(['middleware' => 'cors'] ,function(){
 
 
     // Route::get('leave-counts', 'LeaveCountController@index');
-    Route::get('leave-count/{user_id}/{joining_date}', 'LeaveCountController@store');           // CALLED BY REDIRECT, NOT FROM API CALL
-    Route::get('leave-count/{leave_category_id}', 'LeaveCountController@createAfterNewLeaveCategoryCreation');     // CALLED BY REDIRECT, NOT FROM API CALL
+    Route::get('leave-count/user/{user_id}', 'LeaveCountController@store');           // CALLED BY REDIRECT, NOT FROM API CALL
+    Route::get('leave-count/leave-category/{leave_category_id}', 'LeaveCountController@createAfterNewLeaveCategoryCreation');     // CALLED BY REDIRECT, NOT FROM API CALL
     Route::get ('leave-counts-of-user', 'LeaveCountController@employeeIndex');
     // Route::get('leave-count/{user_id}/{leave_category_id}', 'LeaveCountController@show');
     // Route::post('leave-count/{id}', 'LeaveCountController@update');

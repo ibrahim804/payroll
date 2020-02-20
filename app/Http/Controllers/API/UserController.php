@@ -20,7 +20,7 @@ class UserController extends Controller
 {
 
     /*
-        CustomsErrorsTrait is a trait which contains some methods. Evety Controller that uses CustomsErrorsTrait can access all it's methods.
+        CustomsErrorsTrait is a trait which contains some methods. Every Controller that uses CustomsErrorsTrait can access all it's methods.
          To access some methods globally, we generally create a trait and write function there.
     */
 
@@ -154,39 +154,32 @@ class UserController extends Controller
         */
 
         $user = User::create($this->getProcessedInputsWhileCreatingUser($request));
-        return redirect('api/leave-count'.'/'.$user->id.'/'.$user->joining_date);       // REDIRECTS TO STORE METHOD
+        return redirect('api/leave-count/user/'.$user->id);       // REDIRECTS TO STORE METHOD
     }
 
     /*
-        User can view only her/his user onfo, none else. But admin can
+        User can view only her/his user info, none else. But admin can
     */
 
-/*
-'user_id',
-'leave_category_id',
-'leave_left',
-'leave_count_start',
-'leave_count_expired',
-*/
-    private function createEmployeesLeaveCounts($user)
-    {
-        $myObject = new MyErrorObject;
+    // private function createEmployeesLeaveCounts($user)
+    // {
+    //     $myObject = new MyErrorObject;
 
-        $validate_attributes = [];
-        $validate_attributes['user_id'] = $user->id;
-        $validate_attributes['leave_count_start'] = $user->joining_date;
-        $joining_date_seconds = strtotime($validate_attributes['leave_count_start']);
-        $new_date_seconds = strtotime('+ 1 year', $joining_date_seconds);
-        $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
+    //     $validate_attributes = [];
+    //     $validate_attributes['user_id'] = $user->id;
+    //     $validate_attributes['leave_count_start'] = $user->joining_date;
+    //     $joining_date_seconds = strtotime($validate_attributes['leave_count_start']);
+    //     $new_date_seconds = strtotime('+ 1 year', $joining_date_seconds);
+    //     $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
 
-        $validate_attributes['leave_category_id'] = 1;
-        $validate_attributes['leave_left'] = $myObject->casual_gift;
-        LeaveCount::create($validate_attributes);
+    //     $validate_attributes['leave_category_id'] = 1;
+    //     $validate_attributes['leave_left'] = $myObject->casual_gift;
+    //     LeaveCount::create($validate_attributes);
 
-        $validate_attributes['leave_category_id'] = 2;
-        $validate_attributes['leave_left'] = $myObject->sick_gift;
-        LeaveCount::create($validate_attributes);
-    }
+    //     $validate_attributes['leave_category_id'] = 2;
+    //     $validate_attributes['leave_left'] = $myObject->sick_gift;
+    //     LeaveCount::create($validate_attributes);
+    // }
 
     public function user($id)
     {
