@@ -126,6 +126,7 @@ class LeaveController extends Controller
             $leaves[$i]->leave_available = $user->leave_counts->where(
                 'leave_category_id', $leaves[$i]->leave_category_id
             )->first()->leave_left;
+            $leaves[$i]->leave_type = Leave_category::find($leaves[$i]->leave_category_id)->leave_type;
         }
 
         return
@@ -339,7 +340,7 @@ class LeaveController extends Controller
         $temp = $requested_days - $leave_count->leave_left;
         // $leave_count->update(['leave_left' => 0]);
         $this->updateLeaveCountsOfSameCategories($leave, 0);
-        
+
         return $temp;
     }
 
@@ -362,7 +363,9 @@ class LeaveController extends Controller
         }
 
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
-        $leave_count->update(['leave_left' => 0]);
+        $leave_count->leave_left = 0;
+        $leave_count->times_already_taken = $leave_count->times_already_taken + 1;
+        $leave_count->save();
 
         return 1;
 
