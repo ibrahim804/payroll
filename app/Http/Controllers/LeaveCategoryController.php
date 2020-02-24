@@ -6,6 +6,7 @@ use App\Leave_category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\MyErrorObject;
+use DB;
 
 class LeaveCategoryController extends Controller
 {
@@ -19,16 +20,21 @@ class LeaveCategoryController extends Controller
     public function index()
     {
         $myObject = new MyErrorObject;
-        $leave_categories = null;
 
-        if(auth()->user()->gender == 'female')
-        {
-            $leave_categories = Leave_category::where('leave_type', '<>', $myObject->gender_specialized_leave_categories[0])->get();
-        }
-        else if(auth()->user()->gender == 'male')
-        {
-            $leave_categories = Leave_category::where('leave_type', '<>', $myObject->gender_specialized_leave_categories[1])->get();
-        }
+        $index_gender = (auth()->user()->gender == 'male') ? 0 : 1;
+        $restricted_type = $myObject->gender_specialized_leave_categories[(int)!$index_gender];
+        $semi_restricted_type = $myObject->gender_specialized_leave_categories[(int)$index_gender];
+
+        $special_category = Leave_category::where('leave_type', $semi_restricted_type)->first();
+        $already_taken = auth()->user()->leave_counts->where('leave_category_id', $special_category->id)->first()->times_already_taken;
+        $can_take = $special_category->times_can_take;
+        $condition = ($already_taken < $can_take) ? "true" : "leave_type != '$semi_restricted_type'";
+
+        $leave_categories = DB::select("
+            select * from leave_categories
+            where leave_type != '$restricted_type'
+            and $condition
+        ");
 
         return
         [
