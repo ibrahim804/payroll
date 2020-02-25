@@ -432,7 +432,8 @@ class LeaveController extends Controller
 
     private function renewLeaveCountAll()
     {
-        $leave_counts = LeaveCount::all();
+        $allowed_leave_category_ids = Leave_category::whereIn('leave_type', $this->myObject->general_leave_catagories)->pluck('id');
+        $leave_counts = LeaveCount::whereIn('leave_category_id', $allowed_leave_category_ids)->get();
 
         foreach ($leave_counts as $leave_count) {
             $this->renewLeaveCountAnEmployee($leave_count);
@@ -446,20 +447,13 @@ class LeaveController extends Controller
 
         if($today_seconds < $expired_seconds) return;
 
-        $categoryIdMapsDefaultLimit = [];
-        $leave_categories = Leave_category::all();
-
-        foreach ($leave_categories as $leave_category) { // id->limit
-            $categoryIdMapsDefaultLimit[$leave_category->id] = $leave_category->default_limit;
-        }
-
         $validate_attributes = [];
         $validate_attributes['leave_count_start'] = $leave_count->leave_count_expired;
         $new_date_seconds = strtotime('+ 1 year', $expired_seconds); // second param should be in seconds
         $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
-        $validate_attributes['leave_left'] = $categoryIdMapsDefaultLimit[$leave_count->leave_category_id];
+        $validate_attributes['leave_left'] = $leave_count->leave_category->default_limit;
 
-        $leave_count = $leave_count->update($validate_attributes);
+        $leave_count->update($validate_attributes);
     }
 }
 

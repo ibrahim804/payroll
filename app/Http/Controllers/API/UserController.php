@@ -104,6 +104,8 @@ class UserController extends Controller
             $user = Auth::user();   // user is now logged in
             $success['token'] = $user->createToken(config('app.name'))->accessToken;    // create a token
 
+            if($user->verification_code) $user->update(['verification_code' => NULL]);
+
             return
             [
                 [
