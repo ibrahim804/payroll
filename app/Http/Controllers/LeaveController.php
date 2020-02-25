@@ -229,7 +229,7 @@ class LeaveController extends Controller
         ];
     }
 
-    public function cancelLeave($id)    // needs to work with new leave_categories, paternity, maternity...
+    public function cancelLeave($id)    // ADMIN TASK
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
 
@@ -237,29 +237,33 @@ class LeaveController extends Controller
 
         if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no cancel option');
 
-        $available_LeaveToBeCancelledFirst = Leave::where([
-
-                ['user_id', $leave->user_id],
-                ['leave_category_id', $leave->leave_category_id],
-
-            ])->orderBy('last_accepted_at', 'desc')->first();
-
-        if($available_LeaveToBeCancelledFirst->id != $leave->id)
+        if($this->attemptsToCancelUnTrackedLeave($leave))
         {
-            // return $this->getErrorMessage('This leave can\'t be canceled now, leave no '.$available_LeaveToBeCancelledFirst->id.' should be cancelled first.');
-            return $this->getErrorMessage('This is not the latest leave of this category');
+            return $this->getErrorMessage('Attempting to cancel an unserialized leave');
         }
 
         // $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
         $days_diff = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
-
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
-        $leave_count->leave_left = $leave_count->leave_left + ($days_diff - $leave->unpaid_count);
+        $special_index = ($leave->user->gender == 'male') ? 0 : 1;
+
+        if($leave_count->leave_category->leave_type == $this->myObject->gender_specialized_leave_categories[$special_index]) {
+            $leave_count->times_already_taken = $leave_count->times_already_taken - 1;  // time already taken value must be at least 1. don't worry :)
+            if($leave_count->times_already_taken == 0) {
+                $leave_count->leave_left = $leave_count->leave_category->default_limit;
+            } else {
+                $leave_count->leave_left = 0;
+            }
+            $leave_count->save();
+        } else {
+            // $leave_count->leave_left = $leave_count->leave_left + ($days_diff - $leave->unpaid_count);      // CONSIDER ALL SIMILAR LEAVE CATEGORIES
+            $this->updateLeaveCountsOfSameCategories($leave, $leave_count->leave_left + ($days_diff - $leave->unpaid_count));
+        }
+
         $leave->unpaid_count = 0;
         $leave->approval_status = $this->decision[0];
         $leave->last_accepted_at = NULL;
 
-        $leave_count->save();
         $leave->save();
 
         return
@@ -271,7 +275,32 @@ class LeaveController extends Controller
         ];
     }
 
-    public function removeLeave($id)
+    private function attemptsToCancelUnTrackedLeave($leave)
+    {
+        if(in_array($leave->leave_category->leave_type, $this->myObject->gender_specialized_leave_categories))
+        {
+            $available_LeaveToBeCancelledFirst = Leave::where([
+
+                ['user_id', $leave->user_id],
+                ['leave_category_id', $leave->leave_category_id],
+
+            ])->orderBy('last_accepted_at', 'desc')->first();
+        }
+        else
+        {
+            $same_categories_ids = Leave_category::whereIn('leave_type', $this->myObject->general_leave_catagories)
+                                                    ->pluck('id');
+            $available_LeaveToBeCancelledFirst = Leave::where('user_id', $leave->user_id)
+                                                        ->whereIn('leave_category_id', $same_categories_ids)
+                                                        ->orderBy('last_accepted_at', 'desc')
+                                                        ->first();
+        }
+
+        return ($available_LeaveToBeCancelledFirst->id == $leave->id) ? 0 : 1;
+
+    }
+
+    public function removeLeave($id)    // USER TASK
     {
         $leave = Leave::find($id);
 
@@ -346,7 +375,8 @@ class LeaveController extends Controller
 
     private function updateLeaveCountsOfSameCategories($leave, $cnt)
     {
-        $leave_counts = $leave->user->leave_counts->where('leave_category_id', '<', 4); // HARD-CODED
+        $same_category_ids = Leave_category::whereIn('leave_type', $this->myObject->general_leave_catagories)->pluck('id');
+        $leave_counts = $leave->user->leave_counts->whereIn('leave_category_id', $same_category_ids);
 
         foreach($leave_counts as $leave_count) {
             $leave_count->update(['leave_left' => $cnt]);
