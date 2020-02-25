@@ -354,20 +354,20 @@ class LeaveController extends Controller
 
     private function calculateUnpaidLeave($leave)
     {
-        if($this->calculateForGenderSpecialLeave($leave) == 1) return 0;
-
         $requested_days = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
 
+        $response = $this->calculateForGenderSpecialLeave($leave, $requested_days);
+
+        if($response >= 0) return $response;             // THIS IS SPECIAL CATEGORY, $response carry unpaid count for special category
+
         if($requested_days <= $leave_count->leave_left)
         {
-            // $leave_count->update(['leave_left' => ($leave_count->leave_left - $requested_days)]);
             $this->updateLeaveCountsOfSameCategories($leave, ($leave_count->leave_left - $requested_days));
             return 0;
         }
 
         $temp = $requested_days - $leave_count->leave_left;
-        // $leave_count->update(['leave_left' => 0]);
         $this->updateLeaveCountsOfSameCategories($leave, 0);
 
         return $temp;
@@ -383,21 +383,20 @@ class LeaveController extends Controller
         }
     }
 
-    private function calculateForGenderSpecialLeave($leave)   // misty khawan :)        returns boolean
+    private function calculateForGenderSpecialLeave($leave, $requested_days)   // misty khawan :)
     {
-        if(
-            $leave->leave_category->leave_type != $this->myObject->gender_specialized_leave_categories[0] and
-            $leave->leave_category->leave_type != $this->myObject->gender_specialized_leave_categories[1]
-        ) {
-            return 0;
-        }
+        if(! in_array($leave->leave_category->leave_type, $this->myObject->gender_specialized_leave_categories)) return -1;     // NORMAL CATEGORY
 
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
+        $temp = (int)$leave_count->leave_left;
         $leave_count->leave_left = 0;
         $leave_count->times_already_taken = $leave_count->times_already_taken + 1;
         $leave_count->save();
 
-        return 1;
+        // Returns a value of unpaid leave count for special category
+
+        if($requested_days <= $temp) return 0;
+        else return $requested_days - $temp;
 
     }
 
