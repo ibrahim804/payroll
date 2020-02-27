@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
+use App\Http\Controllers\SharedTrait;
 use App\User;
 use App\MyErrorObject;
 
 class FileController extends Controller
 {
-    use CustomsErrorsTrait;
+    use CustomsErrorsTrait, SharedTrait;
 
     public function __construct()
     {

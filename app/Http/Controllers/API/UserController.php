@@ -8,6 +8,7 @@ use App\User;
 use App\Designation;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CustomsErrorsTrait;
+use App\Http\Controllers\SharedTrait;
 use Validator;
 use File;
 use Illuminate\Support\Facades\Mail;
@@ -24,7 +25,7 @@ class UserController extends Controller
          To access some methods globally, we generally create a trait and write function there.
     */
 
-    use CustomsErrorsTrait;
+    use CustomsErrorsTrait, SharedTrait;
 
     public $successStatus = 200;
 
@@ -143,7 +144,7 @@ class UserController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can create user');
 
-        $validator = $this->validateUser($request->all());          // validateUser is a method of CustomsErrorsTrait. Please check
+        $validator = $this->validateUser($request->all());          // validateUser is a method of SharedTrait. Please check
 
         if ($validator->fails())
         {

@@ -20,7 +20,7 @@ class PaymentController extends Controller
         $this->middleware('auth:api'); //->except(['register', 'login']);
     }
 
-    public function index()
+    public function index()     // BASICALLY RETURNS PAYMENTS OF THIS YEAR-MONTH
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
@@ -86,7 +86,7 @@ class PaymentController extends Controller
         ];
     }
 
-    public function sendPaymentToMail()
+    public function sendPaymentToMail()         // etake arekto jate tulte hobe
     {
         $validate_attributes = request()->validate([
           'user_id' => 'required|string',
