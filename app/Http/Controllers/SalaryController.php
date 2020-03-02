@@ -6,12 +6,13 @@ use App\Salary;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
+use App\Http\Controllers\SharedTrait;
 use Validator;
 use App\MyErrorObject;
 
 class SalaryController extends Controller
 {
-    use CustomsErrorsTrait;
+    use CustomsErrorsTrait, SharedTrait;
     private $myObject;
 
     public function __construct()
@@ -166,21 +167,6 @@ class SalaryController extends Controller
         if($request->filled('other_deduction')) $data['other_deduction'] = $request->input('other_deduction');
 
         return $data;
-    }
-
-    private function calculatePayableAmount(Salary $salary)
-    {
-        $amounts = [];
-
-        $amounts['gross_salary'] = $salary['basic_salary']
-                                 + $salary['house_rent_allowance'] + $salary['medical_allowance']
-                                 + $salary['special_allowance'] + $salary['fuel_allowance']
-                                 + $salary['phone_bill_allowance'] + $salary['other_allowance'];
-
-        $amounts['total_deduction'] = $salary['tax_deduction'] + $salary['provident_fund'] + $salary['other_deduction'];
-        $amounts['net_salary'] = $amounts['gross_salary'] - $amounts['total_deduction'];
-
-        return $amounts;
     }
 }
 

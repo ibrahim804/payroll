@@ -6,10 +6,12 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use App\Http\Controllers\SharedTrait;
 
 class Payment extends Mailable
 {
     use Queueable, SerializesModels;
+    use SharedTrait;
 
     public $payment, $company_name, $full_name, $month, $year;
     public $basic, $house, $medical, $fuel, $phone, $special, $other_a, $tax, $pf, $other_d, $gross, $total_d, $net, $unpaid, $leave_d, $payable;
@@ -52,21 +54,6 @@ class Payment extends Mailable
 
         // $this->unpaid = (int) (($this->leave_d * 22) / $this->net);    // calculation error encountered
 
-    }
-
-    private function calculatePayableAmount($salary)
-    {
-        $amounts = [];
-
-        $amounts['gross_salary'] = $salary['basic_salary']
-                                 + $salary['house_rent_allowance'] + $salary['medical_allowance']
-                                 + $salary['special_allowance'] + $salary['fuel_allowance']
-                                 + $salary['phone_bill_allowance'] + $salary['other_allowance'];
-
-        $amounts['total_deduction'] = $salary['tax_deduction'] + $salary['provident_fund'] + $salary['other_deduction'];
-        $amounts['net_salary'] = $amounts['gross_salary'] - $amounts['total_deduction'];
-
-        return $amounts;
     }
 
     public function build()

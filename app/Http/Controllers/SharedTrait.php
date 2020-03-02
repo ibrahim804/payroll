@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use Validator;
+use App\Salary;
 
 trait SharedTrait
 {
@@ -29,4 +30,19 @@ trait SharedTrait
             'joining_date' => 'required|string',
         ]);
 	}
+
+    public function calculatePayableAmount(Salary $salary)
+    {
+        $amounts = [];
+
+        $amounts['gross_salary'] = $salary['basic_salary']
+                                 + $salary['house_rent_allowance'] + $salary['medical_allowance']
+                                 + $salary['special_allowance'] + $salary['fuel_allowance']
+                                 + $salary['phone_bill_allowance'] + $salary['other_allowance'];
+
+        $amounts['total_deduction'] = $salary['tax_deduction'] + $salary['provident_fund'] + $salary['other_deduction'];
+        $amounts['net_salary'] = $amounts['gross_salary'] - $amounts['total_deduction'];
+
+        return $amounts;
+    }
 }
