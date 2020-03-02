@@ -60,7 +60,8 @@ class UserController extends Controller
             $infos[$i]->full_name = $user->full_name;
             $infos[$i]->email = $user->email;
             $infos[$i]->phone = $user->phone;
-            $infos[$i]->salary = ($user->salary) ? $this->calculateNetSalary($user->salary) : 'N/A';
+            $infos[$i]->salary = ($user->salary) ? $this->calculatePayableAmount($user->salary)['net_salary'] : 'N/A';
+            $infos[$i]->gross_salary = ($user->salary) ? $this->calculatePayableAmount($user->salary)['gross_salary'] : 'N/A';
             $infos[$i]->company = ($user->company) ? $user->company->name : 'N/A';
             $infos[$i]->department = ($user->department) ? $user->department->department_name : 'N/A';
             $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
@@ -78,19 +79,6 @@ class UserController extends Controller
                 'users' => $infos,
             ]
         ];
-    }
-
-    /*
-        Takes salary object(record) and retrurns payable amount
-    */
-
-    private function calculateNetSalary($salary)
-    {
-        return $salary['basic_salary']
-            +  $salary['house_rent_allowance'] + $salary['medical_allowance']
-            +  $salary['special_allowance'] + $salary['fuel_allowance']
-            +  $salary['phone_bill_allowance'] + $salary['other_allowance']
-            -  $salary['tax_deduction'] -  $salary['provident_fund'] - $salary['other_deduction'];
     }
 
     /*
@@ -226,7 +214,7 @@ class UserController extends Controller
                     'joining_date' => $user->joining_date,
                     'phone' => $user->phone,
                     'present_address' => ($user->present_address)? $user->present_address: 'N/A',
-                    'net_salary' => ($user->salary) ? $this->calculateNetSalary($user->salary): 'N/A',
+                    'net_salary' => ($user->salary) ? $this->calculatePayableAmount($user->salary)['net_salary']: 'N/A',
                     'provident_fund' => $pf_amount,
                     'on_loan' => $lh_loan,
                     'available_pf' => $pf_avail,
