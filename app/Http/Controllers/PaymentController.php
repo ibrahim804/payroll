@@ -97,7 +97,7 @@ class PaymentController extends Controller
 
         $data = NULL;
         $index = 0;
-        $users = User::all();
+        $users = User::orderBy('department_id')->orderBy('designation_id')->get();
 
         $userCountMap = $this->getKeyUserIdValueUnpaidLeaveCount();
 
@@ -118,6 +118,10 @@ class PaymentController extends Controller
             $salary->payable_amount = $this->calculatePayableAmountAfterLeaveDeduction(
                 $salary->unpaid_leave_taken, $salary->gross_salary, $salary->net_salary
             );
+
+            $salary->full_name = $user->full_name;
+            $salary->department_name = $user->department->department_name;
+            $salary->designation = $user->designation->designation;
 
             $data[$index++] = $salary;
         }
