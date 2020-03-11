@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Payment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
+use App\Http\Controllers\SharedTrait;
 use App\User;
 use Carbon\Carbon;
 use App\Leave;
@@ -13,7 +14,7 @@ use App\Mail\Payment as PaymentMail;
 
 class PaymentController extends Controller
 {
-    use CustomsErrorsTrait;
+    use CustomsErrorsTrait, SharedTrait;
 
     public function __construct()
     {
@@ -29,19 +30,7 @@ class PaymentController extends Controller
             ['year', date("Y", strtotime('+6 hours'))],
         ])->pluck('user_id');
 
-        $leaves = Leave::where([
-            ['month', date("M", strtotime('+6 hours'))],
-            ['year', date("Y", strtotime('+6 hours'))],
-            ['approval_status', 'Accepted'],
-            ['unpaid_count', '>', 0],
-        ])->get();
-
-        $userCountMap = collect([]);
-
-        foreach ($leaves as $leave) {
-            if($userCountMap->has($leave->user_id)) $userCountMap[$leave->user_id] += (int)$leave->unpaid_count;
-            else $userCountMap[$leave->user_id] = (int)$leave->unpaid_count;
-        }
+        $userCountMap = $this->getKeyUserIdValueUnpaidLeaveCount();
 
         return
         [
@@ -102,9 +91,63 @@ class PaymentController extends Controller
         );
     }
 
-    public function show(Payment $payment)
+    public function getExportableData()
     {
-        //
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+
+        $data = NULL;
+        $index = 0;
+        $users = User::all();
+
+        $userCountMap = $this->getKeyUserIdValueUnpaidLeaveCount();
+
+        foreach ($users as $user) {
+
+            if(! $user->salary) continue;
+
+            $salary = $user->salary;
+            $calculated_amounts = $this->calculatePayableAmount($salary);
+
+            $salary->gross_salary = $calculated_amounts['gross_salary'];
+            $salary->total_deduction = $calculated_amounts['total_deduction'];
+            $salary->net_salary = $calculated_amounts['net_salary'];
+            $salary->unpaid_leave_taken = ($userCountMap->has($user->id)) ? $userCountMap[$user->id] : 0;
+            $salary->deduction_leave = $this->calculateLeaveDeduction(
+                $salary->unpaid_leave_taken, $salary->gross_salary
+            );
+            $salary->payable_amount = $this->calculatePayableAmountAfterLeaveDeduction(
+                $salary->unpaid_leave_taken, $salary->gross_salary, $salary->net_salary
+            );
+
+            $data[$index++] = $salary;
+        }
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'sheet' => $data,
+            ]
+        ];
+    }
+
+    private function getKeyUserIdValueUnpaidLeaveCount()
+    {
+        $unpaid_leaves = Leave::where([
+            ['month', date("M", strtotime('+6 hours'))],
+            ['year', date("Y", strtotime('+6 hours'))],
+            ['approval_status', 'Accepted'],
+            ['unpaid_count', '>', 0],
+        ])->get();
+
+        $userCountMap = collect([]);
+
+        foreach ($unpaid_leaves as $unpaid_leave) {
+            if($userCountMap->has($unpaid_leave->user_id)) $userCountMap[$unpaid_leave->user_id] += (int)$unpaid_leave->unpaid_count;
+            else $userCountMap[$unpaid_leave->user_id] = (int)$unpaid_leave->unpaid_count;
+        }
+
+        return $userCountMap;
     }
 
     private function validatePayment()

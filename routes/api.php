@@ -142,6 +142,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::post('payment', 'PaymentController@store');
     Route::get('payments', 'PaymentController@index');
     Route::post('payment/send-payment-to-mail', 'PaymentController@sendPaymentToMail');
+    Route::get('payment/generate-salary-sheet', 'PaymentController@getExportableData');
 
 
     Route::post('provident-fund', 'ProvidentFundController@store');

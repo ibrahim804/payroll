@@ -45,4 +45,21 @@ trait SharedTrait
 
         return $amounts;
     }
+
+    public function calculatePayableAmountAfterLeaveDeduction($unpaidCount, $grossSalary, $netSalary) {
+        return $netSalary - $this->calculateLeaveDeduction($unpaidCount, $grossSalary);
+    }
+
+    public function calculateLeaveDeduction($unpaidCount, $grossSalary) {
+        return ($grossSalary / 30) * $unpaidCount;
+    }
 }
+
+
+
+
+
+
+
+
+//
