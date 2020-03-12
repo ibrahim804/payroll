@@ -9,6 +9,7 @@ use App\Http\Controllers\CustomsErrorsTrait;
 use App\ProvidentFund;
 use App\LoanHistory;
 use App\MyErrorObject;
+use App\User;
 
 class LoanRequestController extends Controller
 {
@@ -29,6 +30,13 @@ class LoanRequestController extends Controller
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
         $loan_requests = LoanRequest::where('approval_status', $this->decision[2])->get();
+
+        foreach ($loan_requests as $loan_request) {
+            $user = User::find($loan_request->user_id);
+            $loan_request->full_name = $user->full_name;
+            $loan_request->department = $user->department->department_name;
+            $loan_request->designation = $user->designation->designation;
+        }
 
         return
         [
@@ -60,14 +68,22 @@ class LoanRequestController extends Controller
         }
 
         $loan_history = LoanHistory::where('user_id', $validate_attributes['user_id'])->latest()->first();
+        $count = LoanHistory::where('user_id', $validate_attributes['user_id'])->count();
 
-        if($loan_history and $loan_history->loan_status != $this->myObject->loan_statuses[2])
+        if($count and $loan_history->loan_status != $this->myObject->loan_statuses[2])
         {
             return $this->getErrorMessage('You have already taken a loan and didn\'t pay it fully');
         }
 
+        $count = LoanRequest::where([
+            ['user_id', $validate_attributes['user_id']],
+            ['approval_status', $this->decision[2]],
+        ])->count();
+
+        if($count) return $this->getErrorMessage('You have already a pending request');
+
         $loan_request = LoanRequest::create($validate_attributes);
-        $loan_request->update(['approval_status' => 'created_at']);
+        // $loan_request->update(['approval_status' => 'created_at']);
 
         return
         [
