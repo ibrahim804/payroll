@@ -37,6 +37,7 @@ class CreateUsersTable extends Migration
             $table->integer('salary_id')->nullable();
             $table->integer('working_day_id')->nullable();
             $table->date('joining_date');
+            $table->integer('deposit_pf')->default(0);
             $table->integer('verification_code')->nullable();       // code is sent to user's email when password is forgot
             $table->rememberToken();
             $table->timestamps();

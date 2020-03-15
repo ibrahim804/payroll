@@ -28,6 +28,7 @@ trait SharedTrait
             'department_id' => 'nullable|string',
 			'working_day_id' => 'nullable|string',
             'joining_date' => 'required|string',
+            'deposit_pf' => 'nullable|string',
         ]);
 	}
 

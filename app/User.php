@@ -57,6 +57,7 @@ class User extends Authenticatable
         'salary_id',
         'working_day_id',
         'joining_date',
+        'deposit_pf',
         'verification_code',
     ];
 

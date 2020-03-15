@@ -342,6 +342,7 @@ class UserController extends Controller
         if($request->filled('company_id')) $inputs['company_id'] = $request->input('company_id');
         if($request->filled('department_id')) $inputs['department_id'] = $request->input('department_id');
         if($request->filled('designation_id')) $inputs['designation_id'] = $request->input('designation_id');
+        if($request->filled('deposit_pf')) $inputs['deposit_pf'] = $request->input('deposit_pf');
 
         return $inputs;
     }
