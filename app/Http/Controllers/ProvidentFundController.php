@@ -21,27 +21,6 @@ class ProvidentFundController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    // public function index()
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
-    //
-    //     $all_pf = ProvidentFund::all();
-    //     $provident_funds = [];
-    //
-    //     for($index = sizeof($all_pf)-1; $index >= 0; $index--)
-    //     {
-    //         // code
-    //     }
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'provident_funds' => $provident_funds,
-    //         ]
-    //     ];
-    // }
-
     public function store()
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
