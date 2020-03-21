@@ -43,15 +43,8 @@ class SalaryController extends Controller
         $validate_attributes = $this->validateSalary();
         $user = User::find($validate_attributes['user_id']);
 
-        if($user->deposit_pf == 1)
-        {
-            $gross = $this->calculateGross($validate_attributes);
-            $validate_attributes['provident_fund'] = (double)$gross * $this->myObject->monthly_deposit_rate;
-        }
-        else
-        {
-            $validate_attributes['provident_fund'] = 0;
-        }
+        $gross = $this->calculateGross($validate_attributes);
+        $validate_attributes['provident_fund'] = (double)$gross * $this->myObject->monthly_deposit_rate * $user->deposit_pf;
 
         $salary = Salary::create($validate_attributes);
         $user->update(['salary_id' => $salary->id]);
@@ -119,6 +112,15 @@ class SalaryController extends Controller
 
         $salary->update($this->fitUpdatableInputs($request));
         $calculated_amounts = $this->calculatePayableAmount($salary);
+
+        $gross = $calculated_amounts['gross_salary'];
+        $new_pf = (double)$gross * $this->myObject->monthly_deposit_rate * $salary->user->deposit_pf;
+
+        if($new_pf != $salary->provident_fund)
+        {
+            $salary->update(['provident_fund' => $new_pf]);
+            $calculated_amounts = $this->calculatePayableAmount($salary);
+        }
 
         return
         [
