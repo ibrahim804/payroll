@@ -41,9 +41,20 @@ class SalaryController extends Controller
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Salary');
 
         $validate_attributes = $this->validateSalary();
-        $validate_attributes['provident_fund'] = (double)$validate_attributes['basic_salary'] * $this->myObject->deposit_rate;
+        $user = User::find($validate_attributes['user_id']);
+
+        if($user->deposit_pf == 1)
+        {
+            $gross = $this->calculateGross($validate_attributes);
+            $validate_attributes['provident_fund'] = (double)$gross * $this->myObject->monthly_deposit_rate;
+        }
+        else
+        {
+            $validate_attributes['provident_fund'] = 0;
+        }
+
         $salary = Salary::create($validate_attributes);
-        User::findOrFail($validate_attributes['user_id'])->update(['salary_id' => $salary->id]);
+        $user->update(['salary_id' => $salary->id]);
         $calculated_amounts = $this->calculatePayableAmount($salary);
 
         return

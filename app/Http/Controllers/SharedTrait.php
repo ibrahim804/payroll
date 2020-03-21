@@ -47,6 +47,14 @@ trait SharedTrait
         return $amounts;
     }
 
+    public function calculateGross($attributes)
+    {
+        return $attributes['basic_salary']
+             + $attributes['house_rent_allowance'] + $attributes['medical_allowance']
+             + $attributes['fuel_allowance'] + $attributes['phone_bill_allowance']
+             + $attributes['special_allowance'] + $attributes['other_allowance'];
+    }
+
     public function calculatePayableAmountAfterLeaveDeduction($unpaidCount, $grossSalary, $netSalary) {
         return $netSalary - $this->calculateLeaveDeduction($unpaidCount, $grossSalary);
     }
