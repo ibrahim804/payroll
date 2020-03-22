@@ -13,18 +13,6 @@ class MyErrorObject
     // public $pf_yearly_rate = 0.12;
 
     public $monthly_deposit_rate = 0.05;
-    public $initial_company_contribution_rate = -0.25;
-    public $yearly_company_contribution_increment = 0.25;
-    /*
-        after one year: 0.00
-        two: 0.25
-        three 0.50
-        four: 0.75
-        five: 1
-        six: 1
-        seven 1 ...
-        0 <= current_company_contribution_rate <= 1
-    */
 
     public $loan_statuses = array('started', 'running', 'finished');
 

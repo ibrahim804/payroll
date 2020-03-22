@@ -49,11 +49,8 @@ class Payment extends Mailable
         $this->total_d = $amounts['total_deduction'];
         $this->net = $amounts['net_salary'];
 
-        $this->leave_d = $this->payment->employee_monthly_cost;
+        $this->leave_d = $this->payment->employee_monthly_cost - $this->total_d;
         $this->payable = $this->payment->payable_amount;
-
-        // $this->unpaid = (int) (($this->leave_d * 22) / $this->net);    // calculation error encountered
-
     }
 
     public function build()
