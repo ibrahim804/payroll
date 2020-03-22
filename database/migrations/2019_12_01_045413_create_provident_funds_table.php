@@ -19,14 +19,17 @@ class CreateProvidentFundsTable extends Migration
             $table->string('month');
             $table->string('year');
             $table->double('opening_balance');
-            $table->double('basic_salary');
+            $table->double('gross_salary');
             $table->double('deposit_rate');
             $table->double('deposit_balance');
-            $table->double('pf_yearly_rate');
+            $table->double('opening_and_deposit');
+            $table->integer('payment_in_times');
+            $table->double('company_contribution_rate');
+            $table->double('company_contribution');
             $table->double('closing_balance');
             $table->timestamps();
         });
-    } // default nullable
+    }
 
     /**
      * Reverse the migrations.
