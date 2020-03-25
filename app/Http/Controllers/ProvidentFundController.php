@@ -22,14 +22,26 @@ class ProvidentFundController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    public function store()
+    public function store($user_id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
-        $validate_attributes = $this->validateProvidentFund();
+        $validate_attributes = [];
+        $validate_attributes['user_id'] = $user_id;
         $user = User::find($validate_attributes['user_id']);
 
         if(! $user) return $this->getErrorMessage('User doesn\'t exist');
+
+        if($user->deposit_pf == 0)
+        {
+            return
+            [
+                [
+                    'status' => 'OK',
+                    'message' => 'Only Payment Create, PF calculation is not available',
+                ]
+            ];
+        }
 
         $running_month = date("M", strtotime('+6 hours'));
         $running_year  = date("Y", strtotime('+6 hours'));
@@ -62,7 +74,7 @@ class ProvidentFundController extends Controller
         [
             [
                 'status' => 'OK',
-                'provident_fund' => $provident_fund,
+                'message' => 'Payment And PF Record Created',
             ]
         ];
     }
@@ -78,13 +90,6 @@ class ProvidentFundController extends Controller
                 'provident_fund' => $provident_fund,
             ]
         ];
-    }
-
-    private function validateProvidentFund()
-    {
-        return request()->validate ([
-            'user_id' => 'required|string',
-        ]);
     }
 
     private function getCompanyContributionRate($payment_in_times)

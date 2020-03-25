@@ -145,7 +145,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::get('payment/generate-salary-sheet', 'PaymentController@getExportableData');
 
 
-    Route::post('provident-fund', 'ProvidentFundController@store');
+    Route::get('provident-fund/{user_id}', 'ProvidentFundController@store'); // CALLED FROM PF STORE
     Route::get('provident-fund', 'ProvidentFundController@show');
 
 

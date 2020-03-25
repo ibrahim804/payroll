@@ -66,13 +66,7 @@ class PaymentController extends Controller
 
         $payment = Payment::create($validate_attributes);
 
-        return
-        [
-            [
-                'status' => 'OK',
-                'payment' => $payment,
-            ]
-        ];
+        return redirect('api/provident-fund/'.$user->id);       // REDIRECTS TO PF STORE METHOD
     }
 
     public function sendPaymentToMail()         // etake arekto jate tulte hobe
