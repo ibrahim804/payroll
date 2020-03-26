@@ -6,6 +6,7 @@ use App\LoanRequest;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Http\Controllers\CustomsErrorsTrait;
+use App\Http\Controllers\SharedTrait;
 use App\ProvidentFund;
 use App\LoanHistory;
 use App\MyErrorObject;
@@ -13,7 +14,7 @@ use App\User;
 
 class LoanRequestController extends Controller
 {
-    use CustomsErrorsTrait;
+    use CustomsErrorsTrait, SharedTrait;
 
     private $myObject;
 
@@ -25,7 +26,7 @@ class LoanRequestController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    public function index()
+    public function index()     // BASICALLY RETURNS ALL PENDING REQUESTS
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
@@ -50,46 +51,45 @@ class LoanRequestController extends Controller
     public function store()
     {
         $validate_attributes = $this->validateLoanRequest();
+        $size = auth()->user()->loan_requests->count();
+
+        if($size > 0)
+        {
+            $latest_request = auth()->user()->loan_requests[$size - 1];
+
+            if($latest_request->approval_status == $this->decision[2])
+            {
+                return $this->getErrorMessage('You have already a pending request');
+            }
+        }
+
         $validate_attributes['user_id'] = auth()->id();
         $validate_attributes['application_date'] = date('Y-m-d H:i:s', strtotime('+6 hours'));
-        $validate_attributes['requested_amount'] = (double)$validate_attributes['requested_amount'];
-        $provident_fund = ProvidentFund::where(
-            'user_id', $validate_attributes['user_id']
-        )->latest()->first();
+        $obj = $this->getLoanableAmountLimit()[0];
+        $validate_attributes['available_amount'] = $obj['gross'];
         $validate_attributes['approval_status'] = $this->decision[2];
 
-        if(! $provident_fund) return $this->getErrorMessage('No Provident Fund Record Found');
+        if($validate_attributes['available_amount'] == -1) return $this->getErrorMessage('Salary doesn\'t exist');
 
-        $validate_attributes['provident_fund'] = $provident_fund->closing_balance;
+        $size = auth()->user()->loan_histories->count();
 
-        if($validate_attributes['provident_fund'] < $validate_attributes['requested_amount'])
+        if($size > 0)
         {
-            return $this->getErrorMessage('Can\'t take loan more than that you have');
+            $latest_history = auth()->user()->loan_histories[$size - 1];
+
+            if($latest_history->loan_status != $this->myObject->loan_statuses[2])
+            {
+                return $this->getErrorMessage('You have already taken a loan and didn\'t pay it fully');
+            }
         }
-
-        $loan_history = LoanHistory::where('user_id', $validate_attributes['user_id'])->latest()->first();
-        $count = LoanHistory::where('user_id', $validate_attributes['user_id'])->count();
-
-        if($count and $loan_history->loan_status != $this->myObject->loan_statuses[2])
-        {
-            return $this->getErrorMessage('You have already taken a loan and didn\'t pay it fully');
-        }
-
-        $count = LoanRequest::where([
-            ['user_id', $validate_attributes['user_id']],
-            ['approval_status', $this->decision[2]],
-        ])->count();
-
-        if($count) return $this->getErrorMessage('You have already a pending request');
 
         $loan_request = LoanRequest::create($validate_attributes);
-        // $loan_request->update(['approval_status' => 'created_at']);
 
         return
         [
             [
                 'status' => 'OK',
-                'loan_request' => $loan_request,
+                'message' => 'Loan Request Created',
             ]
         ];
     }
@@ -116,7 +116,7 @@ class LoanRequestController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
-        $validate_attributes = request()->validate(['approval_status' => 'required|string']);
+        $validate_attributes = request()->validate(['approval_status' => 'required|string']); // must be 0 or 1
 
         $loan_request = LoanRequest::find($id);
 
@@ -150,20 +150,51 @@ class LoanRequestController extends Controller
     {
         return request()->validate ([
             'requested_amount' => 'required|string',
+            'contract_duration' => 'required|string',
         ]);
     }
 
-    private function createLoanHistory($loan_request)   // Look again what you did.
+    public function getLoanableAmountLimit()
+    {
+        if(! auth()->user()->salary)
+        {
+            return
+            [
+                [
+                    'status' => 'FAILED',
+                    'gross' => -1,
+                ]
+            ];
+        }
+
+        $join = Carbon::parse(auth()->user()->joining_date);
+        $today = Carbon::now();
+        $diff = $join->diffInYears($today);
+
+        $gross = $this->calculateGross(auth()->user()->salary);
+        $gross = ($diff >= 2) ? 1.5*$gross : $gross;
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'gross' => $gross,
+            ]
+        ];
+    }
+
+    private function createLoanHistory($loan_request)
     {
         $validate_attributes = [];
         $validate_attributes['user_id'] = $loan_request->user_id;
         $validate_attributes['month'] = date("M", strtotime('+6 hours'));
         $validate_attributes['year'] = date("Y", strtotime('+6 hours'));
         $validate_attributes['month_count'] = 0;
-        $validate_attributes['actual_loan_amount'] = $loan_request['requested_amount'];
-        $validate_attributes['yearly_interest_rate'] = $this->myObject->pf_yearly_rate;
-        $validate_attributes['current_loan_amount'] = $loan_request['requested_amount'];
-        $validate_attributes['paid_amount'] = 0;
+        $validate_attributes['contract_duration'] = $loan_request->contract_duration;
+        $validate_attributes['actual_loan_amount'] = $loan_request->requested_amount;
+        $validate_attributes['current_loan_amount'] = $loan_request->requested_amount;
+        $validate_attributes['paid_this_month'] = 0;
+        $validate_attributes['total_paid_amount'] = 0;
         $validate_attributes['loan_status'] = $this->myObject->loan_statuses[0];
 
         $loan_history = LoanHistory::create($validate_attributes);

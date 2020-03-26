@@ -22,7 +22,7 @@ class ProvidentFundController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    public function store($user_id)
+    public function store($user_id)     // CALLED FROM PAYMENT STORE METHOD
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
@@ -32,16 +32,7 @@ class ProvidentFundController extends Controller
 
         if(! $user) return $this->getErrorMessage('User doesn\'t exist');
 
-        if($user->deposit_pf == 0)
-        {
-            return
-            [
-                [
-                    'status' => 'OK',
-                    'message' => 'Only Payment Create, PF calculation is not available',
-                ]
-            ];
-        }
+        if($user->deposit_pf == 0) return $this->showSuccessMessage('Only Payment Create, PF calculation is not available');
 
         $running_month = date("M", strtotime('+6 hours'));
         $running_year  = date("Y", strtotime('+6 hours'));
@@ -51,7 +42,7 @@ class ProvidentFundController extends Controller
             ['year', $running_year],
         ])->count();
 
-        if($isExist > 0) return $this->getErrorMessage('PF for this month already exists');
+        if($isExist > 0) return $this->showSuccessMessage('Payment Done, but PF for this month already exists');
 
         $validate_attributes['month'] = $running_month;
         $validate_attributes['year']  = $running_year;
@@ -70,13 +61,7 @@ class ProvidentFundController extends Controller
 
         $provident_fund = ProvidentFund::create($validate_attributes);
 
-        return
-        [
-            [
-                'status' => 'OK',
-                'message' => 'Payment And PF Record Created',
-            ]
-        ];
+        return $this->showSuccessMessage('Payment And PF Record Created');
     }
 
     public function show()
