@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::group(['middleware' => 'cors'] ,function(){
+Route::group(['middleware' => 'cors'], function(){
 
     Route::get('/', function(){
         return
@@ -153,6 +153,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::post('loan-request', 'LoanRequestController@store');
     Route::post('loan-request/{id}', 'LoanRequestController@update');
     Route::get('loan-pending-request', 'LoanRequestController@show');
+    Route::get('loan-request/loanable-amount', 'LoanRequestController@getLoanableAmountLimit');
 
 
     Route::get('loan-history/pay/eligibility', 'LoanHistoryController@checkEligibility'); // check user

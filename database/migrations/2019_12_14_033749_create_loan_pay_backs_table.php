@@ -14,7 +14,7 @@ class CreateLoanPayBacksTable extends Migration
     public function up()
     {
         Schema::create('loan_pay_backs', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->integer('user_id');
             $table->string('month');
             $table->string('year');

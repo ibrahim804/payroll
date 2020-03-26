@@ -14,11 +14,12 @@ class CreateLoanRequestsTable extends Migration
     public function up()
     {
         Schema::create('loan_requests', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->integer('user_id');
             $table->timestamp('application_date');
-            $table->double('provident_fund');
+            $table->double('available_amount');
             $table->double('requested_amount');
+            $table->integer('contract_duration'); // in month
             $table->string('approval_status');
             $table->timestamps();
         });

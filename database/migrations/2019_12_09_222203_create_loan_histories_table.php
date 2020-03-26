@@ -14,15 +14,16 @@ class CreateLoanHistoriesTable extends Migration
     public function up()
     {
         Schema::create('loan_histories', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->integer('user_id');
             $table->string('month');
             $table->string('year');
             $table->integer('month_count');
+            $table->integer('contract_duration');
             $table->double('actual_loan_amount');
-            $table->double('yearly_interest_rate');
             $table->double('current_loan_amount');
-            $table->double('paid_amount');
+            $table->double('paid_this_month');
+            $table->double('total_paid_amount');
             $table->string('loan_status');
             $table->timestamps();
         });

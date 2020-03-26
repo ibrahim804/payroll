@@ -14,7 +14,7 @@ class CreateProvidentFundsTable extends Migration
     public function up()
     {
         Schema::create('provident_funds', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->integer('user_id');
             $table->string('month');
             $table->string('year');
