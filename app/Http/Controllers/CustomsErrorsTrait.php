@@ -14,4 +14,15 @@ trait CustomsErrorsTrait
             ]
         ];
     }
+
+	public function showSuccessMessage($message)
+	{
+		return
+        [
+            [
+                'status' => 'OK',
+                'message' => $message,
+            ]
+        ];
+	}
 }

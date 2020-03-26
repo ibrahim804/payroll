@@ -7,7 +7,7 @@ use App\User;
 
 class LoanRequest extends Model
 {
-    protected $fillable = ['user_id', 'application_date', 'provident_fund', 'requested_amount', 'approval_status'];
+    protected $fillable = ['user_id', 'application_date', 'available_amount', 'requested_amount', 'contract_duration', 'approval_status'];
 
     protected $hidden = [];
 
