@@ -116,7 +116,10 @@ class LoanRequestController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
-        $validate_attributes = request()->validate(['approval_status' => 'required|string']); // must be 0 or 1
+        $validate_attributes = request()->validate([
+            'approval_status' => 'required|string',
+            'contract_duration' => 'required|string',
+        ]); // must be 0 or 1
 
         $loan_request = LoanRequest::find($id);
 
@@ -133,6 +136,7 @@ class LoanRequestController extends Controller
 
         if($loan_request->approval_status == $this->decision[1])
         {
+            $loan_request->update(['contract_duration' => $validate_attributes['contract_duration']]);
             $loan_history = $this->createLoanHistory($loan_request);
         }
 
