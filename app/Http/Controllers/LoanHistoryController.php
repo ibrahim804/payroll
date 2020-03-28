@@ -34,61 +34,44 @@ class LoanHistoryController extends Controller
         ];
     }
 
-    public function store()     // PayBack Request
+    public function store()
     {
-        $onPendingCount = LoanPayBack::where([
-            ['user_id', auth()->id()],
-            ['approval_status', $this->decision[2]],
-        ])->count();
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
 
-        if($onPendingCount > 0) return $this->getErrorMessage('Your last loan payment request on pending');
+        $validate_attributes = $this->validateLoanHistory();
 
-        $validate_attributes = $this->validateLoanHisrory();
+        $user = User::find($validate_attributes['user_id']);
+        $size = $user->loan_histories->count();
 
-        $isExist = LoanHistory::where([
-            ['user_id', auth()->id()],
-            ['month', date("M", strtotime('+6 hours'))],
-            ['year', date("Y", strtotime('+6 hours'))],
-        ])->count();
+        if($size == 0) return $this->getErrorMessage('User has no loan history');
 
-        if($isExist > 0) return $this->getErrorMessage('Already paid for this month');
+        $latest_loan_history = $user->loan_histories[$size - 1];
 
-        $immediate = LoanHistory::where('user_id', auth()->id())->latest()->first();
+        if($latest_loan_history->loan_status == $this->myObject->loan_statuses[2]) return $this->getErrorMessage('Latest loan is already finished');
 
-        if($immediate->loan_status == $this->myObject->loan_statuses[2])
-        {
-            return $this->getErrorMessage('No accepted loan request found.');
+        $running_month = date("M", strtotime('+6 hours'));
+        $running_year = date("Y", strtotime('+6 hours'));
+
+        if(
+            $latest_loan_history->month == $running_month &&
+            $latest_loan_history->year == $running_year
+        ) {
+            return $this->getErrorMessage('For first month of loan taken, user doesn\'t need to pay');
         }
 
-        $validate_attributes['user_id'] = auth()->id();
-        $validate_attributes['month'] = date("M", strtotime('+6 hours'));
-        $validate_attributes['year'] = date("Y", strtotime('+6 hours'));
-        $validate_attributes['month_count'] = (int)$this->calculateMonthDiff(
-            $immediate->year, $immediate->month, $validate_attributes['year'], $validate_attributes['month']
-        ) + (int)$immediate['month_count'];
-        $validate_attributes['actual_loan_amount'] = $immediate['actual_loan_amount'];
-        $validate_attributes['yearly_interest_rate'] = $immediate['yearly_interest_rate'];
-        $validate_attributes['paid_amount'] = (double)$validate_attributes['paid_amount'] + (double)$immediate['paid_amount'];
-        $validate_attributes['current_loan_amount'] = $this->calculateCurrentLoanAmount($validate_attributes);
+        $validate_attributes['month'] = $running_month;
+        $validate_attributes['year'] = $running_year;
+        $validate_attributes['month_count'] = $latest_loan_history->month_count + 1;
+        $validate_attributes['contract_duration'] = $latest_loan_history->contract_duration;
+        $validate_attributes['actual_loan_amount'] = $latest_loan_history->actual_loan_amount;
+        $validate_attributes['paid_this_month'] = $validate_attributes['actual_loan_amount'] / $validate_attributes['contract_duration'];
+        $validate_attributes['total_paid_amount'] = $latest_loan_history->total_paid_amount + $validate_attributes['paid_this_month'];
+        $validate_attributes['current_loan_amount'] = $validate_attributes['actual_loan_amount'] - $validate_attributes['total_paid_amount'];
         $validate_attributes['loan_status'] = $this->myObject->loan_statuses[1];
 
-        if($validate_attributes['current_loan_amount'] <= 0)
-        {
-            $validate_attributes = $this->fixErrorCalculation($validate_attributes);
-            $validate_attributes['loan_status'] = $this->myObject->loan_statuses[2];
-        }
+        LoanHistory::create($this->fixCalculationError($validate_attributes, $latest_loan_history->total_paid_amount));
 
-        $validate_attributes['approval_status'] = $this->decision[2];   // NEW
-        $loan_pay_back = LoanPayBack::create($validate_attributes);
-        // $loan_history = LoanHistory::create($validate_attributes); Previous
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'loan_pay_back' => $loan_pay_back,
-            ]
-        ];
+        return $this->showSuccessMessage('Loan Pay Back record created successfully');
     }
 
     public function checkEligibility()
@@ -172,10 +155,10 @@ class LoanHistoryController extends Controller
         ];
     }
 
-    private function validateLoanHisrory()
+    private function validateLoanHistory()
     {
-        return request()->validate ([
-            'paid_amount' => 'required|string',
+        return request()->validate([
+            'user_id' => 'required|string',
         ]);
     }
 
@@ -195,13 +178,15 @@ class LoanHistoryController extends Controller
             -   $validate_attributes['paid_amount'];
     }
 
-    private function fixErrorCalculation($validate_attributes)
+    private function fixCalculationError($validate_attributes, $latest_total_paid)
     {
+        if($validate_attributes['month_count'] != $validate_attributes['contract_duration']) return $validate_attributes;
+
         $validate_attributes['current_loan_amount'] = 0;
-        $validate_attributes['paid_amount'] =
-            $validate_attributes['actual_loan_amount']
-        +   $validate_attributes['actual_loan_amount'] * ($validate_attributes['yearly_interest_rate'] / 12)
-        *   $validate_attributes['month_count'];
+        $validate_attributes['paid_this_month'] = $validate_attributes['actual_loan_amount'] - $latest_total_paid;
+        $validate_attributes['total_paid_amount'] = $validate_attributes['actual_loan_amount'];
+        $validate_attributes['loan_status'] = $this->myObject->loan_statuses[2];
+
         return $validate_attributes;
     }
 }

@@ -6,19 +6,23 @@ use App\Payment;
 use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\Http\Controllers\SharedTrait;
+use App\MyErrorObject;
 use App\User;
-use Carbon\Carbon;
+use App\LoanHistory;
 use App\Leave;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Payment as PaymentMail;
 
 class PaymentController extends Controller
 {
     use CustomsErrorsTrait, SharedTrait;
+    private $myObject;
 
     public function __construct()
     {
         $this->middleware('auth:api'); //->except(['register', 'login']);
+        $this->myObject = new MyErrorObject;
     }
 
     public function index()     // BASICALLY RETURNS PAYMENTS OF THIS YEAR-MONTH
@@ -31,6 +35,7 @@ class PaymentController extends Controller
         ])->pluck('user_id');
 
         $userCountMap = $this->getKeyUserIdValueUnpaidLeaveCount();
+        $userCountLoan = $this->getLoanDeductionOfAllUsers();
 
         return
         [
@@ -38,6 +43,7 @@ class PaymentController extends Controller
                 'status' => 'OK',
                 'payments_user_id' => $payments_user_id,
                 'userCountMap' => $userCountMap,
+                'userCountLoan' => $userCountLoan,
             ]
         ];
     }
@@ -64,9 +70,9 @@ class PaymentController extends Controller
 
         if($isExist) return $this->getErrorMessage('You have paid this user already for this month');
 
-        $payment = Payment::create($validate_attributes);
+        Payment::create($validate_attributes);
 
-        return redirect('api/provident-fund/'.$user->id);       // REDIRECTS TO PF STORE METHOD
+        return $this->showSuccessMessage('Payment Created Successfully');
     }
 
     public function sendPaymentToMail()         // etake arekto jate tulte hobe
@@ -146,6 +152,34 @@ class PaymentController extends Controller
         }
 
         return $userCountMap;
+    }
+
+    private function getLoanDeductionOfAllUsers()
+    {
+        $users = User::all();
+        $userCountLoan = collect([]);   // MONTHLY LOAN DEDUCTION
+
+        foreach ($users as $user) {
+            $loan_history = LoanHistory::where('user_id', $user->id)->latest()->first();
+            $userCountLoan[$user->id] = $this->getAmountOfLoanToPayThisMonth($loan_history);
+        }
+
+        return $userCountLoan;
+    }
+
+    private function getAmountOfLoanToPayThisMonth($loan_history)
+    {
+        $month = date("M", strtotime('+6 hours'));
+        $year = date("Y", strtotime('+6 hours'));
+
+        if( (! $loan_history) ||
+            ($loan_history->loan_status == $this->myObject->loan_statuses[0] && $loan_history->month == $month && $loan_history->year == $year) ||
+            ($loan_history->loan_status == $this->myObject->loan_statuses[2] && !($loan_history->month == $month && $loan_history->year == $year))
+        ) {
+            return 0;
+        }
+
+        return $loan_history->actual_loan_amount / $loan_history->contract_duration;
     }
 
     private function validatePayment()

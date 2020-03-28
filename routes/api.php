@@ -145,7 +145,7 @@ Route::group(['middleware' => 'cors'], function(){
     Route::get('payment/generate-salary-sheet', 'PaymentController@getExportableData');
 
 
-    Route::get('provident-fund/{user_id}', 'ProvidentFundController@store'); // CALLED FROM PF STORE
+    Route::post('provident-fund', 'ProvidentFundController@store');
     Route::get('provident-fund', 'ProvidentFundController@show');
 
 
@@ -157,7 +157,7 @@ Route::group(['middleware' => 'cors'], function(){
 
 
     Route::get('loan-history/pay/eligibility', 'LoanHistoryController@checkEligibility'); // check user
-    Route::post('loan-history', 'LoanHistoryController@store');     // pay back loan request
+    Route::post('loan-history', 'LoanHistoryController@store');
     Route::get('loan-pay-backs', 'LoanHistoryController@getAllPendingPayBacks'); // pending pay backs request
     Route::get('loan-pay-back-accept/{id}', 'LoanHistoryController@acceptLoanPayBackRequest'); // accept pay back request
     Route::get('loan-histories', 'LoanHistoryController@index');    // all transaction, user
