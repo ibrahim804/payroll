@@ -21,21 +21,6 @@ class SalaryController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    public function index()
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all Salaries');
-
-        $salaries = Salary::all();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'salaries' => $salaries,
-            ]
-        ];
-    }
-
     public function store(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Salary');

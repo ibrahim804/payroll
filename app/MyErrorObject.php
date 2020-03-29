@@ -6,11 +6,8 @@ class MyErrorObject
 {
     public $id, $error;
 
-    public $profile_pictures = '/images/profile_pictures';
-    public $trashed_pictures = '/images/trashed_pictures';
-
-    // public $deposit_rate = 0.05;
-    // public $pf_yearly_rate = 0.12;
+    // public $profile_pictures = '/images/profile_pictures';
+    // public $trashed_pictures = '/images/trashed_pictures';
 
     public $monthly_deposit_rate = 0.05;
 

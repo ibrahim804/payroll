@@ -157,40 +157,6 @@ class LeaveController extends Controller
         ];
     }
 
-    // public function update(Request $request, $id)
-    // {
-    //     $leave = Leave::find($id);
-    //
-    //     if($leave->user_id != auth()->id()) return $this->getErrorMessage('You can\'t update others leave information.');
-    //     if($leave->approval_status != $this->decision[2]) return $this->getErrorMessage('Leave already responsed, you can\'t update information.');
-    //
-    //     $validate_attributes = request()->validate([
-    //         'leave_category_id' => 'string', 'leave_description' => 'string', 'start_date' => 'date', 'end_date' => 'date',
-    //     ]);
-    //
-    //     if(!$this->validateDatesWhileUpdating($request, $leave)) return $this->getErrorMessage('start date can\'t be greater than end date');
-    //
-    //     if($request->filled('start_date'))
-    //     {
-    //         $validate_attributes['month'] = (new DateTime($validate_attributes['start_date']))->format('M');
-    //         $validate_attributes['year'] = (new DateTime($validate_attributes['start_date']))->format('Y');
-    //     }
-    //
-    //     $leave->update($validate_attributes);
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'user_id' => $leave->user->id,
-    //             'leave_type' => $leave->leave_category->leave_type,
-    //             'description' => $leave->leave_description,
-    //             'start_date' => $leave->start_date,
-    //             'end_date' => $leave->end_date,
-    //         ]
-    //     ];
-    // }
-
     public function updateApprovalStatus(Request $request, $id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
@@ -242,7 +208,6 @@ class LeaveController extends Controller
             return $this->getErrorMessage('Attempting to cancel an unserialized leave');
         }
 
-        // $days_diff = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
         $days_diff = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
         $special_index = ($leave->user->gender == 'male') ? 0 : 1;
@@ -332,26 +297,6 @@ class LeaveController extends Controller
         ]);
     }
 
-    private function validateDatesWhileUpdating($request, $leave)
-    {
-        if(!($request->filled('start_date') or $request->filled('end_date'))) return 1;
-
-        else if($request->filled('start_date') and $request->filled('end_date'))
-        {
-            return ($request->input('end_date') >= $request->input('start_date')) ? 1 : 0;
-        }
-
-        else if($request->filled('start_date'))
-        {
-            return ($leave->end_date >= $request->input('start_date')) ? 1 : 0;
-        }
-
-        else if($request->filled('end_date'))
-        {
-            return ($request->input('end_date') >= $leave->start_date) ? 1 : 0;
-        }
-    }
-
     private function calculateUnpaidLeave($leave)
     {
         $requested_days = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
@@ -399,15 +344,6 @@ class LeaveController extends Controller
         else return $requested_days - $temp;
 
     }
-
-    // private function getDaysDiffOfTwoDates($start, $finish)                         // Returns actual difference of two dates
-    // {
-    //     $start = new DateTime($start);
-    //     $finish = new DateTime($finish);
-    //     $interval = $start->diff($finish);
-    //
-    //     return (int)$interval->format('%a') + 1;
-    // }
 
     private function getActualLeavesBetweenTwoDates($working_day, $start, $finish)  // Returns calculated working days between two dates
     {

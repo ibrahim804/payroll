@@ -52,19 +52,6 @@ class DesignationController extends Controller
         ];
     }
 
-    public function show($id)
-    {
-        $designation_name = Designation::findOrFail($id)->designation;
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'designation' => $designation_name,
-            ]
-        ];
-    }
-
     public function update(Request $request, $id) // designation id
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Designation');
@@ -89,53 +76,6 @@ class DesignationController extends Controller
             ]
         ];
     }
-
-    // Must implements SoftDeletes before hitting the following methods.
-
-    // public function destroy($id)
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to destroy Designation');
-    //
-    //     Designation::findOrFail($id)->delete();
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'message' => 'Requested designation deleted successfully',
-    //         ]
-    //     ];
-    // }
-    //
-    // public function restore($id)
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to restore Designation');
-    //
-    //     Designation::onlyTrashed()->where('id', $id)->restore();
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'message' => 'Requested designation is restored successfully.',
-    //         ]
-    //     ];
-    // }
-    //
-    // public function trashedIndex()
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view trashed Designations');
-    //
-    //     $designations = Designation::onlyTrashed()->get();
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'designations' => $designations,
-    //         ]
-    //     ];
-    // }
 
     private function validateDesignation()
     {

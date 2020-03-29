@@ -149,48 +149,6 @@ class UserController extends Controller
         return redirect('api/leave-count/user/'.$user->id);       // REDIRECTS TO LEAVE COUNT STORE METHOD
     }
 
-    /*
-        User can view only her/his user info, none else. But admin can
-    */
-
-    // private function createEmployeesLeaveCounts($user)
-    // {
-    //     $myObject = new MyErrorObject;
-
-    //     $validate_attributes = [];
-    //     $validate_attributes['user_id'] = $user->id;
-    //     $validate_attributes['leave_count_start'] = $user->joining_date;
-    //     $joining_date_seconds = strtotime($validate_attributes['leave_count_start']);
-    //     $new_date_seconds = strtotime('+ 1 year', $joining_date_seconds);
-    //     $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
-
-    //     $validate_attributes['leave_category_id'] = 1;
-    //     $validate_attributes['leave_left'] = $myObject->casual_gift;
-    //     LeaveCount::create($validate_attributes);
-
-    //     $validate_attributes['leave_category_id'] = 2;
-    //     $validate_attributes['leave_left'] = $myObject->sick_gift;
-    //     LeaveCount::create($validate_attributes);
-    // }
-
-    public function user($id)
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id)
-        {
-            return $this->getErrorMessage('You don\'t have permission to view any user info');
-        }
-
-        $user = User::find($id);              // if not found, returns an exception
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'description' => $user,
-            ]
-        ];
-    }
-
     public function get_me()
     {
         $user = auth()->user();
@@ -220,22 +178,6 @@ class UserController extends Controller
                     'on_loan' => $lh_loan,
                     'available_pf' => $pf_avail,
                 ]
-            ]
-        ];
-    }
-
-    public function exists_email()
-    {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
-
-        $validate_attributes = request()->validate(['email' => 'required|string']);
-        $u_count = User::where('email', $validate_attributes['email'])->count();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'exists' => ($u_count)? 'yes': 'no',
             ]
         ];
     }
@@ -463,11 +405,6 @@ class UserController extends Controller
 
     }
 
-    /*
-        The following route will be called when user is already verified through verification acode and ready to set a new password
-        Input: email, new_password and confirm_password
-    */
-
     public function setNewPasswordAfterUserVerification(Request $request)
     {
         $validate_attributes = request()->validate([            // these validations are not working for being out of auth:api. I don't know why. Check it later.
@@ -494,77 +431,6 @@ class UserController extends Controller
             ]
         ];
     }
-
-    // SoftDelete
-
-    // public function delete(Request $request, $id)
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
-    //
-    //     User::find($id)->delete();
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'message' => 'User deleted successfully',
-    //         ]
-    //     ];
-    // }
-
-    // public function restore(Request $request, $id)
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied for normal user');
-    //
-    //     User::onlyTrashed()->where('id', $id)->restore();                       // Deleted user can be restored when it is trashed.
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'message' => 'User restored successfully.',
-    //         ]
-    //     ];
-    // }
-
-    /* If user wants to remove her/his profile picture
-        Their are two directories /public/images. one is profile_pictures(all profile pictures are here), another is trashed_pictures(all removed profile pictures are here)
-        So when user remove photo, the system basically move profile picture from profile_pictures directory to trashed_pictures directory
-    */
-
-    // public function remove_photo($id)
-    // {
-    //     if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $id)    // User can remove her/his profile picture, Admin can anyone's
-    //     {
-    //         return $this->getErrorMessage('Permission denied.');
-    //     }
-    //
-    //     $user = User::find($id);
-    //
-    //     if(!$user->photo_path) return $this->getErrorMessage('No photo has been found in this path.');      // If photo exists, path must have a value
-    //
-    //     $actual_old_path = public_path($user->photo_path);              // physical path where the photo is
-    //     $extension = pathinfo($actual_old_path, PATHINFO_EXTENSION);    // extension is needed to rename that profile picture in trashed_pictures directory,
-    //     $actual_new_path = public_path().(new \App\MyErrorObject)->trashed_pictures.'/'.bin2hex(random_bytes(8)).'.'.$extension;        // where to save(trashed_pictures location)
-    //
-    //     /* Another way of finding extension from path string
-    //         $infoPath = pathinfo(public_path('/uploads/my_image.jpg'));
-    //         $extension = $infoPath['extension'];
-    //     */
-    //
-    //     if(! File::exists($actual_old_path)) return $this->getErrorMessage('File doesn\'t exists in this path');    // before moving, we need to ensure that, photo really exists in this actual path
-    //
-    //     File::move($actual_old_path, $actual_new_path);     // profile_pictures to trashed_pictures
-    //     $user->update(['photo_path' => NULL]);              // No photo in profile_pictures directory
-    //
-    //     return
-    //     [
-    //         [
-    //             'status' => 'OK',
-    //             'message' => 'Image removed successfully',
-    //         ]
-    //     ];
-    // }
 
     private function validatePassword() {
         return request()->validate([

@@ -71,19 +71,6 @@ class ProvidentFundController extends Controller
         ]);
     }
 
-    public function show()
-    {
-        $provident_fund = ProvidentFund::where('user_id', auth()->id())->latest()->first();
-
-        return
-        [
-            [
-                'status' => 'OK',
-                'provident_fund' => $provident_fund,
-            ]
-        ];
-    }
-
     private function getCompanyContributionRate($payment_in_times)
     {
         $active_years = (int)($payment_in_times / 12);
