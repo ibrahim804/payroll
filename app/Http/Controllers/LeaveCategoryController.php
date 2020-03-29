@@ -63,6 +63,7 @@ class LeaveCategoryController extends Controller
         $leave_category = Leave_category::create($validate_attributes);
 
         return redirect('api/leave-count/leave-category/'.$leave_category->id);
+        // REDIRECTS TO createAfterNewLeaveCategoryCreation OF LEAVE COUNT
     }
 
     public function show($id)

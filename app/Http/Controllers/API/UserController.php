@@ -146,7 +146,7 @@ class UserController extends Controller
         */
 
         $user = User::create($this->getProcessedInputsWhileCreatingUser($request));
-        return redirect('api/leave-count/user/'.$user->id);       // REDIRECTS TO STORE METHOD
+        return redirect('api/leave-count/user/'.$user->id);       // REDIRECTS TO LEAVE COUNT STORE METHOD
     }
 
     /*
