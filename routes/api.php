@@ -117,6 +117,7 @@ Route::group(['middleware' => 'cors'], function(){
 
     Route::post('loan-history', 'LoanHistoryController@store');
     Route::get('loan-histories', 'LoanHistoryController@index');
+    Route::get('loan-history/user/latest', 'LoanHistoryController@getLatestHistoryOfEach');
 
 });
 

@@ -21,7 +21,7 @@ class LoanHistoryController extends Controller
         $this->myObject = new MyErrorObject;
     }
 
-    public function index()
+    public function index() // his-his, whose-whose
     {
         $loan_histories = LoanHistory::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
 
@@ -30,6 +30,36 @@ class LoanHistoryController extends Controller
             [
                 'status' => 'OK',
                 'loan_histories' => $loan_histories,
+            ]
+        ];
+    }
+
+    public function getLatestHistoryOfEach()
+    {
+        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+
+        $loan_histories = LoanHistory::orderBy('created_at', 'desc')->get();
+        $array = array();
+        $countMap = collect([]);
+
+        foreach ($loan_histories as $loan_history) {
+            if(! $countMap->has($loan_history->user_id))
+            {
+                $countMap[$loan_history->user_id] = 1;
+
+                $loan_history->name = $loan_history->user->full_name;
+                $loan_history->department = $loan_history->user->department->department_name;
+                $loan_history->designation = $loan_history->user->designation->designation;
+
+                array_push($array, $loan_history);
+            }
+        }
+
+        return
+        [
+            [
+                'status' => 'OK',
+                'latest_histories' => $array,
             ]
         ];
     }
