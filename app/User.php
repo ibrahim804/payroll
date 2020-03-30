@@ -56,6 +56,7 @@ class User extends Authenticatable
         'designation_id',
         'department_id',
         'role_id',
+        'leader_id',
         'salary_id',
         'working_day_id',
         'joining_date',
