@@ -23,6 +23,7 @@ use App\LoanHistory;
 use App\LoanRequest;
 use App\LoanPayBack;
 use App\Payment;
+use App\Role;
 
 class User extends Authenticatable
 {
@@ -54,6 +55,7 @@ class User extends Authenticatable
         'company_id',
         'designation_id',
         'department_id',
+        'role_id',
         'salary_id',
         'working_day_id',
         'joining_date',
@@ -83,6 +85,11 @@ class User extends Authenticatable
     public function isAdmin($user_id)                               // this method returns whether the user is admin or not
     {
         return ($user_id == $this->admin_id) ? 'true' : 'false';
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 
     public function attendances()                                   // returns all attendances of a user. one(user) to many(attendances) relationship.

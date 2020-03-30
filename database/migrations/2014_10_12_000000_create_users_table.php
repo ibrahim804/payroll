@@ -34,6 +34,7 @@ class CreateUsersTable extends Migration
             $table->integer('company_id')->nullable();
             $table->integer('designation_id')->nullable();
             $table->integer('department_id')->nullable();
+            $table->integer('role_id');
             $table->integer('salary_id')->nullable();
             $table->integer('working_day_id')->nullable();
             $table->date('joining_date');
