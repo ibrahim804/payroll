@@ -66,9 +66,6 @@ class UserController extends Controller
             $infos[$i]->company = ($user->company) ? $user->company->name : 'N/A';
             $infos[$i]->department = ($user->department) ? $user->department->department_name : 'N/A';
             $infos[$i]->designation = ($user->designation) ? $user->designation->designation : 'N/A';
-            // $infos[$i]->casual_leave = ($user->leave_counts->count()) ? $user->leave_counts->where('leave_category_id', 1)->first()->leave_left : 'Not set yet';
-            // $infos[$i]->sick_leave = ($user->leave_counts->count()) ? $user->leave_counts->where('leave_category_id', 2)->first()->leave_left : 'Not set yet';
-            // $infos[$i]->photo_path = url($user->photo_path);
 
             $i++;
         }
@@ -157,26 +154,23 @@ class UserController extends Controller
         $pf_amount = ($pf_counts > 0) ? $user->provident_funds()->latest()->first()->closing_balance : 0;
         $lh_counts = $user->loan_histories->count();
         $lh_loan = ($lh_counts > 0) ? $user->loan_histories()->latest()->first()->current_loan_amount : 0;
-        $pf_avail = $pf_amount - $lh_loan;
 
         return
         [
             [
                 'status' => 'OK',
                 'description' => [
-                    'company_name' => ($user->company) ? $user->company->name : 'N/A',
-                    'department_name' => ($user->department) ? $user->department->department_name : 'N/A',
-                    'designation' => ($user->designation) ? $user->designation->designation : 'N/A',
-                    'email' => $user->email,
-                    'full_name' => $user->full_name,
                     'id' => $user->id,
-                    'joining_date' => $user->joining_date,
+                    'full_name' => $user->full_name,
+                    'email' => $user->email,
                     'phone' => $user->phone,
                     'present_address' => ($user->present_address)? $user->present_address: 'N/A',
+                    'department_name' => ($user->department) ? $user->department->department_name : 'N/A',
+                    'designation' => ($user->designation) ? $user->designation->designation : 'N/A',
+                    'joining_date' => $user->joining_date,
                     'net_salary' => ($user->salary) ? $this->calculatePayableAmount($user->salary)['net_salary']: 'N/A',
                     'provident_fund' => $pf_amount,
                     'on_loan' => $lh_loan,
-                    'available_pf' => $pf_avail,
                 ]
             ]
         ];
