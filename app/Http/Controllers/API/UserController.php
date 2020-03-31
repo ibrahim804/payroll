@@ -266,6 +266,8 @@ class UserController extends Controller
         $inputs['gender'] = $request->input('gender');
         $inputs['phone'] = $request->input('phone');
         $inputs['joining_date'] = $request->input('joining_date');
+        $inputs['role_id'] = $request->input('role_id');
+        $inputs['id_of_leader'] = $request->input('id_of_leader');
 
         if($request->filled('employee_id')) $inputs['employee_id'] = $request->input('employee_id');
         if($request->filled('user_name')) $inputs['user_name'] = $request->input('user_name');

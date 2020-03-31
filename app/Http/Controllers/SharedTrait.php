@@ -26,6 +26,8 @@ trait SharedTrait
 			'company_id' => 'nullable|string',
             'designation_id' => 'nullable|string',
             'department_id' => 'nullable|string',
+            'role_id' => 'required|string',
+            'id_of_leader' => 'required|string',
 			'working_day_id' => 'nullable|string',
             'joining_date' => 'required|string',
             'deposit_pf' => 'nullable|string',

@@ -60,6 +60,10 @@ Route::group(['middleware' => 'cors'], function(){
     Route::get('users', 'API\UserController@index');
 
 
+    Route::get('roles', 'RoleController@index');
+    Route::get('roles/leaders', 'RoleController@leaders');
+
+
     Route::post('salary', 'SalaryController@store');
     Route::get('salary/{user_id}', 'SalaryController@show');
     Route::get('salary-mine', 'SalaryController@showMySalary');
