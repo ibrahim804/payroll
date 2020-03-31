@@ -102,6 +102,7 @@ class PaymentController extends Controller
         $users = User::orderBy('department_id')->orderBy('designation_id')->get();
 
         $userCountMap = $this->getKeyUserIdValueUnpaidLeaveCount();
+        $userCountLoan = $this->getLoanDeductionOfAllUsers();
 
         foreach ($users as $user) {
 
@@ -117,9 +118,10 @@ class PaymentController extends Controller
             $salary->deduction_leave = $this->calculateLeaveDeduction(
                 $salary->unpaid_leave_taken, $salary->gross_salary
             );
+            $salary->on_loan = $userCountLoan[$salary->user_id];
             $salary->payable_amount = $this->calculatePayableAmountAfterLeaveDeduction(
                 $salary->unpaid_leave_taken, $salary->gross_salary, $salary->net_salary
-            );
+            ) - $salary->on_loan;
 
             $salary->full_name = $user->full_name;
             $salary->department_name = $user->department->department_name;
