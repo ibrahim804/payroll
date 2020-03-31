@@ -167,6 +167,7 @@ class LoanRequestController extends Controller
                 [
                     'status' => 'FAILED',
                     'gross' => -1,
+                    'message' => 'Your salary is not set yet',
                 ]
             ];
         }
