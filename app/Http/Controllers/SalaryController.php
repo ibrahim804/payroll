@@ -23,7 +23,7 @@ class SalaryController extends Controller
 
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Salary');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateSalary();
         $user = User::find($validate_attributes['user_id']);
@@ -49,10 +49,7 @@ class SalaryController extends Controller
 
     public function show($user_id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false')
-        {
-            return $this->getErrorMessage('You don\'t have permission to view his/her salary');
-        }
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $user = User::find($user_id);
 
@@ -87,7 +84,7 @@ class SalaryController extends Controller
 
     public function update(Request $request, $user_id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Salary Information');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $salary = User::findOrFail($user_id)->salary;
         if(!$salary) return $this->getErrorMessage('This user doesn\'t have any salary yet.');

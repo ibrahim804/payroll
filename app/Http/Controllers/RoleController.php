@@ -18,7 +18,7 @@ class RoleController extends Controller
 
     public function index()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $roles = Role::where('type', '<>', 'admin')->get();
 
@@ -33,7 +33,7 @@ class RoleController extends Controller
 
     public function leaders()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $leader_id = Role::where('type', 'leader')->first()->id;
         $leaders = User::select('id', 'full_name')->where('role_id', $leader_id)->get();

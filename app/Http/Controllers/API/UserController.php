@@ -45,9 +45,9 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
-        $users = User::all();               // fetches all users
+        $users = User::orderBy('department_id')->orderBy('designation_id')->get();              // fetches all users
         $i = 0; $infos = [];
 
         foreach($users as $user) {
@@ -100,7 +100,8 @@ class UserController extends Controller
                     'full_name' => $user->full_name,
                     'email' => $user->email,
                     'token' => $success['token'],
-                    'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
+                    // 'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
+                    'role' => $user->role->type,
                 ]
             ];
         }
@@ -128,7 +129,7 @@ class UserController extends Controller
 
     public function register(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Only admin can create user');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Only admin can create user');
 
         $validator = $this->validateUser($request->all());          // validateUser is a method of SharedTrait. Please check
 
@@ -178,7 +179,7 @@ class UserController extends Controller
 
     public function user_dept_desg($id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $user = User::find($id);
 

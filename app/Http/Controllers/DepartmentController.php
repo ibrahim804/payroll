@@ -19,6 +19,8 @@ class DepartmentController extends Controller
 
     public function index()
     {
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
+
         $departments = Department::all();
 
         return
@@ -32,7 +34,7 @@ class DepartmentController extends Controller
 
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Department');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validator = $this->validateDepartment($request);
 
@@ -51,7 +53,7 @@ class DepartmentController extends Controller
 
     public function designations($id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view any Department\'s designations');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $designations = Department::findOrFail($id)->designations;
 
@@ -66,7 +68,7 @@ class DepartmentController extends Controller
 
     public function thisDeptDesgnUser($dept_id, $desgn_id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $users = Department::findOrFail($dept_id)->users->where('designation_id', $desgn_id);
         $i=0; $infos = [];
@@ -90,7 +92,7 @@ class DepartmentController extends Controller
 
     public function update(Request $request, $id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Dept Info.');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $department = Department::findOrFail($id);
         $validator = $this->validateDepartment($request);

@@ -27,7 +27,7 @@ class PaymentController extends Controller
 
     public function index()     // BASICALLY RETURNS PAYMENTS OF THIS YEAR-MONTH
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $payments_user_id = Payment::where([
             ['month', date("M", strtotime('+6 hours'))],
@@ -50,7 +50,7 @@ class PaymentController extends Controller
 
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validatePayment();
         $user = User::find($validate_attributes['user_id']);
@@ -77,6 +77,8 @@ class PaymentController extends Controller
 
     public function sendPaymentToMail()         // etake arekto jate tulte hobe
     {
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
+
         $validate_attributes = request()->validate([
           'user_id' => 'required|string',
           'unpaid_leave_count' => 'required|string',
@@ -93,7 +95,7 @@ class PaymentController extends Controller
 
     public function getExportableData()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $data = NULL;
         $index = 0;

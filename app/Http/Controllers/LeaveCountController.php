@@ -23,7 +23,7 @@ class LeaveCountController extends Controller
 
     public function store($user_id)      // CALLED BY REDIRECT FROM register METHOD IN UserController (AFTER USER REGISTRATION), NOT BY ROUTE.
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create any leave count');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $leave_categories = Leave_category::all();
         $hasAny = $leave_categories->count();
@@ -67,7 +67,7 @@ class LeaveCountController extends Controller
 
     public function createAfterNewLeaveCategoryCreation($leave_category_id)   // CALLED BY REDIRECT (AFTER NEW LEAVE CATEGORY CREATION), NOT BY ROUTE.
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave count');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $leave_category = Leave_category::find($leave_category_id);
         $all_users = User::all();

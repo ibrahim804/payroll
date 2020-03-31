@@ -47,7 +47,7 @@ class LeaveCategoryController extends Controller
 
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create leave category');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateLeaveCategory();
         $myObject = new MyErrorObject;

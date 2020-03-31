@@ -40,7 +40,7 @@ class LeaveController extends Controller
 
     public function index()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leaves');
+        if(auth()->user()->role->type == 'user') return $this->getErrorMessage('Permission Denied');
 
         $this->renewLeaveCountAll();
 
@@ -51,6 +51,13 @@ class LeaveController extends Controller
         foreach($leaves as $leave) {
 
             if(! $leave->user) continue;
+
+            if(
+                auth()->user()->role->type != 'admin' &&
+                $leave->user->id_of_leader != auth()->id()
+            ) {
+                continue;
+            }
 
             $infos[$i] = new User;
 
@@ -66,6 +73,7 @@ class LeaveController extends Controller
             $infos[$i]->leave_length = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
             $infos[$i]->leave_available = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first()->leave_left;
             $infos[$i]->approval_status = $leave->approval_status;
+            $infos[$i]->is_readonly = $leave->user->id_of_leader != auth()->id();
 
             $i++;
         }
@@ -159,9 +167,15 @@ class LeaveController extends Controller
 
     public function updateApprovalStatus(Request $request, $id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
+        if(auth()->user()->role->type == 'user') return $this->getErrorMessage('Permission Denied');
 
         $leave = Leave::find($id);
+
+        if($leave->user->id_of_leader != auth()->id())      // SCOPE DEFINED
+        {
+            return $this->getErrorMessage('Out Of Access');
+        }
+
         $value = request()->validate(['decision' => 'required|string']);
         $decision_str = $this->decision[(int) $value['decision']];
 
@@ -195,17 +209,22 @@ class LeaveController extends Controller
         ];
     }
 
-    public function cancelLeave($id)    // ADMIN TASK
+    public function cancelLeave($id)    // ADMIN-LEADER TASK
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
+        if(auth()->user()->role->type == 'user') return $this->getErrorMessage('Permission Denied');
 
         $leave = Leave::find($id);
+
+        if($leave->user->id_of_leader != auth()->id())      // SCOPE DEFINED
+        {
+            return $this->getErrorMessage('Out Of Access');
+        }
 
         if($leave->approval_status != $this->decision[1]) return $this->getErrorMessage('This leave is not accepted yet. no cancel option');
 
         if($this->attemptsToCancelUnTrackedLeave($leave))
         {
-            return $this->getErrorMessage('Attempting to cancel an unserialized leave');
+            return $this->getErrorMessage('Leave cancellation follows: last accept first reject');
         }
 
         $days_diff = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
@@ -265,7 +284,7 @@ class LeaveController extends Controller
 
     }
 
-    public function removeLeave($id)    // USER TASK
+    public function removeLeave($id)    // LEADER-USER TASK
     {
         $leave = Leave::find($id);
 

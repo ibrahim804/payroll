@@ -36,7 +36,7 @@ class LoanHistoryController extends Controller
 
     public function getLatestHistoryOfEach()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $loan_histories = LoanHistory::orderBy('created_at', 'desc')->get();
         $array = array();
@@ -66,7 +66,7 @@ class LoanHistoryController extends Controller
 
     public function store()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateLoanHistory();
 

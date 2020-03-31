@@ -19,7 +19,7 @@ class WorkingDayController extends Controller
 
     public function store(Request $request)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateWorkingDay(1);
 

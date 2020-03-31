@@ -24,7 +24,7 @@ class ProvidentFundController extends Controller
 
     public function store()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateProvidentFund();
 

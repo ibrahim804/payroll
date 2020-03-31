@@ -18,6 +18,8 @@ class DesignationController extends Controller
 
     public function index()
     {
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
+
         $designations = Designation::all();
 
         return
@@ -31,7 +33,7 @@ class DesignationController extends Controller
 
     public function store()
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create Designation');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = $this->validateDesignation();
 
@@ -54,7 +56,7 @@ class DesignationController extends Controller
 
     public function update(Request $request, $id) // designation id
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update Designation');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $designation = Designation::findOrFail($id);
         $validate_attributes = $request->validate(['designation' => 'required|string']);

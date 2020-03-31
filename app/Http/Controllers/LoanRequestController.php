@@ -28,7 +28,7 @@ class LoanRequestController extends Controller
 
     public function index()     // BASICALLY RETURNS ALL PENDING REQUESTS
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $loan_requests = LoanRequest::where('approval_status', $this->decision[2])->get();
 
@@ -114,7 +114,7 @@ class LoanRequestController extends Controller
 
     public function update($id)
     {
-        if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('Permission Denied');
+        if(auth()->user()->role->type != 'admin') return $this->getErrorMessage('Permission Denied');
 
         $validate_attributes = request()->validate([
             'approval_status' => 'required|string',
