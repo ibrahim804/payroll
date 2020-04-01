@@ -54,7 +54,7 @@ class UserController extends Controller
 
             $infos[$i] = new User;
 
-            if($user->isAdmin($user->id) == 'true') continue;
+            if($user->role->type == 'admin') continue;
 
             $infos[$i]->id = $user->id;
             $infos[$i]->full_name = $user->full_name;
@@ -100,7 +100,6 @@ class UserController extends Controller
                     'full_name' => $user->full_name,
                     'email' => $user->email,
                     'token' => $success['token'],
-                    // 'role' => ($user->isAdmin($user->id) == 'true') ? 'admin' : 'user',
                     'role' => $user->role->type,
                 ]
             ];
