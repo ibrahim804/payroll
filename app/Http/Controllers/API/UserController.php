@@ -171,6 +171,12 @@ class UserController extends Controller
                     'net_salary' => ($user->salary) ? $this->calculatePayableAmount($user->salary)['net_salary']: 'N/A',
                     'provident_fund' => $pf_amount,
                     'on_loan' => $lh_loan,
+                    'date_of_birth' => ($user->date_of_birth) ? $user->date_of_birth : 'N/A',
+                    'marital_status' => ($user->marital_status) ? $user->marital_status : 'N/A',
+                    'fathers_name' => ($user->fathers_name) ? $user->fathers_name : 'N/A',
+                    'nationality' => ($user->nationality) ? $user->nationality : 'N/A',
+                    'passport_number' => ($user->passport_number) ? $user->passport_number : 'N/A',
+                    'permanent_address' => ($user->permanent_address) ? $user->permanent_address : 'N/A',
                 ]
             ]
         ];
@@ -206,7 +212,7 @@ class UserController extends Controller
 
         $validate_attributes = request()->validate([
             'email' => 'nullable|string|email|max:255|unique:users',
-            'date_of_birth' => 'nullable|date',
+            'date_of_birth' => 'nullable|string',
             'fathers_name' => 'nullable|string|min:3|max:25',
             'marital_status' => 'nullable|string',
             'nationality' => 'nullable|string',
