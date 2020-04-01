@@ -205,11 +205,9 @@ class UserController extends Controller
         $user = Auth::user();
 
         $validate_attributes = request()->validate([
-            'full_name' => 'nullable|string|min:3|max:25',
             'email' => 'nullable|string|email|max:255|unique:users',
             'date_of_birth' => 'nullable|date',
             'fathers_name' => 'nullable|string|min:3|max:25',
-            'gender' => 'nullable|string',
             'marital_status' => 'nullable|string',
             'nationality' => 'nullable|string',
             'permanent_address' => 'nullable|string|min:10|max:300',
@@ -220,10 +218,7 @@ class UserController extends Controller
 
         $inputs = [];
 
-        if($validate_attributes['full_name']) $inputs['full_name'] = $request->input('full_name');
         if($validate_attributes['email']) $inputs['email'] = $request->input('email');
-        if($validate_attributes['gender']) $inputs['gender'] = $request->input('gender');
-        if($validate_attributes['phone']) $inputs['phone'] = $request->input('phone');
         if($validate_attributes['date_of_birth']) $inputs['date_of_birth'] = $request->input('date_of_birth');
         if($validate_attributes['fathers_name']) $inputs['fathers_name'] = $request->input('fathers_name');
         if($validate_attributes['marital_status']) $inputs['marital_status'] = $request->input('marital_status');
@@ -231,6 +226,7 @@ class UserController extends Controller
         if($validate_attributes['permanent_address']) $inputs['permanent_address'] = $request->input('permanent_address');
         if($validate_attributes['present_address']) $inputs['present_address'] = $request->input('present_address');
         if($validate_attributes['passport_number']) $inputs['passport_number'] = $request->input('passport_number');
+        if($validate_attributes['phone']) $inputs['phone'] = $request->input('phone');
 
         $user->update($inputs);
 
