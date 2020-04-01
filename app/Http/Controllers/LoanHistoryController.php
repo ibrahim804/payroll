@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\CustomsErrorsTrait;
 use App\MyErrorObject;
 use App\User;
-use App\LoanPayBack;
 
 class LoanHistoryController extends Controller
 {
