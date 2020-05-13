@@ -21,13 +21,13 @@ class LoanHistoryController extends Controller
 
     public function index()
     {
-        $loan_histories = LoanHistory::where('user_id', auth()->id())->get();
+        $loan_histories = LoanHistory::where('user_id', auth()->id())->orderBy('created_at', 'desc')->get();
 
         return
         [
             [
                 'status' => 'OK',
-                'loan_histories' => $loan_histories->sortByDesc('created_at'),
+                'loan_histories' => $loan_histories,
             ]
         ];
     }
