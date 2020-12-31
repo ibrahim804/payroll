@@ -8,19 +8,24 @@ use App\Http\Controllers\CustomsErrorsTrait;
 use App\User;
 use App\Leave_category;
 use DateTime;
+use App\MyErrorObject;
 
 class LeaveCountController extends Controller
 {
     use CustomsErrorsTrait;
+    private $myObject;
 
     public function __construct()
     {
         $this->middleware('auth:api');
+        $this->myObject = new MyErrorObject;
     }
 
     public function index()
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leave counts');
+
+        $this->renewLeaveCountAll();
 
         $leave_counts = LeaveCount::all();
 
@@ -46,6 +51,8 @@ class LeaveCountController extends Controller
     public function store(Request $request)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to create any leave count');
+
+        $this->renewLeaveCountAll();
 
         $validate_attributes = $this->validateLeaveCount();
         $leave_category = Leave_category::find($validate_attributes['leave_category_id']);
@@ -83,6 +90,8 @@ class LeaveCountController extends Controller
             return $this->getErrorMessage('You don\'t have permission to check others leave count');
         }
 
+        $this->renewLeaveCountAll();
+
         $leave_count = LeaveCount::where([
             ['user_id', $user_id],
             ['leave_category_id', $leave_category_id],
@@ -105,6 +114,8 @@ class LeaveCountController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update any leave count');
 
+        $this->renewLeaveCountAll();
+
         $leave_count = LeaveCount::findOrFail($id);
         $validate_attributes = request()->validate(['leave_left' => 'string']);
         $leave_count->update($validate_attributes);
@@ -120,6 +131,8 @@ class LeaveCountController extends Controller
 
     public function employeeIndex($user_id)
     {
+        $this->renewLeaveCountAll();
+
         $user = User::find($user_id);
 
         if($user_id != auth()->id()) return $this->getErrorMessage('Permission Denied');
@@ -142,6 +155,39 @@ class LeaveCountController extends Controller
             'leave_category_id' => 'required|string',
             'leave_left' => 'required|string',
         ]);
+    }
+
+    private function renewLeaveCountAll()
+    {
+        $leave_counts = LeaveCount::all();
+
+        foreach ($leave_counts as $leave_count) {
+            $this->renewLeaveCountAnEmployee($leave_count);
+        }
+    }
+
+    private function renewLeaveCountAnEmployee($leave_count)
+    {
+        $expired_seconds = strtotime($leave_count->leave_count_expired);
+        $today_seconds = strtotime(date('Y-m-d'));
+
+        if($today_seconds < $expired_seconds) return;
+
+        $validate_attributes = [];
+        $validate_attributes['leave_count_start'] = $leave_count->leave_count_expired;
+        $new_date_seconds = strtotime('+ 1 year', $expired_seconds); // second param should be in seconds
+        $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
+
+        if($leave_count->leave_category_id == '1')
+        {
+            $validate_attributes['leave_left'] = $this->myObject->casual_gift;
+            $leave_count = $leave_count->update($validate_attributes);
+        }
+        else if($leave_count->leave_category_id == '2')
+        {
+            $validate_attributes['leave_left'] = $this->myObject->sick_gift;
+            $leave_count = $leave_count->update($validate_attributes);
+        }
     }
 
 }

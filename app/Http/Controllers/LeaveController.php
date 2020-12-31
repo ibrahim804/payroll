@@ -9,10 +9,13 @@ use App\Http\Controllers\CustomsErrorsTrait;
 use Validator;
 use Carbon\Carbon;
 use DateTime;
+use App\MyErrorObject;
+use App\LeaveCount;
 
 class LeaveController extends Controller
 {
     use CustomsErrorsTrait;
+    private $myObject;
 
     private $decision = array('Rejected', 'Accepted', 'Pending');
     // private $month_name = array('Nothing', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
@@ -31,11 +34,14 @@ class LeaveController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api');
+        $this->myObject = new MyErrorObject;
     }
 
     public function index()
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to view all leaves');
+
+        $this->renewLeaveCountAll();
 
         $leaves = Leave::all();
 
@@ -74,6 +80,8 @@ class LeaveController extends Controller
 
     public function store(Request $request)
     {
+        $this->renewLeaveCountAll();
+
         $validate_attributes = $this->validateLeave();
         $leave_count = auth()->user()->leave_counts->where('leave_category_id', $validate_attributes['leave_category_id'])->count();
 
@@ -99,6 +107,8 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false' and auth()->id() != $user_id) return $this->getErrorMessage('You don\'t have permission to view leave');
 
+        $this->renewLeaveCountAll();
+
         $user = User::find($user_id);
         $leaves = $user->leaves;
 
@@ -122,6 +132,8 @@ class LeaveController extends Controller
 
     public function showCountsDuration($leave_category_id, $start_date, $end_date)
     {
+        $this->renewLeaveCountAll();
+
         $user = auth()->user();
         $leave_count = $user->leave_counts->where('leave_category_id', $leave_category_id)->first();
         $days_diff = $this->getActualLeavesBetweenTwoDates($user->working_day, $start_date, $end_date);
@@ -138,6 +150,8 @@ class LeaveController extends Controller
 
     public function update(Request $request, $id)
     {
+        $this->renewLeaveCountAll();
+
         $leave = Leave::find($id);
 
         if($leave->user_id != auth()->id()) return $this->getErrorMessage('You can\'t update others leave information.');
@@ -174,6 +188,8 @@ class LeaveController extends Controller
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to update approval status');
 
+        $this->renewLeaveCountAll();
+
         $leave = Leave::find($id);
         $value = request()->validate(['decision' => 'required|string']);
         $decision_str = $this->decision[(int) $value['decision']];
@@ -201,6 +217,8 @@ class LeaveController extends Controller
     public function cancelLeave($id)
     {
         if(auth()->user()->isAdmin(auth()->id()) == 'false') return $this->getErrorMessage('You don\'t have permission to cancel leave');
+
+        $this->renewLeaveCountAll();
 
         $leave = Leave::find($id);
 
@@ -241,6 +259,8 @@ class LeaveController extends Controller
 
     public function removeLeave($id)
     {
+        $this->renewLeaveCountAll();
+
         $leave = Leave::find($id);
 
         if($leave->user->id != auth()->id()) return $this->getErrorMessage('Permission Denied');
@@ -273,6 +293,8 @@ class LeaveController extends Controller
 
     private function validateDatesWhileUpdating($request, $leave)
     {
+        $this->renewLeaveCountAll();
+
         if(!($request->filled('start_date') or $request->filled('end_date'))) return 1;
 
         else if($request->filled('start_date') and $request->filled('end_date'))
@@ -293,6 +315,8 @@ class LeaveController extends Controller
 
     private function calculateUnpaidLeave($leave)
     {
+        $this->renewLeaveCountAll();
+
         // $requested_days = $this->getDaysDiffOfTwoDates($leave->start_date, $leave->end_date);
         $requested_days = $this->getActualLeavesBetweenTwoDates($leave->user->working_day, $leave->start_date, $leave->end_date);
         $leave_count = $leave->user->leave_counts->where('leave_category_id', $leave->leave_category_id)->first();
@@ -320,6 +344,8 @@ class LeaveController extends Controller
 
     private function getActualLeavesBetweenTwoDates($working_day, $start, $finish)  // Returns calculated working days between two dates
     {
+        $this->renewLeaveCountAll();
+
         $start = new DateTime($start);
         $finish = new DateTime($finish);
 
@@ -336,6 +362,39 @@ class LeaveController extends Controller
         }
 
         return $actualLeaveCount;
+    }
+
+    private function renewLeaveCountAll()
+    {
+        $leave_counts = LeaveCount::all();
+
+        foreach ($leave_counts as $leave_count) {
+            $this->renewLeaveCountAnEmployee($leave_count);
+        }
+    }
+
+    private function renewLeaveCountAnEmployee($leave_count)
+    {
+        $expired_seconds = strtotime($leave_count->leave_count_expired);
+        $today_seconds = strtotime(date('Y-m-d'));
+
+        if($today_seconds < $expired_seconds) return;
+
+        $validate_attributes = [];
+        $validate_attributes['leave_count_start'] = $leave_count->leave_count_expired;
+        $new_date_seconds = strtotime('+ 1 year', $expired_seconds); // second param should be in seconds
+        $validate_attributes['leave_count_expired'] = date('Y-m-d', $new_date_seconds);
+
+        if($leave_count->leave_category_id == '1')
+        {
+            $validate_attributes['leave_left'] = $this->myObject->casual_gift;
+            $leave_count = $leave_count->update($validate_attributes);
+        }
+        else if($leave_count->leave_category_id == '2')
+        {
+            $validate_attributes['leave_left'] = $this->myObject->sick_gift;
+            $leave_count = $leave_count->update($validate_attributes);
+        }
     }
 }
 
