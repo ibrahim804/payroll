@@ -147,7 +147,7 @@ Route::group(['middleware' => 'cors'] ,function(){
     Route::post('loan-request/{id}', 'LoanRequestController@update');
 
 
-    // Route::
+    Route::post('loan-history', 'LoanHistoryController@store');
 
 
     Route::post('file-upload/create/user', 'FileController@create_user'); // must work with xcel, not csv

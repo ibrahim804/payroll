@@ -103,12 +103,13 @@ class LoanRequestController extends Controller
 
         $validate_attributes = request()->validate(['approval_status' => 'required|string']);
 
-        if($validate_attributes['approval_status'] != $this->decision[2])
+        $loan_request = LoanRequest::find($id);
+
+        if($loan_request['approval_status'] != $this->decision[2])
         {
             return $this->getErrorMessage('Can\'t update, Already Responded');
         }
 
-        $loan_request = LoanRequest::find($id);
         $loan_request->update([
             'approval_status' => $this->decision[(int)$validate_attributes['approval_status']],
         ]);
